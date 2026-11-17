@@ -1,30 +1,54 @@
+@php
+    $accent = ($p->accent_color && preg_match('/^#[0-9A-Fa-f]{6}$/', $p->accent_color)) ? $p->accent_color : null;
+    $order = collect($p->section_order ?: ['bio', 'links', 'website'])->intersect(['bio', 'links', 'website'])->values();
+    foreach (['bio', 'links', 'website'] as $s) { if (! $order->contains($s)) { $order->push($s); } }
+    $display = $p->name_fa ?: ($p->name_en ?: $p->username);
+@endphp
 <!doctype html>
-<html lang="fa" dir="rtl">
+<html lang="{{ config('brand.default_locale') }}" dir="{{ config('brand.default_locale') === 'en' ? 'ltr' : 'rtl' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $p->name_fa ?: ($p->name_en ?: $p->username) }} — {{ config('app.name') }}</title>
+    <title>{{ $display }} — {{ config('brand.name') }}</title>
     @unless($indexable)<meta name="robots" content="noindex, nofollow">@endunless
     @if($p->bio)<meta name="description" content="{{ \Illuminate\Support\Str::limit($p->bio, 160) }}">@endif
-    <style>
-        body{font-family:Tahoma,sans-serif;background:#f3f4f6;margin:0;display:flex;justify-content:center;padding:2rem 1rem}
-        .card{background:#fff;border-radius:16px;padding:2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 2px 12px #0001}
-        img,.ph{width:128px;height:128px;border-radius:50%;object-fit:cover;background:#e5e7eb}
-        h1{margin:.8rem 0 .2rem;font-size:1.4rem}.en{color:#6b7280;direction:ltr}.bio{margin:1rem 0;line-height:1.9}
-        a{color:#2563eb;text-decoration:none}ul{list-style:none;padding:0;display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
-    </style>
+    @include('partials.brand')
+    @if($accent)<style>:root{--brand: {{ $accent }}}</style>@endif
+    @vite(['resources/css/app.css'])
 </head>
-<body>
-<main class="card">
-    @if($avatarUrl)<img src="{{ $avatarUrl }}" alt="{{ $p->username }}" width="128" height="128">@else<div class="ph" style="margin:auto"></div>@endif
-    <h1>{{ $p->name_fa ?: $p->username }}</h1>
-    @if($p->name_en)<div class="en">{{ $p->name_en }}</div>@endif
-    <div class="en">&#64;{{ $p->username }}</div>
-    @if($p->bio)<p class="bio">{{ $p->bio }}</p>@endif
-    @if($p->website)<p><a href="{{ $p->website }}" rel="nofollow noopener ugc" target="_blank">{{ parse_url($p->website, PHP_URL_HOST) }}</a></p>@endif
-    @if($socials)
-        <ul>@foreach($socials as $net => $url)<li><a href="{{ $url }}" rel="nofollow noopener ugc" target="_blank">{{ $net }}</a></li>@endforeach</ul>
-    @endif
+<body class="min-h-screen">
+<main class="mx-auto max-w-xl px-4 py-10">
+    <article class="card overflow-hidden">
+        <div class="h-28" style="background: color-mix(in srgb, var(--brand) 16%, var(--surface))"></div>
+        <div class="px-6 pb-8 text-center">
+            <div class="-mt-16 mb-4 flex justify-center">
+                @if($avatarUrl)
+                    <img src="{{ $avatarUrl }}" alt="{{ $display }}" width="128" height="128"
+                         class="size-32 rounded-full border-4 border-surface object-cover bg-line">
+                @else
+                    <div class="size-32 rounded-full border-4 border-surface bg-line"></div>
+                @endif
+            </div>
+            <h1 class="font-display text-2xl font-bold tracking-tight">{{ $display }}</h1>
+            @if($p->name_fa && $p->name_en)<div dir="ltr" class="text-muted">{{ $p->name_en }}</div>@endif
+            <div dir="ltr" class="text-sm text-muted">&#64;{{ $p->username }}</div>
+
+            @foreach($order as $section)
+                @if($section === 'bio' && $p->bio)
+                    <p class="mt-6 leading-8">{{ $p->bio }}</p>
+                @elseif($section === 'website' && $p->website)
+                    <p class="mt-6"><a class="font-medium text-brand hover:underline" href="{{ $p->website }}" rel="nofollow noopener ugc" target="_blank">{{ parse_url($p->website, PHP_URL_HOST) }}</a></p>
+                @elseif($section === 'links' && $socials)
+                    <ul class="mt-6 flex flex-wrap justify-center gap-2">
+                        @foreach($socials as $net => $url)
+                            <li><a class="btn btn-ghost !py-1.5 text-sm" href="{{ $url }}" rel="nofollow noopener ugc" target="_blank">{{ $net }}</a></li>
+                        @endforeach
+                    </ul>
+                @endif
+            @endforeach
+        </div>
+    </article>
+    <p class="mt-6 text-center text-sm text-muted"><a href="/" class="hover:underline">{{ config('brand.name') }}</a></p>
 </main>
 </body>
 </html>

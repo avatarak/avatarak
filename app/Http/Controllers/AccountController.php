@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Rules\Username;
 use App\Services\AvatarService;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,8 +21,8 @@ class AccountController extends Controller
         return response()->json([
             'name' => $user->name,
             'profile' => $p->only(['username', 'name_fa', 'name_en', 'bio', 'website', 'socials',
-                'show_avatar', 'show_profile', 'allow_indexing']) + ['has_avatar' => (bool) $p->avatar_path],
-            'emails' => $user->emails->map(fn ($e) => $e->only(['id', 'email', 'is_primary', 'is_public'])
+                'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order']) + ['has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version],
+            'emails' => $user->emails->map(fn ($e) => $e->only(['id', 'email', 'email_hash', 'is_primary', 'is_public'])
                 + ['verified' => $e->isVerified()])->values(),
         ]);
     }
@@ -51,6 +52,20 @@ class AccountController extends Controller
         return $this->show($request);
     }
 
+    public const SECTIONS = ['bio', 'links', 'website'];
+
+    public function updateAppearance(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'accent_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'section_order' => ['nullable', 'array', 'max:3'],
+            'section_order.*' => ['string', 'distinct', Rule::in(self::SECTIONS)],
+        ]);
+        $request->user()->profile->update($data);
+
+        return $this->show($request);
+    }
+
     public function updatePrivacy(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -70,6 +85,19 @@ class AccountController extends Controller
         $avatars->store($request->user()->profile, $request->file('avatar'));
 
         return response()->json(['message' => 'ok']);
+    }
+
+    /** Owner's own avatar, for the dashboard preview (never cached publicly). */
+    public function myAvatar(Request $request)
+    {
+        $path = $request->user()->profile->avatar_path;
+        abort_unless($path, 404);
+
+        return response(Storage::disk(config('avatar.disk'))->get($path), 200, [
+            'Content-Type' => 'image/jpeg',
+            'Cache-Control' => 'private, max-age=0, must-revalidate',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
     }
 
     public function deleteAvatar(Request $request, AvatarService $avatars): JsonResponse

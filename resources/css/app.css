@@ -1,9 +1,59 @@
 @import 'tailwindcss';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/vazirmatn/400.css';
+@import '@fontsource/vazirmatn/500.css';
+@import '@fontsource/vazirmatn/700.css';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/*
+ * Design tokens. These are the ONLY place colors/radius/fonts are defined.
+ * config/brand.php overrides the color tokens at runtime (see partials/brand.blade.php),
+ * so rebranding never touches components.
+ */
+:root {
+    --canvas: #F8F7F4;
+    --surface: #FFFFFF;
+    --ink: #20242A;
+    --brand: #3563E9;
+    --line: #E7E9ED;
+    --muted: #6A7280;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgb(32 36 42 / 0.04), 0 4px 16px rgb(32 36 42 / 0.05);
 }
+
+@theme inline {
+    --color-canvas: var(--canvas);
+    --color-surface: var(--surface);
+    --color-ink: var(--ink);
+    --color-brand: var(--brand);
+    --color-line: var(--line);
+    --color-muted: var(--muted);
+    --radius-card: var(--radius);
+    --shadow-card: var(--shadow);
+    /* Latin first (Inter), Arabic script falls through to Vazirmatn */
+    --font-sans: 'Inter', 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Vazirmatn', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+    html { font-family: var(--font-sans); }
+    body { background: var(--canvas); color: var(--ink); }
+    :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+}
+
+@layer components {
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .field { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: .6rem .8rem; transition: border-color .15s, box-shadow .15s; }
+    .field:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border-radius: 10px; padding: .55rem 1rem; font-weight: 500; transition: background .15s, opacity .15s; cursor: pointer; }
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-primary:hover { background: color-mix(in srgb, var(--brand) 88%, #000); }
+    .btn-ghost { border: 1px solid var(--line); background: var(--surface); }
+    .btn-ghost:hover { background: var(--canvas); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .label { display: block; font-size: .85rem; font-weight: 500; margin-bottom: .35rem; }
+    .hint { font-size: .8rem; color: var(--muted); }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
