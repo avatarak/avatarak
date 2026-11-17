@@ -11,6 +11,11 @@ const COPY = {
         heroSub: 'ایمیل شما، گذرنامه‌ی دیجیتال شما: یک عکس، یک بیوگرافی، شبکه‌های اجتماعی و لینک‌های تأییدشده.',
         emailPh: 'ایمیل خود را وارد کنید', claim: 'ساخت پروفایل رایگان',
 
+        heroCards: [
+            { name: 'سارا احمدی', role: 'طراح محصول', city: 'تهران', bio: 'طراح محصول و نویسنده. عاشق تایپوگرافی فارسی و ابزارهایی که کار را ساده می‌کنند.' },
+            { name: 'امیر رضایی', role: 'توسعه‌دهنده‌ی وب', city: 'اصفهان', bio: 'توسعه‌دهنده‌ی وب و علاقه‌مند به متن‌باز. این روزها روی ابزارهای توسعه‌دهنده کار می‌کنم.' },
+            { name: 'مینا کریمی', role: 'نویسنده و مترجم', city: 'شیراز', bio: 'نویسنده و مترجم. درباره‌ی کتاب، سفر و زبان فارسی می‌نویسم.' },
+        ],
         stripLabel: 'همه‌چیز در یک نگاه',
         strip: [['gift', 'رایگان برای کاربران'], ['shield', 'حریم خصوصی در اولویت'], ['verified', 'حساب‌های تأییدشده'], ['code', 'API برای توسعه‌دهنده‌ها']],
 
@@ -61,6 +66,11 @@ const COPY = {
         heroSub: 'Your email is your digital passport: one avatar, one bio, social connections and verified links.',
         emailPh: 'Enter email address', claim: 'Claim your free profile',
 
+        heroCards: [
+            { name: 'Sara Ahmadi', role: 'Product designer', city: 'Tehran', bio: 'Product designer and writer. Loves typography and tools that make work simpler.' },
+            { name: 'Amir Rezaei', role: 'Web developer', city: 'Isfahan', bio: 'Web developer and open-source fan. These days I build tools for developers.' },
+            { name: 'Mina Karimi', role: 'Writer & translator', city: 'Shiraz', bio: 'Writer and translator. I write about books, travel and the Persian language.' },
+        ],
         stripLabel: 'At a glance',
         strip: [['gift', 'Free for people'], ['shield', 'Privacy first'], ['verified', 'Verified accounts'], ['code', 'A developer API']],
 

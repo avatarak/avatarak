@@ -4,19 +4,13 @@ import Icon from '../Icon.vue';
 import Person from './Person.vue';
 import SocialIcon from '../SocialIcon.vue';
 import Verified from './Verified.vue';
-import { i18n } from '../../i18n';
 import { lt } from './copy';
 
 const emit = defineEmits(['start']);
 const email = ref('');
 
-// decorative sample profiles (not real people)
-const cards = [
-    { fa: 'سارا احمدی', en: 'Sara Ahmadi', rf: 'طراح محصول', re: 'Product designer', tone: 0, icons: ['instagram', 'x', 'github'] },
-    { fa: 'امیر رضایی', en: 'Amir Rezaei', rf: 'توسعه‌دهنده‌ی وب', re: 'Web developer', tone: 5, icons: ['github', 'linkedin', 'telegram'] },
-    { fa: 'مینا کریمی', en: 'Mina Karimi', rf: 'نویسنده و مترجم', re: 'Writer & translator', tone: 3, icons: ['telegram', 'instagram', 'youtube'] },
-];
-const fa = () => i18n.locale === 'fa';
+// decorative sample profiles (illustrated, not real people); copy lives in copy.js
+const looks = [{ tone: 1, icons: ['instagram', 'x', 'github'], tint: '#3563E9' }, { tone: 4, icons: ['github', 'linkedin', 'telegram'], tint: '#0F9D7A' }, { tone: 3, icons: ['telegram', 'instagram', 'youtube'], tint: '#C2255C' }];
 </script>
 
 <template>
@@ -31,13 +25,21 @@ const fa = () => i18n.locale === 'fa';
                 </form>
             </div>
 
-            <div class="relative hidden h-[30rem] lg:block" aria-hidden="true">
-                <article v-for="(c, i) in cards" :key="c.en" class="card absolute top-1/2 w-[22rem] -translate-y-1/2 !rounded-[4px] p-8" :style="{ insetInlineStart: i * 24 + 'rem' }">
-                    <Person :tone="c.tone" :size="96" />
-                    <div class="mt-5 text-[2rem] font-bold leading-tight">{{ fa() ? c.fa : c.en }}</div>
-                    <div class="text-base text-ink/70">{{ fa() ? c.rf : c.re }}</div>
-                    <div class="mt-5 flex items-center gap-3 text-ink"><Verified /><span class="h-px w-3 bg-ink/35"></span><SocialIcon v-for="n in c.icons" :key="n" :name="n" :size="18" /></div>
-                    <div class="mt-5 grid grid-cols-2 gap-3"><span class="h-[42px] rounded-[4px] border border-line"></span><span class="h-[42px] rounded-[4px] border border-line"></span></div>
+            <div class="relative hidden h-[36rem] lg:block" aria-hidden="true">
+                <article v-for="(c, i) in lt('heroCards')" :key="c.name" class="card absolute top-1/2 w-[23rem] -translate-y-1/2 overflow-hidden !rounded-[4px]" :style="{ insetInlineStart: i * 25 + 'rem' }">
+                    <div class="h-24" :style="{ background: `color-mix(in srgb, ${looks[i].tint} 20%, #fff)` }"></div>
+                    <div class="px-8 pb-8">
+                        <div class="-mt-14 w-fit rounded-full ring-4 ring-white"><Person :tone="looks[i].tone" :size="108" /></div>
+                        <div class="mt-4 text-[2rem] font-bold leading-tight">{{ c.name }}</div>
+                        <div class="text-base text-ink/75">{{ c.role }}</div>
+                        <div class="text-base text-ink/75">{{ c.city }}</div>
+                        <div class="mt-5 flex items-center gap-3 text-ink"><Verified /><span class="h-px w-3 bg-ink/35"></span><SocialIcon v-for="n in looks[i].icons" :key="n" :name="n" :size="18" /></div>
+                        <p class="mt-5 line-clamp-3 text-base leading-[1.45]">{{ c.bio }}</p>
+                        <div class="mt-5 grid grid-cols-2 gap-3">
+                            <span class="accent-btn" :style="{ '--accent': looks[i].tint }">{{ lt('mockShare') }}</span>
+                            <span class="accent-btn" :style="{ '--accent': looks[i].tint }">{{ lt('mockSite') }}</span>
+                        </div>
+                    </div>
                 </article>
             </div>
         </div>
