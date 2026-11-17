@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Profile;
 use App\Models\UserEmail;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -58,6 +61,47 @@ class AvatarService
             'mime' => $format === 'webp' ? 'image/webp' : 'image/jpeg',
             'etag' => '"'.md5($key).'"',
         ];
+    }
+
+    /**
+     * Re-encode an upload as a square JPEG (max 1024px). Re-encoding drops EXIF/GPS
+     * metadata and any non-image payload; the original file is never stored.
+     */
+    public function store(Profile $profile, UploadedFile $file): void
+    {
+        $src = @imagecreatefromstring((string) file_get_contents($file->getRealPath()));
+        abort_unless($src, 422, 'تصویر نامعتبر است.');
+
+        $w = imagesx($src);
+        $h = imagesy($src);
+        $side = min($w, $h);
+        $out = min($side, 1024);
+
+        $dst = imagecreatetruecolor($out, $out);
+        imagefill($dst, 0, 0, imagecolorallocate($dst, 255, 255, 255));
+        imagecopyresampled($dst, $src, 0, 0, intdiv($w - $side, 2), intdiv($h - $side, 2), $out, $out, $side, $side);
+
+        ob_start();
+        imagejpeg($dst, null, 90);
+        $bytes = ob_get_clean();
+
+        $disk = Storage::disk(config('avatar.disk'));
+        $path = "avatars/{$profile->id}/".Str::random(20).'.jpg';
+        $disk->put($path, $bytes);
+
+        $old = $profile->avatar_path;
+        $profile->update(['avatar_path' => $path, 'avatar_version' => Str::random(12)]);
+        if ($old) {
+            $disk->delete($old);
+        }
+    }
+
+    public function remove(Profile $profile): void
+    {
+        if ($profile->avatar_path) {
+            Storage::disk(config('avatar.disk'))->delete($profile->avatar_path);
+        }
+        $profile->update(['avatar_path' => null, 'avatar_version' => null]);
     }
 
     /** Center-crop to a square and scale to $size. */
