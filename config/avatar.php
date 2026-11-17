@@ -5,7 +5,8 @@ return [
     'disk' => env('AVATAR_DISK', 'local'),
 
     // Cache store for rendered avatars. null = default cache store (use "redis" in production)
-    'cache_store' => env('AVATAR_CACHE_STORE'),
+    // `AVATAR_CACHE_STORE=` (empty) in .env must mean "use the default store", not a store named ""
+    'cache_store' => env('AVATAR_CACHE_STORE') ?: null,
     'cache_ttl' => (int) env('AVATAR_CACHE_TTL', 86400),
 
     // Browser/CDN cache lifetime in seconds

@@ -30,7 +30,7 @@ class AvatarController extends Controller
     private function params(Request $request, AvatarService $avatars): array
     {
         $size = $avatars->clampSize((int) ($request->query('s', $request->query('size', 0))));
-        $webp = str_contains((string) $request->header('Accept'), 'image/webp');
+        $webp = $avatars->supportsWebp() && str_contains((string) $request->header('Accept'), 'image/webp');
 
         return [$size, $webp ? 'webp' : 'jpeg'];
     }

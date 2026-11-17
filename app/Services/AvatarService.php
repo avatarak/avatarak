@@ -60,13 +60,9 @@ class AvatarService
         $version = $profile->avatar_version ?: '0';
         $key = "avatar:{$profile->id}:{$version}:{$size}:{$format}";
 
-        $body = $this->cache()->remember($key, config('avatar.cache_ttl'), function () use ($profile, $size, $format) {
-            return $this->resize($profile->avatar_path, $size, $format);
-        });
+        $body = $this->cached($key, fn () => $this->resize($profile->avatar_path, $size, $format));
 
         if (! $body) {
-            $this->cache()->forget($key);
-
             return null;
         }
 
@@ -75,6 +71,38 @@ class AvatarService
             'mime' => $format === 'webp' ? 'image/webp' : 'image/jpeg',
             'etag' => '"'.md5($key).'"',
         ];
+    }
+
+    /**
+     * Remember the rendered image. Stored base64-encoded because raw JPEG/WebP bytes are not valid UTF-8,
+     * and text-based cache stores (the `database` driver on MySQL) reject or mangle them.
+     * A broken cache must never break an image: on any cache error we just render without it.
+     */
+    private function cached(string $key, \Closure $make): ?string
+    {
+        try {
+            $hit = $this->cache()->get($key);
+            if (is_string($hit) && ($raw = base64_decode($hit, true)) !== false && $raw !== '') {
+                return $raw;
+            }
+
+            $body = $make();
+            if ($body) {
+                $this->cache()->put($key, base64_encode($body), config('avatar.cache_ttl'));
+            }
+
+            return $body;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return $make();
+        }
+    }
+
+    /** WebP output needs GD built with WebP; otherwise we silently serve JPEG. */
+    public function supportsWebp(): bool
+    {
+        return function_exists('imagewebp') && (gd_info()['WebP Support'] ?? false);
     }
 
     /**
@@ -183,6 +211,6 @@ class AvatarService
 
     private function cache(): Repository
     {
-        return Cache::store(config('avatar.cache_store'));
+        return Cache::store(config('avatar.cache_store') ?: null);
     }
 }

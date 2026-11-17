@@ -162,4 +162,56 @@ class ProfileUrlTest extends TestCase
         $this->artisan('email:verify', ['email' => 'dup@x.ir'])->assertFailed();
         $this->assertSame(0, UserEmail::whereNotNull('verified_at')->count());
     }
+
+    public function test_cached_image_is_text_safe_for_database_cache_on_mysql(): void
+    {
+        config(['cache.default' => 'array']);
+        $u = $this->user();
+        $this->withAvatar($u);
+        $this->get('/javid/avatar?s=120')->assertOk();
+
+        $key = "avatar:{$u->profile->id}:{$u->profile->fresh()->avatar_version}:120:jpeg";
+        $stored = \Illuminate\Support\Facades\Cache::get($key);
+        $this->assertIsString($stored);
+        $this->assertTrue(mb_check_encoding($stored, 'UTF-8'), 'cached value must be valid UTF-8');
+        $this->assertStringNotContainsString("\0", $stored);
+        $this->assertSame("\xFF\xD8", substr(base64_decode($stored, true), 0, 2), 'decodes back to a JPEG');
+
+        // second request is served from cache and is identical
+        $a = $this->get('/javid/avatar?s=120')->getContent();
+        $b = $this->get('/javid/avatar?s=120')->getContent();
+        $this->assertSame($a, $b);
+    }
+
+    public function test_a_broken_cache_never_breaks_the_image(): void
+    {
+        $u = $this->user();
+        $this->withAvatar($u);
+
+        \Illuminate\Support\Facades\Cache::shouldReceive('store')->andThrow(new \RuntimeException('cache down'));
+        $r = $this->get('/javid/avatar?s=90')->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+        $this->assertSame([90, 90], array_slice(getimagesizefromstring($r->getContent()), 0, 2));
+    }
+
+    public function test_empty_avatar_cache_store_means_default_store(): void
+    {
+        // `AVATAR_CACHE_STORE=` left empty in .env used to crash with "Cache store [] is not defined"
+        config(['cache.default' => 'array', 'avatar.cache_store' => '']);
+        $u = $this->user();
+        $this->withAvatar($u);
+
+        $this->get('/javid/avatar?s=64')->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+        $key = "avatar:{$u->profile->id}:{$u->profile->fresh()->avatar_version}:64:jpeg";
+        $this->assertNotNull(\Illuminate\Support\Facades\Cache::get($key), 'was cached in the default store');
+    }
+
+    public function test_empty_env_value_resolves_to_null_in_config(): void
+    {
+        putenv('AVATAR_CACHE_STORE=');
+        $_ENV['AVATAR_CACHE_STORE'] = '';
+        $cfg = require base_path('config/avatar.php');
+        $this->assertNull($cfg['cache_store']);
+        putenv('AVATAR_CACHE_STORE');
+        unset($_ENV['AVATAR_CACHE_STORE']);
+    }
 }
