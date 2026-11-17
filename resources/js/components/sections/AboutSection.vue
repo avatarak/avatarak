@@ -45,7 +45,7 @@ const { busy, message, run, err } = useSubmit('PATCH', '/account/profile', () =>
             <label class="label" for="p-user">{{ t('username') }}</label>
             <input id="p-user" v-model="state.draft.username" dir="ltr" class="field text-start">
             <p v-if="err('username')" class="mt-1 text-sm text-red-600">{{ err('username') }}</p>
-            <p v-else class="hint mt-1">{{ t('usernameHint') }}: <bdi dir="ltr" class="inline-block">/u/{{ state.draft.username }}</bdi></p>
+            <p v-else class="hint mt-1">{{ t('usernameHint') }}: <bdi dir="ltr" class="inline-block">/{{ state.draft.username }}</bdi></p>
         </div>
         <SaveBar :busy="busy" :error="message" />
     </form>

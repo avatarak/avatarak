@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\PublicProfileController;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'app');
 
 // Public
-Route::get('/u/{username}', [PublicProfileController::class, 'show'])->name('profile.show');
+Route::get('/u/{username}', fn (string $username) => redirect()->route('profile.show', strtolower($username), 301))->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}');
 Route::get('/verify-email/{token}', [EmailController::class, 'verify'])->name('email.verify')->middleware('throttle:20,1');
 
 // Auth (session based, same-origin SPA)
@@ -41,3 +42,10 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::post('emails/{id}/resend', [EmailController::class, 'resend'])->middleware('throttle:5,1');
     Route::delete('emails/{id}', [EmailController::class, 'destroy']);
 });
+
+// Public profiles live at the site root, like gravatar.com/{username}. Keep these LAST so they never
+// shadow another route; usernames that collide with routes are reserved (App\Rules\Username).
+Route::get('/{username}', [PublicProfileController::class, 'show'])
+    ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->name('profile.show');
+Route::get('/{username}/avatar', [AvatarController::class, 'profile'])
+    ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:avatar')->name('profile.avatar');

@@ -1,11 +1,6 @@
 @import 'tailwindcss';
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
-@import '@fontsource/vazirmatn/400.css';
-@import '@fontsource/vazirmatn/500.css';
-@import '@fontsource/vazirmatn/700.css';
+@import '@fontsource-variable/inter/index.css';
+@import '@fontsource-variable/vazirmatn/index.css';
 
 /*
  * Design tokens: the ONLY place colors / radii / fonts live. config/brand.php overrides the
@@ -35,8 +30,9 @@
     --color-muted: var(--muted);
     --color-soft: var(--soft);
     --shadow-card: var(--shadow);
-    --font-sans: 'Inter', 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Inter', 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+    /* Latin glyphs come from Inter, Arabic-script glyphs fall through to Vazirmatn */
+    --font-sans: 'Inter Variable', 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Inter Variable', 'Vazirmatn Variable', ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -44,6 +40,14 @@
     body { background: var(--canvas); color: var(--ink); -webkit-font-smoothing: antialiased; }
     :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     h1, h2, h3 { letter-spacing: -0.01em; }
+
+    /* Persian typography. Vazirmatn has a small x-height, so it needs more size and leading than Latin.
+       Letter-spacing MUST be 0: tracking breaks the joins between Arabic-script letters. */
+    html[lang='fa'] { font-size: 106.25%; }
+    html[lang='fa'] body { line-height: 1.85; }
+    html[lang='fa'] h1, html[lang='fa'] h2, html[lang='fa'] h3 { line-height: 1.45; }
+    html[lang='fa'] *, html[lang='fa'] *::before, html[lang='fa'] *::after { letter-spacing: 0 !important; }
+    html[lang='fa'] .btn, html[lang='fa'] .accent-btn { line-height: 1.6; }
 }
 
 @layer components {
@@ -78,9 +82,18 @@
                 color-mix(in srgb, var(--accent) 62%, #fff) 48%,
                 color-mix(in srgb, var(--accent) 100%, #000 0%) 100%);
     }
-    .accent-btn { background: #fff; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 35%, #fff); border-radius: var(--radius-control);
+    .accent-btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+                  background: #fff; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 35%, #fff); border-radius: var(--radius-control);
                   padding: 10px 18px; font-weight: 600; text-align: center; transition: background .12s; }
     .accent-btn:hover { background: color-mix(in srgb, var(--accent) 8%, #fff); }
 }
+
+/* Modal: backdrop fades, panel eases up. Same curve on the way out, slightly faster. */
+.modal-enter-active, .modal-leave-active { transition: opacity .2s ease; }
+.modal-enter-active .modal-panel { transition: transform .26s cubic-bezier(.2, .8, .2, 1), opacity .2s ease; }
+.modal-leave-active .modal-panel { transition: transform .16s ease-in, opacity .16s ease-in; }
+.modal-leave-active { transition-duration: .16s; }
+.modal-enter-from, .modal-leave-to { opacity: 0; }
+.modal-enter-from .modal-panel, .modal-leave-to .modal-panel { opacity: 0; transform: translateY(14px) scale(.97); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

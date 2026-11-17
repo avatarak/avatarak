@@ -7,8 +7,13 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class Username implements ValidationRule
 {
-    public const RESERVED = ['admin', 'api', 'avatar', 'u', 'login', 'register', 'logout', 'account',
-        'settings', 'support', 'help', 'about', 'www', 'root', 'null', 'verify-email', 'up'];
+    public const RESERVED = [
+        'admin', 'administrator', 'api', 'avatar', 'avatars', 'u', 'login', 'register', 'logout', 'account', 'accounts',
+        'settings', 'support', 'help', 'about', 'www', 'root', 'null', 'undefined', 'verify-email', 'up', 'build', 'storage',
+        'assets', 'static', 'public', 'favicon', 'robots', 'sitemap', 'dashboard', 'profile', 'profiles', 'user', 'users',
+        'me', 'privacy', 'terms', 'developers', 'developer', 'pricing', 'blog', 'docs', 'status', 'health', 'security',
+        'contact', 'home', 'index', 'app', 'auth', 'oauth', 'signup', 'signin', 'wordpress', 'gravatar', 'iravatar',
+    ];
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

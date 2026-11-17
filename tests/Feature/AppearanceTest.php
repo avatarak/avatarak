@@ -27,7 +27,7 @@ class AppearanceTest extends TestCase
         $this->actingAs($u)->patchJson('/account/appearance', ['accent_color' => '#0F9D7A', 'section_order' => ['links', 'bio']])
             ->assertOk()->assertJsonPath('profile.accent_color', '#0F9D7A');
 
-        $html = $this->get('/u/sara')->assertOk()->assertSee('--accent: #0F9D7A', false)->getContent();
+        $html = $this->get('/sara')->assertOk()->assertSee('--accent: #0F9D7A', false)->getContent();
         $this->assertLessThan(strpos($html, 'leading-8">BIO_TEXT'), strpos($html, 'LINK_LABEL'), 'links card must precede bio card');
     }
 
@@ -46,7 +46,7 @@ class AppearanceTest extends TestCase
     {
         $u = $this->user();
         $u->profile->forceFill(['accent_color' => '#FFF;}</style><script>alert(1)</script>'])->save();
-        $this->get('/u/sara')->assertOk()->assertDontSee('<script>alert(1)', false);
+        $this->get('/sara')->assertOk()->assertDontSee('<script>alert(1)', false);
     }
 
     public function test_account_exposes_own_email_hash_only_to_owner(): void
@@ -62,7 +62,7 @@ class AppearanceTest extends TestCase
         $u = $this->user();
         $this->actingAs($u)->patchJson('/account/appearance', ['hidden_sections' => ['links']])->assertOk()
             ->assertJsonPath('profile.hidden_sections.0', 'links');
-        $this->get('/u/sara')->assertOk()->assertSee('BIO_TEXT')->assertDontSee('LINK_LABEL');
+        $this->get('/sara')->assertOk()->assertSee('BIO_TEXT')->assertDontSee('LINK_LABEL');
     }
 
     public function test_links_validation_rejects_unsafe_urls(): void
@@ -84,7 +84,7 @@ class AppearanceTest extends TestCase
             'socials' => ['youtube' => 'sara', 'eitaa' => 'sara_e'],
         ])->assertOk();
 
-        $html = $this->get('/u/sara')->assertOk()->getContent();
+        $html = $this->get('/sara')->assertOk()->getContent();
         $this->assertStringNotContainsString('<script>1</script>', $html);
         $this->assertStringNotContainsString('<b>blog</b>', $html);
         $this->assertStringContainsString('Tehran', $html);
@@ -96,9 +96,9 @@ class AppearanceTest extends TestCase
     public function test_verified_badge_only_for_verified_owner(): void
     {
         $u = $this->user();
-        $this->get('/u/sara')->assertDontSee('aria-label="verified"', false);
+        $this->get('/sara')->assertDontSee('aria-label="verified"', false);
         $u->emails()->create(['email' => 'sara@x.ir', 'verified_at' => now()]);
-        $this->get('/u/sara')->assertSee('aria-label="verified"', false);
+        $this->get('/sara')->assertSee('aria-label="verified"', false);
     }
 
     public function test_brand_config_colors_are_rendered_with_winning_specificity(): void

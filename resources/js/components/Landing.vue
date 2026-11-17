@@ -8,7 +8,9 @@ import SocialIcon from './SocialIcon.vue';
 import { t, i18n } from '../i18n';
 
 const brand = window.__BRAND__ || {};
-const auth = ref(null);
+const auth = ref('register');
+const authOpen = ref(false);
+const show = (mode) => { auth.value = mode; authOpen.value = true; };
 const email = ref('');
 
 // decorative sample profiles (no real people / data)
@@ -26,8 +28,8 @@ const fa = () => i18n.locale === 'fa';
             <Logo />
             <nav class="flex items-center gap-2">
                 <LangSwitch />
-                <button class="btn btn-ghost" @click="auth = 'login'">{{ t('login') }}</button>
-                <button class="btn btn-primary hidden sm:inline-flex" @click="auth = 'register'">{{ t('start') }}</button>
+                <button class="btn btn-ghost" @click="show('login')">{{ t('login') }}</button>
+                <button class="btn btn-primary hidden sm:inline-flex" @click="show('register')">{{ t('start') }}</button>
             </nav>
         </header>
 
@@ -38,7 +40,7 @@ const fa = () => i18n.locale === 'fa';
                         {{ i18n.locale === 'en' ? (brand.tagline_en || brand.tagline) : brand.tagline }}
                     </h1>
                     <p class="mt-6 max-w-xl text-xl leading-9 text-white/90">{{ t('heroSub') }}</p>
-                    <form class="mt-9 flex max-w-xl flex-col gap-3 sm:flex-row" @submit.prevent="auth = 'register'">
+                    <form class="mt-9 flex max-w-xl flex-col gap-3 sm:flex-row" @submit.prevent="show('register')">
                         <input v-model="email" type="email" dir="ltr" class="field text-start text-ink sm:flex-1" :placeholder="t('emailPlaceholder')" :aria-label="t('email')" autocomplete="email">
                         <button class="btn !min-h-[48px] border-white bg-brand text-white hover:!bg-ink">{{ t('claim') }} <Icon name="chevron" :size="18" flip /></button>
                     </form>
@@ -65,6 +67,6 @@ const fa = () => i18n.locale === 'fa';
             </div>
         </section>
 
-        <AuthCard v-if="auth" :mode="auth" :email="email" @close="auth = null" @switch="auth = $event" />
+        <AuthCard :open="authOpen" :mode="auth" :email="email" @close="authOpen = false" @switch="auth = $event" />
     </div>
 </template>

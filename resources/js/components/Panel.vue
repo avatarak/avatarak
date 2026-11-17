@@ -34,8 +34,8 @@ const menuRoot = ref(null);
 const profile = computed(() => state.account.profile);
 const avatarSrc = computed(() => (profile.value.has_avatar ? `/account/avatar?v=${profile.value.avatar_version}` : null));
 const verified = computed(() => state.account.emails.some((e) => e.verified));
-const publicUrl = computed(() => `${window.location.origin}/u/${profile.value.username}`);
-const publicPath = computed(() => `${window.location.host}/u/${profile.value.username}`);
+const publicUrl = computed(() => `${window.location.origin}/${profile.value.username}`);
+const publicPath = computed(() => `${window.location.host}/${profile.value.username}`);
 
 async function logout() {
     await api('POST', '/logout');
@@ -52,7 +52,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
         <header class="flex h-[70px] shrink-0 items-center justify-between px-5">
             <Logo />
             <div class="flex items-center gap-1">
-                <a :href="`/u/${profile.username}`" target="_blank" rel="noopener" class="icon-btn" :title="t('viewPublic')" :aria-label="t('viewPublic')">
+                <a :href="`/${profile.username}`" target="_blank" rel="noopener" class="icon-btn" :title="t('viewPublic')" :aria-label="t('viewPublic')">
                     <Icon name="external" :size="22" />
                 </a>
                 <LangSwitch />

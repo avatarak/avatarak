@@ -188,19 +188,19 @@ class AccountTest extends TestCase
         $u = $this->register();
         $u->profile->update(['name_fa' => 'علی', 'bio' => 'سلام <b>x</b>', 'socials' => ['github' => 'ali']]);
 
-        $res = $this->get('/u/ali')->assertOk()->assertSee('علی');
+        $res = $this->get('/ali')->assertOk()->assertSee('علی');
         $res->assertSee('noindex', false)->assertHeader('X-Robots-Tag', 'noindex, nofollow');
         $res->assertDontSee('<b>x</b>', false);   // escaped
         $res->assertDontSee('ali@example.com');
 
         $u->profile->update(['allow_indexing' => true]);
-        $res = $this->get('/u/ali')->assertOk();
+        $res = $this->get('/ali')->assertOk();
         $this->assertNull($res->headers->get('X-Robots-Tag'));
         $res->assertDontSee('noindex', false);
 
         $u->profile->update(['show_profile' => false]);
-        $this->get('/u/ali')->assertNotFound();
-        $this->get('/u/nobody')->assertNotFound();
+        $this->get('/ali')->assertNotFound();
+        $this->get('/nobody')->assertNotFound();
     }
 
     public function test_privacy_endpoint_controls_flags(): void

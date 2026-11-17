@@ -19,11 +19,31 @@ class EmailController extends Controller
         $email = $user->emails()->firstOrNew(['email' => UserEmail::normalize($address)]);
         $email->is_primary = $email->exists ? $email->is_primary : $primary;
         $email->verification_token = Str::random(48);
-        $email->save();
 
+        if (self::autoVerifies($email)) {
+            $email->verified_at = now();
+            $email->verification_token = null;
+            $email->save();
+            UserEmail::where('email_hash', $email->email_hash)->where('id', '!=', $email->id)->whereNull('verified_at')->delete();
+
+            return $email;
+        }
+
+        $email->save();
         Mail::to($email->email)->send(new VerifyEmailAddress($email));
 
         return $email;
+    }
+
+    /** Local-dev convenience only (see config/identity.php); never in production. */
+    private static function autoVerifies(UserEmail $email): bool
+    {
+        if (! config('identity.auto_verify_emails') || ! app()->environment('local')) {
+            return false;
+        }
+        $hash = UserEmail::hash($email->email);
+
+        return ! UserEmail::where('email_hash', $hash)->whereNotNull('verified_at')->where('id', '!=', $email->id ?? 0)->exists();
     }
 
     public function store(Request $request): JsonResponse

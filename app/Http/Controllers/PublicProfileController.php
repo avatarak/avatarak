@@ -27,11 +27,6 @@ class PublicProfileController extends Controller
     {
         $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
 
-        // The avatar is served by hash, so use the primary public verified email if any.
-        $email = UserEmail::where('user_id', $profile->user_id)
-            ->whereNotNull('verified_at')->where('is_public', true)
-            ->orderByDesc('is_primary')->first();
-
         $socials = [];
         foreach ($profile->socials ?? [] as $net => $handle) {
             if (isset(self::SOCIAL_URLS[$net]) && $handle !== '') {
@@ -59,7 +54,8 @@ class PublicProfileController extends Controller
             'order' => $order,
             'icons' => json_decode(file_get_contents(resource_path('data/social-icons.json')), true) ?: [],
             'verified' => UserEmail::where('user_id', $profile->user_id)->whereNotNull('verified_at')->exists(),
-            'avatarUrl' => ($profile->show_avatar && $profile->avatar_path && $email) ? route('avatar', [$email->email_hash, 's' => 512]) : null,
+            'avatarUrl' => ($profile->show_avatar && $profile->avatar_path)
+                ? route('profile.avatar', ['username' => $profile->username, 's' => 512, 'v' => $profile->avatar_version]) : null,
             'indexable' => $profile->allow_indexing,
         ]);
 

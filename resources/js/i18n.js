@@ -52,7 +52,7 @@ const M = {
         siteName: 'نام سایت', siteDomain: 'دامنه (مثلاً blog.example.ir)', createKey: 'ساخت کلید', keyOnce: 'این کلید را همین حالا ذخیره کنید؛ دوباره نمایش داده نمی‌شود.',
         lastUsed: 'آخرین استفاده', never: 'هرگز', example: 'نمونه درخواست', confirmDelete: 'حذف شود؟', empty: 'هنوز چیزی نیست.',
         loading: 'در حال بارگذاری…', error: 'خطایی رخ داد.', viewPublic: 'مشاهده‌ی صفحه‌ی عمومی', share: 'اشتراک‌گذاری', visitSite: 'مشاهده‌ی وب‌سایت',
-        verifyNotice: 'ایمیل شما هنوز تأیید نشده؛ تا آن موقع عکس و تیک تأیید روی صفحه‌ی عمومی و سایت‌های متصل نمایش داده نمی‌شود.', verifyAction: 'مدیریت ایمیل‌ها',
+        verifyNotice: 'ایمیل شما هنوز تأیید نشده؛ تا آن موقع تیک تأیید نمایش داده نمی‌شود و سایت‌های متصل (مثل وردپرس) عکس شما را نشان نمی‌دهند.', verifyAction: 'مدیریت ایمیل‌ها',
         preview: 'پیش‌نمایش', back: 'بازگشت', menu: 'منو', yourAddress: 'نشانی پروفایل شما', linkCopied: 'لینک کپی شد',
     },
     en: {
@@ -90,7 +90,7 @@ const M = {
         siteName: 'Site name', siteDomain: 'Domain (e.g. blog.example.com)', createKey: 'Create key', keyOnce: 'Save this key now; it will not be shown again.',
         lastUsed: 'Last used', never: 'Never', example: 'Example request', confirmDelete: 'Delete?', empty: 'Nothing here yet.',
         loading: 'Loading…', error: 'Something went wrong.', viewPublic: 'View public profile', share: 'Share', visitSite: 'Visit website',
-        verifyNotice: 'Your email is not verified yet. Until it is, your photo and the verified badge are hidden on your public page and connected sites.', verifyAction: 'Manage emails',
+        verifyNotice: 'Your email is not verified yet. Until it is, the verified badge is hidden and connected sites (like WordPress) will not show your photo.', verifyAction: 'Manage emails',
         preview: 'Preview', back: 'Back', menu: 'Menu', yourAddress: 'Your profile address', linkCopied: 'Link copied',
     },
 };

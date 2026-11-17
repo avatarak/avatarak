@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
 import Icon from './Icon.vue';
+import Modal from './Modal.vue';
 import { t } from '../i18n';
 
-const props = defineProps({ file: File });
+const props = defineProps({ file: File, open: { type: Boolean, default: true } });
 const emit = defineEmits(['done', 'cancel', 'error']);
 
 const STAGE = 300;   // px, the square viewport (shown through a circular mask)
@@ -15,7 +16,6 @@ const zoom = ref(1);
 const rot = ref(0);          // degrees: 0 / 90 / 180 / 270
 const off = ref({ x: 0, y: 0 });
 const busy = ref(false);
-const root = ref(null);
 
 // dimensions of the image after rotation
 const dims = computed(() => (rot.value % 180 === 0 ? natural.value : { w: natural.value.h, h: natural.value.w }));
@@ -69,23 +69,20 @@ function confirm() {
     c.toBlob((b) => { busy.value = false; b ? emit('done', b) : emit('error', t('errLoad')); }, 'image/jpeg', 0.92);
 }
 
-function esc(e) { if (e.key === 'Escape') emit('cancel'); }
-onMounted(() => { document.addEventListener('keydown', esc); root.value?.querySelector('button')?.focus(); });
-onBeforeUnmount(() => { document.removeEventListener('keydown', esc); URL.revokeObjectURL(url); });
+onBeforeUnmount(() => URL.revokeObjectURL(url));
 </script>
 
 <template>
-    <div ref="root" class="fixed inset-0 z-50 grid place-items-center bg-ink/45 p-4" role="dialog" aria-modal="true" :aria-label="t('cropTitle')"
-         @click.self="emit('cancel')">
-        <div class="card w-full max-w-md p-6">
+    <Modal :open="open" :label="t('cropTitle')" width="28rem" @close="emit('cancel')">
+        <div class="p-6">
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-bold">{{ t('cropTitle') }}</h2>
-                <button type="button" class="icon-btn" :aria-label="t('close')" @click="emit('cancel')"><Icon name="close" /></button>
+                <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('cancel')"><Icon name="close" :size="22" /></button>
             </div>
 
             <div class="mx-auto mt-5 select-none touch-none overflow-hidden rounded-[6px] bg-ink/90 outline-none"
                  :style="{ width: STAGE + 'px', height: STAGE + 'px', position: 'relative', cursor: 'grab' }"
-                 tabindex="0" role="application" :aria-label="t('cropHint')"
+                 tabindex="0" role="application" :aria-label="t('cropHint')" data-autofocus
                  @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up" @wheel.prevent="wheel" @keydown="key">
                 <img ref="img" :src="url" alt="" draggable="false" @load="onLoad" @error="emit('error', t('errLoad'))"
                      class="pointer-events-none absolute max-w-none"
@@ -101,7 +98,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', esc); URL.revoke
                 <span class="text-sm text-muted">{{ t('zoom') }}</span>
                 <input type="range" min="1" max="4" step="0.01" :value="zoom" class="h-2 flex-1 accent-[var(--brand)]"
                        :aria-label="t('zoom')" @input="setZoom(+$event.target.value)">
-                <button type="button" class="icon-btn" :title="t('rotate')" :aria-label="t('rotate')" @click="rotate"><Icon name="rotate" :size="20" /></button>
+                <button type="button" class="icon-btn" :title="t('rotate')" :aria-label="t('rotate')" @click="rotate"><Icon name="rotate" :size="22" /></button>
             </div>
 
             <div class="mt-6 flex items-center justify-between gap-3">
@@ -112,5 +109,5 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', esc); URL.revoke
                 </div>
             </div>
         </div>
-    </div>
+    </Modal>
 </template>

@@ -28,6 +28,8 @@ class AvatarService
     }
 
     /**
+     * Avatar for an email hash (used by other sites). Only verified + public emails resolve.
+     *
      * @return array{body: string, mime: string, etag: string}|null
      */
     public function render(string $hash, int $size, string $format): ?array
@@ -40,7 +42,18 @@ class AvatarService
 
         $profile = $email?->user?->profile;
 
-        if (! $profile || ! $profile->show_avatar || ! $profile->avatar_path) {
+        return $profile ? $this->renderProfile($profile, $size, $format) : null;
+    }
+
+    /**
+     * Avatar for a profile (used by the owner's own public page). Honors show_avatar only:
+     * the page itself is public, so no email is involved and nothing about emails leaks.
+     *
+     * @return array{body: string, mime: string, etag: string}|null
+     */
+    public function renderProfile(Profile $profile, int $size, string $format): ?array
+    {
+        if (! $profile->show_avatar || ! $profile->avatar_path) {
             return null;
         }
 

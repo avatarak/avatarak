@@ -12,6 +12,9 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const input = ref(null);
 const cropFile = ref(null);
+const cropOpen = ref(false);
+const openCrop = (f) => { cropFile.value = f; cropOpen.value = true; };
+const closeCrop = () => { cropOpen.value = false; setTimeout(() => { if (!cropOpen.value) cropFile.value = null; }, 260); };
 const dragging = ref(false);
 const progress = ref(null);   // null | 0..100
 const error = ref('');
@@ -27,11 +30,11 @@ function pick(file) {
     if (!file) return;
     if (!TYPES.includes(file.type)) return (error.value = t('errType'));
     if (file.size > MAX_SOURCE) return (error.value = t('errSize'));
-    cropFile.value = file;
+    openCrop(file);
 }
 
 async function send(blob) {
-    cropFile.value = null;
+    closeCrop();
     progress.value = 0;
     error.value = '';
     current = upload('/account/avatars', 'avatar', blob, 'avatar.jpg', (p) => (progress.value = p));
@@ -120,6 +123,6 @@ onBeforeUnmount(() => { document.removeEventListener('paste', onPaste); current?
             </li>
         </ul>
 
-        <CropModal v-if="cropFile" :file="cropFile" @done="send" @cancel="cropFile = null" @error="(m) => { cropFile = null; error = m; }" />
+        <CropModal v-if="cropFile" :file="cropFile" :open="cropOpen" @done="send" @cancel="closeCrop" @error="(m) => { closeCrop(); error = m; }" />
     </div>
 </template>
