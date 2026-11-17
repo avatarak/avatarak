@@ -12,15 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Proves control of a domain by one of three standard methods (like Google Search Console):
- *  - meta : <meta name="iravatar-verification" content="TOKEN"> on the home page
- *  - file : /.well-known/iravatar-verification.txt containing TOKEN
- *  - dns  : a TXT record "iravatar-verification=TOKEN" on the domain
+ *  - meta : <meta name="avatarak-verification" content="TOKEN"> on the home page
+ *  - file : /.well-known/avatarak-verification.txt containing TOKEN
+ *  - dns  : a TXT record "avatarak-verification=TOKEN" on the domain
  * Fetching uses LinkPreviewService::get(), i.e. the SSRF-hardened client (public IPs only, ports 80/443,
  * revalidated redirects, size/time caps).
  */
 class WebsiteVerifier
 {
-    public const META = 'iravatar-verification';
+    public const META = 'avatarak-verification';
 
     /** Test seam: fn(string $host): list<string> of TXT values. */
     public ?Closure $txtResolver = null;
@@ -53,7 +53,7 @@ class WebsiteVerifier
             'domain' => $c->identifier,
             'token' => $c->token,
             'meta' => '<meta name="'.self::META.'" content="'.$c->token.'">',
-            'file' => ['path' => 'https://'.$c->identifier.'/.well-known/iravatar-verification.txt', 'content' => $c->token],
+            'file' => ['path' => 'https://'.$c->identifier.'/.well-known/avatarak-verification.txt', 'content' => $c->token],
             'dns' => ['name' => $c->identifier, 'type' => 'TXT', 'value' => self::META.'='.$c->token],
             'expires_at' => $c->expires_at->toIso8601String(),
         ];
@@ -124,7 +124,7 @@ class WebsiteVerifier
     {
         foreach (['https', 'http'] as $scheme) {
             try {
-                [$body, $final] = $this->http->get($scheme.'://'.$c->identifier.'/.well-known/iravatar-verification.txt', 4096, ['text/']);
+                [$body, $final] = $this->http->get($scheme.'://'.$c->identifier.'/.well-known/avatarak-verification.txt', 4096, ['text/']);
             } catch (\Throwable) {
                 continue;
             }

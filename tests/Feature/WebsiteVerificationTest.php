@@ -60,7 +60,7 @@ class WebsiteVerificationTest extends TestCase
     {
         $u = $this->user();
         $c = VerificationChallenge::issue($u, 'website', 'example.com');
-        Http::fake(['https://example.com/' => Http::response('<html><head><meta name="iravatar-verification" content="'.$c->token.'"></head></html>', 200, ['Content-Type' => 'text/html'])]);
+        Http::fake(['https://example.com/' => Http::response('<html><head><meta name="avatarak-verification" content="'.$c->token.'"></head></html>', 200, ['Content-Type' => 'text/html'])]);
 
         $this->assertSame(['ok' => true, 'method' => 'meta'], $this->verifier()->check($c));
         $this->assertDatabaseHas('verified_accounts', ['user_id' => $u->id, 'network' => 'website', 'identifier' => 'example.com', 'method' => 'meta']);
@@ -72,7 +72,7 @@ class WebsiteVerificationTest extends TestCase
         $u = $this->user();
         $c = VerificationChallenge::issue($u, 'website', 'example.com');
         Http::fake([
-            'https://example.com/.well-known/iravatar-verification.txt' => Http::response("  {$c->token}\n", 200, ['Content-Type' => 'text/plain']),
+            'https://example.com/.well-known/avatarak-verification.txt' => Http::response("  {$c->token}\n", 200, ['Content-Type' => 'text/plain']),
             '*' => Http::response('<html></html>', 200, ['Content-Type' => 'text/html']),
         ]);
         $this->assertSame('file', $this->verifier()->check($c)['method']);
@@ -83,7 +83,7 @@ class WebsiteVerificationTest extends TestCase
         $u = $this->user();
         $c = VerificationChallenge::issue($u, 'website', 'example.com');
         Http::fake(['*' => Http::response('', 404)]);
-        $r = $this->verifier(['example.com' => ['v=spf1 -all', 'iravatar-verification='.$c->token]])->check($c);
+        $r = $this->verifier(['example.com' => ['v=spf1 -all', 'avatarak-verification='.$c->token]])->check($c);
         $this->assertSame('dns', $r['method']);
     }
 
@@ -91,7 +91,7 @@ class WebsiteVerificationTest extends TestCase
     {
         $u = $this->user();
         $c = VerificationChallenge::issue($u, 'website', 'example.com');
-        Http::fake(['*' => Http::response('<meta name="iravatar-verification" content="WRONG">', 200, ['Content-Type' => 'text/html'])]);
+        Http::fake(['*' => Http::response('<meta name="avatarak-verification" content="WRONG">', 200, ['Content-Type' => 'text/html'])]);
         $this->assertSame(['ok' => false, 'error' => 'not_found'], $this->verifier()->check($c));
         $this->assertSame(1, $c->fresh()->attempts);
         $this->assertSame(0, VerifiedAccount::count());
@@ -102,7 +102,7 @@ class WebsiteVerificationTest extends TestCase
         // attacker publishes their OWN token on THEIR site; victim's domain must not verify for them
         $attacker = $this->user('evil');
         $mine = VerificationChallenge::issue($attacker, 'website', 'victim.com');
-        Http::fake(['https://victim.com/' => Http::response('<meta name="iravatar-verification" content="not-the-attackers-token">', 200, ['Content-Type' => 'text/html'])]);
+        Http::fake(['https://victim.com/' => Http::response('<meta name="avatarak-verification" content="not-the-attackers-token">', 200, ['Content-Type' => 'text/html'])]);
         $this->assertFalse($this->verifier()->check($mine)['ok']);
     }
 
@@ -112,7 +112,7 @@ class WebsiteVerificationTest extends TestCase
         $c = VerificationChallenge::issue($u, 'website', 'mine.com');
         Http::fake([
             'https://mine.com/' => Http::response('', 302, ['Location' => 'https://other.com/']),
-            'https://other.com/' => Http::response('<meta name="iravatar-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html']),
+            'https://other.com/' => Http::response('<meta name="avatarak-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html']),
             '*' => Http::response('', 404),
         ]);
         $this->assertFalse($this->verifier()->check($c)['ok']);
@@ -124,7 +124,7 @@ class WebsiteVerificationTest extends TestCase
         $c = VerificationChallenge::issue($u, 'website', 'mine.com');
         Http::fake([
             'https://mine.com/' => Http::response('', 301, ['Location' => 'https://www.mine.com/']),
-            'https://www.mine.com/' => Http::response('<meta name="iravatar-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html']),
+            'https://www.mine.com/' => Http::response('<meta name="avatarak-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html']),
         ]);
         $this->assertTrue($this->verifier()->check($c)['ok']);
     }
@@ -148,7 +148,7 @@ class WebsiteVerificationTest extends TestCase
 
         $other = $this->user('other');
         $c = VerificationChallenge::issue($other, 'website', 'example.com');
-        Http::fake(['*' => Http::response('<meta name="iravatar-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html'])]);
+        Http::fake(['*' => Http::response('<meta name="avatarak-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html'])]);
         $this->assertSame(['ok' => false, 'error' => 'taken'], $this->verifier()->check($c));
         $this->assertSame($owner->id, VerifiedAccount::first()->user_id);
     }
@@ -181,7 +181,7 @@ class WebsiteVerificationTest extends TestCase
         $c = VerificationChallenge::issue($u, 'website', 'example.com');
         $i = $this->verifier()->instructions($c);
         $this->assertStringContainsString($c->token, $i['meta']);
-        $this->assertSame('iravatar-verification='.$c->token, $i['dns']['value']);
-        $this->assertSame('https://example.com/.well-known/iravatar-verification.txt', $i['file']['path']);
+        $this->assertSame('avatarak-verification='.$c->token, $i['dns']['value']);
+        $this->assertSame('https://example.com/.well-known/avatarak-verification.txt', $i['file']['path']);
     }
 }

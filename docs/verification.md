@@ -8,9 +8,9 @@ The user enters a domain in the dashboard and publishes the code we give them in
 
 | Method | What to publish |
 |---|---|
-| meta tag | `<meta name="iravatar-verification" content="TOKEN">` in the home page `<head>` |
-| file | `https://DOMAIN/.well-known/iravatar-verification.txt` containing only `TOKEN` |
-| DNS | a `TXT` record on `DOMAIN` with the value `iravatar-verification=TOKEN` |
+| meta tag | `<meta name="avatarak-verification" content="TOKEN">` in the home page `<head>` |
+| file | `https://DOMAIN/.well-known/avatarak-verification.txt` containing only `TOKEN` |
+| DNS | a `TXT` record on `DOMAIN` with the value `avatarak-verification=TOKEN` |
 
 Pages are fetched with the same SSRF-hardened client used for link previews (public IPs only, ports 80/443, redirects re-validated, size/time caps). A redirect to a different domain proves nothing and is ignored.
 

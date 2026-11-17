@@ -25,7 +25,7 @@ class VerificationApiTest extends TestCase
     private function tg(bool $on = true): void
     {
         config(['verification.telegram' => $on
-            ? ['bot_token' => '1:A', 'bot_username' => 'iravatar_bot', 'webhook_secret' => 'x'.str_repeat('y', 20)]
+            ? ['bot_token' => '1:A', 'bot_username' => 'avatarak_bot', 'webhook_secret' => 'x'.str_repeat('y', 20)]
             : ['bot_token' => null, 'bot_username' => '', 'webhook_secret' => null]]);
         config(['linkpreview.pin_dns' => false]);
     }
@@ -69,7 +69,7 @@ class VerificationApiTest extends TestCase
 
         $published = false;
         Http::fake(function () use (&$published, $token) {   // by reference: arrow fns capture by value
-            return Http::response($published ? '<meta name="iravatar-verification" content="'.$token.'">' : '<html></html>', 200, ['Content-Type' => 'text/html']);
+            return Http::response($published ? '<meta name="avatarak-verification" content="'.$token.'">' : '<html></html>', 200, ['Content-Type' => 'text/html']);
         });
         app()->instance(\App\Services\LinkPreviewService::class, tap(new \App\Services\LinkPreviewService, fn ($s) => $s->resolver = fn () => ['93.184.216.34']));
 
@@ -98,7 +98,7 @@ class VerificationApiTest extends TestCase
     {
         $a = $this->user('aaa');
         $c = VerificationChallenge::issue($a, 'website', 'shared.com');
-        Http::fake(['*' => Http::response('<meta name="iravatar-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html'])]);
+        Http::fake(['*' => Http::response('<meta name="avatarak-verification" content="'.$c->token.'">', 200, ['Content-Type' => 'text/html'])]);
         $this->actingAs($this->user('bbb'))->postJson('/account/verifications/website/check', ['domain' => 'shared.com'])->assertNotFound();
         $this->assertSame(0, VerifiedAccount::count());
     }
@@ -109,7 +109,7 @@ class VerificationApiTest extends TestCase
         $u = $this->user('javid', ['socials' => ['telegram' => 'Javid_T']]);
         $r = $this->actingAs($u)->postJson('/account/verifications/telegram')->assertOk()->assertJsonPath('handle', 'javid_t');
         $token = VerificationChallenge::first()->token;
-        $this->assertSame("https://t.me/iravatar_bot?start=$token", $r->json('link'));
+        $this->assertSame("https://t.me/avatarak_bot?start=$token", $r->json('link'));
     }
 
     public function test_telegram_start_validates_and_respects_config(): void
@@ -134,7 +134,7 @@ class VerificationApiTest extends TestCase
     {
         $this->tg();
         $r = $this->actingAs($this->user())->getJson('/account/verifications')->assertOk()
-            ->assertJsonPath('telegram.enabled', true)->assertJsonPath('telegram.bot', 'iravatar_bot');
+            ->assertJsonPath('telegram.enabled', true)->assertJsonPath('telegram.bot', 'avatarak_bot');
         $this->assertStringNotContainsString('1:A', $r->getContent());          // never the bot token
         $this->assertStringNotContainsString('webhook', strtolower($r->getContent()));
     }

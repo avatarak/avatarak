@@ -12,7 +12,7 @@ class Username implements ValidationRule
         'settings', 'support', 'help', 'about', 'www', 'root', 'null', 'undefined', 'verify-email', 'up', 'build', 'storage',
         'assets', 'static', 'public', 'favicon', 'robots', 'sitemap', 'dashboard', 'profile', 'profiles', 'user', 'users',
         'me', 'privacy', 'terms', 'thumb', 'developers', 'developer', 'pricing', 'blog', 'docs', 'status', 'health', 'security',
-        'contact', 'home', 'index', 'app', 'auth', 'oauth', 'signup', 'signin', 'wordpress', 'gravatar', 'iravatar',
+        'contact', 'home', 'index', 'app', 'auth', 'oauth', 'signup', 'signin', 'wordpress', 'gravatar', 'avatarak', 'iravatar',
     ];
 
     public function validate(string $attribute, mixed $value, Closure $fail): void

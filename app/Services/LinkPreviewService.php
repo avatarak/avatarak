@@ -152,7 +152,7 @@ class LinkPreviewService
             }
 
             $res = Http::timeout((int) config('linkpreview.timeout'))->connectTimeout(4)
-                ->withHeaders(['User-Agent' => 'IravatarLinkPreview/1.0', 'Accept' => 'text/html,image/*;q=0.8'])
+                ->withHeaders(['User-Agent' => 'AvatarakLinkPreview/1.0', 'Accept' => 'text/html,image/*;q=0.8'])
                 ->withOptions($options)->get($url);
 
             if ($res->redirect()) {

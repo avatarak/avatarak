@@ -5,8 +5,8 @@
  | layout and UX stay the same. Colors must be #RRGGBB.
  */
 return [
-    'name' => env('BRAND_NAME', 'گراواتار'),
-    'name_en' => env('BRAND_NAME_EN', 'Iravatar'),
+    'name' => env('BRAND_NAME', 'Avatarak.ir'),
+    'name_en' => env('BRAND_NAME_EN', 'Avatarak.ir'),
     'logo_url' => env('BRAND_LOGO_URL'),            // null = built-in monogram
     'tagline' => env('BRAND_TAGLINE', 'یک عکس، یک هویت، همه‌جا'),
     'tagline_en' => env('BRAND_TAGLINE_EN', 'One photo, one identity, everywhere'),

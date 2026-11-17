@@ -20,7 +20,7 @@ class TelegramVerificationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config(['verification.telegram' => ['bot_token' => '123:ABC', 'bot_username' => 'iravatar_bot', 'webhook_secret' => self::SECRET]]);
+        config(['verification.telegram' => ['bot_token' => '123:ABC', 'bot_username' => 'avatarak_bot', 'webhook_secret' => self::SECRET]]);
         Http::fake(['api.telegram.org/*' => Http::response(['ok' => true])]);
     }
 

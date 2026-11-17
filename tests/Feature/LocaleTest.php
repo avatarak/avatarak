@@ -126,8 +126,18 @@ class LocaleTest extends TestCase
     public function test_brand_name_follows_locale_on_the_public_page(): void
     {
         $this->profile();
-        config(['brand.name' => 'گراواتار', 'brand.name_en' => 'Iravatar']);
-        $this->withUnencryptedCookie('locale', 'en')->get('/sara')->assertSee('— Iravatar', false)->assertDontSee('گراواتار');
-        $this->withUnencryptedCookie('locale', 'fa')->get('/sara')->assertSee('— گراواتار', false);
+        config(['brand.name' => 'نام فارسی', 'brand.name_en' => 'English Name']);
+        $this->withUnencryptedCookie('locale', 'en')->get('/sara')->assertSee('— English Name', false)->assertDontSee('نام فارسی');
+        $this->withUnencryptedCookie('locale', 'fa')->get('/sara')->assertSee('— نام فارسی', false);
+    }
+
+    public function test_default_site_name_is_avatarak_in_both_languages(): void
+    {
+        $this->profile();
+        $this->withUnencryptedCookie('locale', 'fa')->get('/sara')->assertSee('— Avatarak.ir', false);
+        $this->withUnencryptedCookie('locale', 'en')->get('/sara')->assertSee('— Avatarak.ir', false);
+        $this->assertSame('Avatarak.ir', config('brand.name'));
+        $this->assertSame('Avatarak.ir', config('brand.name_en'));
+        $this->get('/')->assertSee('Avatarak.ir', false);                      // SPA shell: <title> and window.__BRAND__
     }
 }
