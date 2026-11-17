@@ -13,7 +13,7 @@ class VerifyEmailAddress extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'تأیید ایمیل در '.config('app.name'));
+        return new Envelope(subject: __('app.mail_subject', ['app' => config('brand.name')]));
     }
 
     public function content(): Content

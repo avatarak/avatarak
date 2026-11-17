@@ -14,9 +14,9 @@ class Username implements ValidationRule
     {
         $v = (string) $value;
         if (! preg_match('/^[a-z][a-z0-9_]{2,31}$/', $v)) {
-            $fail('نام کاربری باید ۳ تا ۳۲ کاراکتر، با حرف انگلیسی کوچک شروع شود و فقط شامل حرف، عدد و _ باشد.');
+            $fail(__('app.username_format'));
         } elseif (in_array($v, self::RESERVED, true)) {
-            $fail('این نام کاربری مجاز نیست.');
+            $fail(__('app.username_reserved'));
         }
     }
 }
