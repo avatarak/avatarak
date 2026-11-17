@@ -21,8 +21,6 @@ class PublicProfileController extends Controller
         'rubika' => 'https://rubika.ir/%s',
     ];
 
-    private const SECTIONS = ['bio', 'links'];
-
     public function show(string $username): Response
     {
         $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
@@ -39,19 +37,15 @@ class PublicProfileController extends Controller
             ->filter(fn ($l) => ! empty($l['label']) && ! empty($l['url']) && preg_match('#^https?://#i', $l['url']))
             ->values()->all();
 
-        $order = collect($profile->section_order ?: self::SECTIONS)->intersect(self::SECTIONS)->values();
-        foreach (self::SECTIONS as $s) {
-            if (! $order->contains($s)) {
-                $order->push($s);
-            }
-        }
-        $order = $order->reject(fn ($s) => in_array($s, $profile->hidden_sections ?? [], true))->values()->all();
+        $hidden = $profile->hidden_sections ?? [];
 
         $res = response()->view('profile', [
             'p' => $profile,
             'socials' => $socials,
             'links' => $links,
-            'order' => $order,
+            'showBio' => ! in_array('bio', $hidden, true),
+            'showLinks' => ! in_array('links', $hidden, true),
+            'isOwner' => auth()->id() === $profile->user_id,
             'icons' => json_decode(file_get_contents(resource_path('data/social-icons.json')), true) ?: [],
             'verified' => UserEmail::where('user_id', $profile->user_id)->whereNotNull('verified_at')->exists(),
             'avatarUrl' => ($profile->show_avatar && $profile->avatar_path)

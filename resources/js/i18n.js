@@ -45,7 +45,7 @@ const M = {
         yourLinks: 'لینک‌های شما', addLink: 'افزودن لینک', linkLabel: 'عنوان', linkUrl: 'آدرس (https://…)', socials: 'شبکه‌های اجتماعی', socialsHint: 'فقط نام کاربری را بنویسید.',
         colors: 'رنگ‌ها', accent: 'رنگ اصلی', sections: 'بخش‌ها', dragReorder: 'برای مرتب‌سازی بکشید', intro: 'معرفی', pinned: 'ثابت',
         th_classic: 'کلاسیک', th_mocha: 'موکا', th_mint: 'نعنایی', th_mustard: 'خردلی', th_midnight: 'نیمه‌شب', th_molten: 'مذاب', th_earth: 'خاکی', th_cyber: 'سایبر', th_custom: 'دلخواه',
-        sec_bio: 'درباره‌ی من', sec_links: 'لینک‌ها', show: 'نمایش', hide: 'مخفی', moveUp: 'بالا', moveDown: 'پایین',
+        sec_bio: 'متن درباره‌ی من', sec_links: 'لینک‌ها', show: 'نمایش', hide: 'مخفی', moveUp: 'بالا', moveDown: 'پایین',
         showAvatar: 'نمایش عکس در سایت‌های متصل', showAvatarD: 'اگر خاموش باشد همه‌جا عکس پیش‌فرض نشان داده می‌شود.',
         showProfile: 'صفحه‌ی پروفایل عمومی', showProfileD: 'خاموش کردن، صفحه و API پروفایل را برای همه پنهان می‌کند.',
         allowIndexing: 'ایندکس شدن در گوگل', allowIndexingD: 'به‌طور پیش‌فرض خاموش است و صفحه‌ی شما noindex می‌ماند.',
@@ -53,6 +53,7 @@ const M = {
         lastUsed: 'آخرین استفاده', never: 'هرگز', example: 'نمونه درخواست', confirmDelete: 'حذف شود؟', empty: 'هنوز چیزی نیست.',
         loading: 'در حال بارگذاری…', error: 'خطایی رخ داد.', viewPublic: 'مشاهده‌ی صفحه‌ی عمومی', share: 'اشتراک‌گذاری', visitSite: 'مشاهده‌ی وب‌سایت',
         verifyNotice: 'ایمیل شما هنوز تأیید نشده؛ تا آن موقع تیک تأیید نمایش داده نمی‌شود و سایت‌های متصل (مثل وردپرس) عکس شما را نشان نمی‌دهند.', verifyAction: 'مدیریت ایمیل‌ها',
+        showMore: 'نمایش بیشتر', showLess: 'نمایش کمتر', linkDesc: 'توضیح کوتاه (اختیاری)', editProfile: 'ویرایش پروفایل', sec_intro: 'معرفی',
         preview: 'پیش‌نمایش', back: 'بازگشت', menu: 'منو', yourAddress: 'نشانی پروفایل شما', linkCopied: 'لینک کپی شد',
     },
     en: {
@@ -83,7 +84,7 @@ const M = {
         yourLinks: 'Your links', addLink: 'Add link', linkLabel: 'Label', linkUrl: 'URL (https://…)', socials: 'Social accounts', socialsHint: 'Enter just the handle.',
         colors: 'Colors', accent: 'Accent color', sections: 'Sections', dragReorder: 'Drag to reorder', intro: 'Introduction', pinned: 'Pinned',
         th_classic: 'Classic', th_mocha: 'Mocha', th_mint: 'Mint', th_mustard: 'Mustard', th_midnight: 'Midnight', th_molten: 'Molten', th_earth: 'Earth', th_cyber: 'Cyber', th_custom: 'Custom',
-        sec_bio: 'About me', sec_links: 'Links', show: 'Show', hide: 'Hide', moveUp: 'Move up', moveDown: 'Move down',
+        sec_bio: 'About me text', sec_links: 'Links', show: 'Show', hide: 'Hide', moveUp: 'Move up', moveDown: 'Move down',
         showAvatar: 'Show photo on connected sites', showAvatarD: 'When off, a default image is shown everywhere.',
         showProfile: 'Public profile page', showProfileD: 'Turning this off hides your page and API profile from everyone.',
         allowIndexing: 'Search engine indexing', allowIndexingD: 'Off by default; your page stays noindex.',
@@ -91,6 +92,7 @@ const M = {
         lastUsed: 'Last used', never: 'Never', example: 'Example request', confirmDelete: 'Delete?', empty: 'Nothing here yet.',
         loading: 'Loading…', error: 'Something went wrong.', viewPublic: 'View public profile', share: 'Share', visitSite: 'Visit website',
         verifyNotice: 'Your email is not verified yet. Until it is, the verified badge is hidden and connected sites (like WordPress) will not show your photo.', verifyAction: 'Manage emails',
+        showMore: 'Show more', showLess: 'Show less', linkDesc: 'Short description (optional)', editProfile: 'Edit profile', sec_intro: 'Introduction',
         preview: 'Preview', back: 'Back', menu: 'Menu', yourAddress: 'Your profile address', linkCopied: 'Link copied',
     },
 };

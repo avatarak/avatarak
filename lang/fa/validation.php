@@ -183,6 +183,7 @@ return [
         'links' => 'لینک‌ها',
         'links.*.label' => 'عنوان لینک',
         'links.*.url' => 'آدرس لینک',
+        'links.*.description' => 'توضیح لینک',
         'is_public' => 'نمایش عمومی',
         'hashes' => 'فهرست هش‌ها',
         'socials.telegram' => 'تلگرام',

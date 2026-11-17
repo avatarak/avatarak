@@ -46,6 +46,7 @@ class AccountController extends Controller
             'links' => ['nullable', 'array', 'max:10'],
             'links.*.label' => ['required', 'string', 'max:60'],
             'links.*.url' => ['required', 'url:http,https', 'max:300'],
+            'links.*.description' => ['nullable', 'string', 'max:160'],
             'website' => ['nullable', 'url:http,https', 'max:200'],
             'socials' => ['nullable', 'array'],
             'socials.*' => ['nullable', 'string', 'max:64', 'regex:/^@?[A-Za-z0-9._-]+$/'],
@@ -58,7 +59,7 @@ class AccountController extends Controller
         }
 
         if (array_key_exists('links', $data)) {
-            $data['links'] = collect($data['links'] ?? [])->map(fn ($l) => ['label' => trim($l['label']), 'url' => $l['url']])->values()->all();
+            $data['links'] = collect($data['links'] ?? [])->map(fn ($l) => array_filter(['label' => trim($l['label']), 'url' => $l['url'], 'description' => trim($l['description'] ?? '')], fn ($v) => $v !== ''))->values()->all();
         }
 
         $profile->update($data);

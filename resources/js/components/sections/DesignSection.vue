@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { state } from '../../store';
 import { useSubmit } from '../../composables';
 import { t } from '../../i18n';
@@ -14,30 +14,14 @@ const current = computed(() => (state.draft.accent_color || '#1D4FC4').toUpperCa
 const isCustom = computed(() => !THEMES.some(([, c]) => c === current.value));
 
 state.draft.hidden_sections = [...(state.draft.hidden_sections || [])];
-const order = computed({
-    get: () => [...new Set([...(state.draft.section_order || []), 'bio', 'links'])].filter((s) => ['bio', 'links'].includes(s)),
-    set: (v) => (state.draft.section_order = v),
-});
-
-function move(from, to) {
-    if (to < 0 || to >= order.value.length || from === to) return;
-    const a = [...order.value];
-    a.splice(to, 0, a.splice(from, 1)[0]);
-    order.value = a;
-}
-const dragFrom = ref(null);
 const hidden = (s) => state.draft.hidden_sections.includes(s);
 function toggle(s) {
     const h = state.draft.hidden_sections;
     hidden(s) ? h.splice(h.indexOf(s), 1) : h.push(s);
 }
-function handleKey(e, i) {
-    if (e.key === 'ArrowUp') { e.preventDefault(); move(i, i - 1); }
-    if (e.key === 'ArrowDown') { e.preventDefault(); move(i, i + 1); }
-}
 
 const { busy, message, run, err } = useSubmit('PATCH', '/account/appearance', () => ({
-    accent_color: state.draft.accent_color || null, section_order: order.value, hidden_sections: state.draft.hidden_sections,
+    accent_color: state.draft.accent_color || null, hidden_sections: state.draft.hidden_sections,
 }));
 </script>
 
@@ -70,25 +54,18 @@ const { busy, message, run, err } = useSubmit('PATCH', '/account/appearance', ()
         </div>
         <p v-if="err('accent_color')" class="mt-2 text-sm text-red-600">{{ err('accent_color') }}</p>
 
-        <div class="mt-9 flex items-baseline justify-between">
-            <h3 class="text-lg font-bold">{{ t('sections') }}</h3>
-            <span class="hint">{{ t('dragReorder') }}</span>
-        </div>
+        <h3 class="mt-9 text-lg font-bold">{{ t('sections') }}</h3>
         <ul class="mt-3 space-y-2">
             <li class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5">
                 <span class="grid size-10 place-items-center rounded-[6px] bg-white"><Icon name="user" :size="20" /></span>
-                <span class="flex-1">{{ t('intro') }}</span>
+                <span class="flex-1">{{ t('sec_intro') }}</span>
                 <span class="px-2 text-sm text-muted">{{ t('pinned') }}</span>
             </li>
-            <li v-for="(s, i) in order" :key="s" class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5" :class="{ 'opacity-60': hidden(s) }"
-                draggable="true" @dragstart="dragFrom = i" @dragover.prevent @drop.prevent="move(dragFrom, i); dragFrom = null">
+            <li v-for="s in ['bio', 'links']" :key="s" class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5" :class="{ 'opacity-60': hidden(s) }">
                 <span class="grid size-10 place-items-center rounded-[6px] bg-white"><Icon :name="s === 'bio' ? 'user' : 'link'" :size="20" /></span>
                 <span class="flex-1">{{ t('sec_' + s) }}</span>
                 <button type="button" class="icon-btn" :aria-label="hidden(s) ? t('show') : t('hide')" :aria-pressed="!hidden(s)" @click="toggle(s)">
                     <Icon :name="hidden(s) ? 'eyeOff' : 'eye'" :size="20" />
-                </button>
-                <button type="button" class="icon-btn cursor-grab" :aria-label="t('dragReorder')" @keydown="handleKey($event, i)">
-                    <Icon name="grip" :size="20" />
                 </button>
             </li>
         </ul>

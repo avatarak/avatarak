@@ -21,14 +21,50 @@ class AppearanceTest extends TestCase
         return $u;
     }
 
-    public function test_accent_and_order_are_saved_and_rendered(): void
+    public function test_accent_is_saved_and_rendered(): void
     {
         $u = $this->user();
-        $this->actingAs($u)->patchJson('/account/appearance', ['accent_color' => '#0F9D7A', 'section_order' => ['links', 'bio']])
+        $this->actingAs($u)->patchJson('/account/appearance', ['accent_color' => '#0F9D7A'])
             ->assertOk()->assertJsonPath('profile.accent_color', '#0F9D7A');
 
-        $html = $this->get('/sara')->assertOk()->assertSee('--accent: #0F9D7A', false)->getContent();
-        $this->assertLessThan(strpos($html, 'leading-8">BIO_TEXT'), strpos($html, 'LINK_LABEL'), 'links card must precede bio card');
+        $this->get('/sara')->assertOk()->assertSee('--accent: #0F9D7A', false)
+            ->assertSee('BIO_TEXT')->assertSee('LINK_LABEL');
+    }
+
+    public function test_bio_is_inside_the_intro_card_and_collapsible(): void
+    {
+        $this->user();
+        $html = $this->get('/sara')->assertOk()->getContent();
+        $this->assertStringContainsString('data-bio-text>', $html);
+        $this->assertStringContainsString('line-clamp-3', $html);
+        $this->assertStringContainsString('Show more', str_replace('نمایش بیشتر', 'Show more', $html));
+        // bio comes before the links card, both inside the page
+        $this->assertLessThan(strpos($html, 'LINK_LABEL'), strpos($html, 'data-bio-text>'));
+    }
+
+    public function test_link_description_is_saved_escaped_and_rendered(): void
+    {
+        $u = $this->user();
+        $this->actingAs($u)->patchJson('/account/profile', ['links' => [
+            ['label' => 'Blog', 'url' => 'https://blog.sara.ir', 'description' => 'About <b>things</b>'],
+            ['label' => 'Plain', 'url' => 'https://plain.ir', 'description' => ''],
+        ]])->assertOk();
+        $this->assertArrayNotHasKey('description', $u->profile->fresh()->links[1]);
+
+        $html = $this->get('/sara')->assertOk()->getContent();
+        $this->assertStringContainsString('About &lt;b&gt;things&lt;/b&gt;', $html);
+        $this->assertStringNotContainsString('<b>things</b>', $html);
+        $this->patchJson('/account/profile', ['links' => [['label' => 'x', 'url' => 'https://a.ir', 'description' => str_repeat('a', 161)]]])
+            ->assertJsonValidationErrors('links.0.description');
+    }
+
+    public function test_owner_sees_edit_pill_but_visitors_do_not(): void
+    {
+        $u = $this->user();
+        $this->get('/sara')->assertDontSee('fixed end-4 top-4', false);
+        $this->actingAs($u)->get('/sara')->assertSee('fixed end-4 top-4', false);
+        $other = User::factory()->create();
+        $this->actingAs($other)->get('/sara')->assertDontSee('fixed end-4 top-4', false);
     }
 
     public function test_appearance_validation_blocks_css_injection(): void
@@ -63,6 +99,11 @@ class AppearanceTest extends TestCase
         $this->actingAs($u)->patchJson('/account/appearance', ['hidden_sections' => ['links']])->assertOk()
             ->assertJsonPath('profile.hidden_sections.0', 'links');
         $this->get('/sara')->assertOk()->assertSee('BIO_TEXT')->assertDontSee('LINK_LABEL');
+
+        $this->patchJson('/account/appearance', ['hidden_sections' => ['bio']])->assertOk();
+        $html = $this->get('/sara')->assertOk()->getContent();
+        $this->assertStringNotContainsString('data-bio-text>', $html);
+        $this->assertStringContainsString('LINK_LABEL', $html);
     }
 
     public function test_links_validation_rejects_unsafe_urls(): void
