@@ -10,6 +10,13 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            // Public avatar endpoint: no session/cookies so CDNs can cache it.
+            \Illuminate\Support\Facades\Route::get('/avatar/{hash}', [\App\Http\Controllers\AvatarController::class, 'show'])
+                ->where('hash', '[A-Fa-f0-9]{64}')
+                ->middleware('throttle:avatar')
+                ->name('avatar');
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
