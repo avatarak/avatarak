@@ -53,13 +53,13 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
             <Logo />
             <div class="flex items-center gap-1">
                 <a :href="`/${profile.username}`" target="_blank" rel="noopener" class="icon-btn" :title="t('viewPublic')" :aria-label="t('viewPublic')">
-                    <Icon name="external" :size="22" />
+                    <Icon name="external" :size="20" />
                 </a>
                 <LangSwitch />
                 <div ref="menuRoot" class="relative ms-1">
                     <button type="button" class="flex items-center gap-1 rounded-full p-1 hover:bg-soft" :aria-expanded="menu" :aria-label="t('menu')" @click="menu = !menu">
-                        <img v-if="avatarSrc" :src="avatarSrc" alt="" class="size-10 rounded-full object-cover">
-                        <span v-else class="grid size-10 place-items-center rounded-full bg-line font-bold uppercase text-muted">{{ profile.username.charAt(0) }}</span>
+                        <img v-if="avatarSrc" :src="avatarSrc" alt="" class="size-9 rounded-full object-cover">
+                        <span v-else class="grid size-9 place-items-center rounded-full bg-line font-bold uppercase text-muted">{{ profile.username.charAt(0) }}</span>
                     </button>
                     <div v-if="menu" class="card absolute end-0 top-full z-30 mt-2 w-56 overflow-hidden py-1">
                         <div dir="ltr" class="truncate border-b border-line px-4 py-2 text-start text-sm text-muted">@{{ profile.username }}</div>
@@ -82,12 +82,12 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
                     <nav v-if="!open" :aria-label="t('menu')" class="pt-4">
                         <ul v-for="(group, gi) in GROUPS" :key="gi" class="py-2" :class="gi ? 'mt-2' : ''">
                             <li v-for="[id, icon] in group" :key="id">
-                                <button type="button" class="flex w-full items-center gap-4 rounded-[6px] px-2 py-3 text-start text-base transition-colors hover:bg-soft" @click="open = id">
-                                    <img v-if="id === 'avatars' && avatarSrc" :src="avatarSrc" alt="" class="size-[26px] rounded-full object-cover">
-                                    <span v-else-if="id === 'avatars'" class="size-[26px] rounded-full bg-line"></span>
-                                    <Icon v-else :name="icon" :size="26" />
+                                <button type="button" class="flex w-full items-center gap-3.5 rounded-[6px] px-2 py-2.5 text-start text-[0.9375rem] transition-colors hover:bg-soft" @click="open = id">
+                                    <img v-if="id === 'avatars' && avatarSrc" :src="avatarSrc" alt="" class="size-5 rounded-full object-cover">
+                                    <span v-else-if="id === 'avatars'" class="size-5 rounded-full bg-line"></span>
+                                    <Icon v-else :name="icon" :size="20" />
                                     <span class="flex-1">{{ t('nav_' + id) }}</span>
-                                    <Icon name="chevron" :size="18" flip class="text-muted" />
+                                    <Icon name="chevron" :size="16" flip class="text-muted" />
                                 </button>
                             </li>
                         </ul>
@@ -105,7 +105,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
                 <div v-if="!open" class="shrink-0 px-5 pb-5">
                     <div class="flex items-center justify-between gap-2 rounded-[8px] border border-line bg-white py-2 ps-4 pe-2 shadow-card">
                         <span dir="ltr" class="min-w-0 truncate text-sm text-muted" :title="t('yourAddress')">{{ publicPath }}</span>
-                        <button type="button" class="icon-btn shrink-0" :title="t('copy')" :aria-label="t('copy')" @click="copyUrl"><Icon name="share" :size="20" /></button>
+                        <button type="button" class="icon-btn shrink-0" :title="t('copy')" :aria-label="t('copy')" @click="copyUrl"><Icon name="share" :size="18" /></button>
                     </div>
                 </div>
             </aside>

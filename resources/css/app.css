@@ -43,9 +43,9 @@
     :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     h1, h2, h3 { letter-spacing: -0.01em; }
 
-    /* Persian typography. Vazirmatn has a small x-height, so it needs more size and leading than Latin.
-       Letter-spacing MUST be 0: tracking breaks the joins between Arabic-script letters. */
-    html[lang='fa'] { font-size: 106.25%; }
+    /* Persian typography: more leading than Latin (Vazirmatn has a small x-height). No root font scaling,
+       so every size matches the design measurements exactly. Letter-spacing MUST be 0: tracking breaks the
+       joins between Arabic-script letters. */
     html[lang='fa'] body { line-height: 1.85; }
     html[lang='fa'] h1, html[lang='fa'] h2, html[lang='fa'] h3 { line-height: 1.45; }
     html[lang='fa'] *, html[lang='fa'] *::before, html[lang='fa'] *::after { letter-spacing: 0 !important; }
@@ -72,7 +72,7 @@
     .btn:disabled { opacity: .45; cursor: not-allowed; }
     .btn-danger { color: #B32D2E; border-color: color-mix(in srgb, #B32D2E 30%, transparent); background: transparent; }
     .btn-danger:hover { background: color-mix(in srgb, #B32D2E 8%, transparent); border-color: #B32D2E; }
-    .icon-btn { display: inline-grid; place-items: center; size: 40px; width: 40px; height: 40px; border-radius: 999px; cursor: pointer; color: var(--ink); }
+    .icon-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 999px; cursor: pointer; color: var(--ink); }
     .icon-btn:hover { background: var(--soft); }
 
     /* themed canvas behind the public profile / live preview; --accent set per profile */
@@ -85,8 +85,8 @@
                 color-mix(in srgb, var(--accent) 100%, #000 0%) 100%);
     }
     .accent-btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-                  background: #fff; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 32%, #fff); border-radius: var(--radius-control);
-                  min-height: 52px; padding: 10px 18px; font-size: 1.0625rem; font-weight: 600; text-align: center; transition: background .12s, border-color .12s; cursor: pointer; }
+                  background: #fff; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, #fff); border-radius: var(--radius-control);
+                  min-height: 42px; padding: 6px 12px; font-size: 1rem; font-weight: 600; text-align: center; transition: background .12s, border-color .12s; cursor: pointer; }
     .accent-btn:hover { background: color-mix(in srgb, var(--accent) 6%, #fff); border-color: color-mix(in srgb, var(--accent) 55%, #fff); }
 }
 
@@ -99,3 +99,15 @@
 .modal-enter-from .modal-panel, .modal-leave-to .modal-panel { opacity: 0; transform: translateY(14px) scale(.97); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Public profile "Advanced details" modal (vanilla JS; see resources/js/profile.js) */
+.pm { position: fixed; inset: 0; z-index: 50; }
+.pm[hidden] { display: none; }
+.pm-backdrop { display: grid; place-items: center; min-height: 100%; overflow-y: auto; padding: 1rem; background: rgb(16 21 23 / .5);
+               opacity: 0; transition: opacity .2s ease; }
+.pm-panel { width: 100%; max-width: 54rem; margin-block: auto; opacity: 0; transform: translateY(14px) scale(.97);
+            transition: transform .26s cubic-bezier(.2, .8, .2, 1), opacity .2s ease; outline: none; }
+.pm.is-open .pm-backdrop { opacity: 1; }
+.pm.is-open .pm-panel { opacity: 1; transform: none; }
+.pm.is-closing .pm-backdrop { transition-duration: .16s; }
+.pm.is-closing .pm-panel { transition-duration: .16s; }

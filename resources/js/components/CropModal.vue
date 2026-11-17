@@ -77,7 +77,7 @@ onBeforeUnmount(() => URL.revokeObjectURL(url));
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-bold">{{ t('cropTitle') }}</h2>
-                <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('cancel')"><Icon name="close" :size="22" /></button>
+                <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('cancel')"><Icon name="close" :size="20" /></button>
             </div>
 
             <div class="mx-auto mt-5 select-none touch-none overflow-hidden rounded-[6px] bg-ink/90 outline-none"
@@ -98,7 +98,7 @@ onBeforeUnmount(() => URL.revokeObjectURL(url));
                 <span class="text-sm text-muted">{{ t('zoom') }}</span>
                 <input type="range" min="1" max="4" step="0.01" :value="zoom" class="h-2 flex-1 accent-[var(--brand)]"
                        :aria-label="t('zoom')" @input="setZoom(+$event.target.value)">
-                <button type="button" class="icon-btn" :title="t('rotate')" :aria-label="t('rotate')" @click="rotate"><Icon name="rotate" :size="22" /></button>
+                <button type="button" class="icon-btn" :title="t('rotate')" :aria-label="t('rotate')" @click="rotate"><Icon name="rotate" :size="20" /></button>
             </div>
 
             <div class="mt-6 flex items-center justify-between gap-3">

@@ -23,7 +23,7 @@ class AccountController extends Controller
             'name' => $user->name,
             'profile' => $p->only(['username', 'name_fa', 'name_en', 'bio', 'website', 'socials',
                 'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order',
-                'headline', 'location', 'links', 'hidden_sections']) + ['has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
+                'headline', 'location', 'links', 'hidden_sections', 'show_link_images']) + ['has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
             'avatars' => $user->avatars()->latest('id')->get()->map(fn ($a) => [
                 'id' => $a->id, 'active' => $a->id === $p->avatar_id, 'created_at' => $a->created_at,
             ])->values(),
@@ -47,6 +47,7 @@ class AccountController extends Controller
             'links.*.label' => ['required', 'string', 'max:60'],
             'links.*.url' => ['required', 'url:http,https', 'max:300'],
             'links.*.description' => ['nullable', 'string', 'max:160'],
+            'show_link_images' => ['sometimes', 'boolean'],
             'website' => ['nullable', 'url:http,https', 'max:200'],
             'socials' => ['nullable', 'array'],
             'socials.*' => ['nullable', 'string', 'max:64', 'regex:/^@?[A-Za-z0-9._-]+$/'],
@@ -58,11 +59,20 @@ class AccountController extends Controller
                 ->only(self::SOCIALS)->filter()->map(fn ($v) => ltrim($v, '@'))->all();
         }
 
+        $needsThumbs = false;
         if (array_key_exists('links', $data)) {
-            $data['links'] = collect($data['links'] ?? [])->map(fn ($l) => array_filter(['label' => trim($l['label']), 'url' => $l['url'], 'description' => trim($l['description'] ?? '')], fn ($v) => $v !== ''))->values()->all();
+            // keep the preview result for URLs that did not change; new/changed URLs are fetched after the response
+            $known = collect($profile->links ?? [])->filter(fn ($l) => array_key_exists('thumb', $l))->pluck('thumb', 'url');
+            $data['links'] = collect($data['links'] ?? [])->map(fn ($l) => array_filter(['label' => trim($l['label']), 'url' => $l['url'], 'description' => trim($l['description'] ?? '')], fn ($v) => $v !== ''))
+                ->map(fn ($l) => $known->has($l['url']) ? $l + ['thumb' => $known[$l['url']]] : $l)
+                ->values()->all();
+            $needsThumbs = config('linkpreview.enabled') && collect($data['links'])->contains(fn ($l) => ! array_key_exists('thumb', $l));
         }
 
         $profile->update($data);
+        if ($needsThumbs) {
+            \App\Jobs\FetchLinkThumbnails::dispatchAfterResponse($profile->id);
+        }
 
         return $this->show($request);
     }

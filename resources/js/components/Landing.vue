@@ -52,7 +52,7 @@ const fa = () => i18n.locale === 'fa';
                         <div class="size-20 rounded-full" :style="{ background: `color-mix(in srgb, var(--brand) ${c.tone * 100}%, #E6E8EC)` }"></div>
                         <div class="mt-5 text-3xl font-bold leading-tight">{{ fa() ? c.fa : c.en }}</div>
                         <div class="mt-1 text-muted">{{ fa() ? c.role_fa : c.role_en }}</div>
-                        <div class="mt-5 flex gap-3 text-ink"><SocialIcon v-for="n in c.icons" :key="n" :name="n" :size="22" /></div>
+                        <div class="mt-5 flex gap-3 text-ink"><SocialIcon v-for="n in c.icons" :key="n" :name="n" :size="18" /></div>
                         <div class="mt-5 grid gap-2"><span class="h-11 rounded-[4px] border border-line"></span><span class="h-11 rounded-[4px] border border-line"></span></div>
                     </article>
                 </section>

@@ -41,7 +41,7 @@ const err = (k) => errors.value[k]?.[0];
         <form class="p-7" novalidate @submit.prevent="submit">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold">{{ t(mode) }}</h2>
-                <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('close')"><Icon name="close" :size="22" /></button>
+                <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('close')"><Icon name="close" :size="20" /></button>
             </div>
 
             <div class="space-y-4">

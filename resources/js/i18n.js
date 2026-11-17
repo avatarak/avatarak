@@ -53,7 +53,7 @@ const M = {
         lastUsed: 'آخرین استفاده', never: 'هرگز', example: 'نمونه درخواست', confirmDelete: 'حذف شود؟', empty: 'هنوز چیزی نیست.',
         loading: 'در حال بارگذاری…', error: 'خطایی رخ داد.', viewPublic: 'مشاهده‌ی صفحه‌ی عمومی', share: 'اشتراک‌گذاری', visitSite: 'مشاهده‌ی وب‌سایت',
         verifyNotice: 'ایمیل شما هنوز تأیید نشده؛ تا آن موقع تیک تأیید نمایش داده نمی‌شود و سایت‌های متصل (مثل وردپرس) عکس شما را نشان نمی‌دهند.', verifyAction: 'مدیریت ایمیل‌ها',
-        showMore: 'نمایش بیشتر', showLess: 'نمایش کمتر', linkDesc: 'توضیح کوتاه (اختیاری)', editProfile: 'ویرایش پروفایل', sec_intro: 'معرفی',
+        showMore: 'نمایش بیشتر', showLess: 'نمایش کمتر', advanced: 'جزئیات بیشتر', showImages: 'نمایش تصویر کنار لینک‌ها', showImagesD: 'تصویر پیش‌نمایش هر سایت به‌طور خودکار گرفته می‌شود.', linkDesc: 'توضیح کوتاه (اختیاری)', editProfile: 'ویرایش پروفایل', sec_intro: 'معرفی',
         preview: 'پیش‌نمایش', back: 'بازگشت', menu: 'منو', yourAddress: 'نشانی پروفایل شما', linkCopied: 'لینک کپی شد',
     },
     en: {
@@ -92,7 +92,7 @@ const M = {
         lastUsed: 'Last used', never: 'Never', example: 'Example request', confirmDelete: 'Delete?', empty: 'Nothing here yet.',
         loading: 'Loading…', error: 'Something went wrong.', viewPublic: 'View public profile', share: 'Share', visitSite: 'Visit website',
         verifyNotice: 'Your email is not verified yet. Until it is, the verified badge is hidden and connected sites (like WordPress) will not show your photo.', verifyAction: 'Manage emails',
-        showMore: 'Show more', showLess: 'Show less', linkDesc: 'Short description (optional)', editProfile: 'Edit profile', sec_intro: 'Introduction',
+        showMore: 'Show more', showLess: 'Show less', advanced: 'Advanced details', showImages: 'Show images with links', showImagesD: 'A preview image of each site is fetched automatically.', linkDesc: 'Short description (optional)', editProfile: 'Edit profile', sec_intro: 'Introduction',
         preview: 'Preview', back: 'Back', menu: 'Menu', yourAddress: 'Your profile address', linkCopied: 'Link copied',
     },
 };

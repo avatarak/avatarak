@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profile;
-use App\Models\UserEmail;
+use App\Services\ProfileExport;
 use Illuminate\Http\Response;
 
 class PublicProfileController extends Controller
@@ -21,35 +21,34 @@ class PublicProfileController extends Controller
         'rubika' => 'https://rubika.ir/%s',
     ];
 
-    public function show(string $username): Response
+    public function show(ProfileExport $export, string $username): Response
     {
         $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
 
-        $socials = [];
-        foreach ($profile->socials ?? [] as $net => $handle) {
-            if (isset(self::SOCIAL_URLS[$net]) && $handle !== '') {
-                $socials[$net] = sprintf(self::SOCIAL_URLS[$net], rawurlencode($handle));
-            }
-        }
-
-        // Only http(s) links are ever rendered (also enforced on save).
-        $links = collect($profile->links ?? [])
-            ->filter(fn ($l) => ! empty($l['label']) && ! empty($l['url']) && preg_match('#^https?://#i', $l['url']))
-            ->values()->all();
-
         $hidden = $profile->hidden_sections ?? [];
+        $links = $export->links($profile);
+        $name = $profile->username;
 
         $res = response()->view('profile', [
             'p' => $profile,
-            'socials' => $socials,
+            'socials' => $export->socials($profile),
             'links' => $links,
+            'showImages' => (bool) $profile->show_link_images,
             'showBio' => ! in_array('bio', $hidden, true),
             'showLinks' => ! in_array('links', $hidden, true),
             'isOwner' => auth()->id() === $profile->user_id,
             'icons' => json_decode(file_get_contents(resource_path('data/social-icons.json')), true) ?: [],
-            'verified' => UserEmail::where('user_id', $profile->user_id)->whereNotNull('verified_at')->exists(),
-            'avatarUrl' => ($profile->show_avatar && $profile->avatar_path)
-                ? route('profile.avatar', ['username' => $profile->username, 's' => 512, 'v' => $profile->avatar_version]) : null,
+            'verified' => $export->verified($profile),
+            'avatarUrl' => $export->avatarUrl($profile, 512),
+            'avatarSmall' => $export->avatarUrl($profile, 128),
+            'display' => $export->display($profile),
+            'created' => $profile->created_at?->diffForHumans(),
+            'updated' => $profile->updated_at?->diffForHumans(),
+            'socialCount' => count($export->socials($profile)),
+            'formats' => [
+                'json' => route('profile.export', [$name, 'json']), 'md' => route('profile.export', [$name, 'md']),
+                'vcf' => route('profile.export', [$name, 'vcf']), 'card' => route('profile.export', [$name, 'card']),
+            ],
             'indexable' => $profile->allow_indexing,
         ]);
 

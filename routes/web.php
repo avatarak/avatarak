@@ -43,6 +43,24 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::delete('emails/{id}', [EmailController::class, 'destroy']);
 });
 
+// Stored link-preview thumbnails (public: they are copies of public og:images)
+Route::get('/thumb/{key}', function (string $key) {
+    $path = \App\Services\LinkPreviewService::path($key);
+    $disk = \Illuminate\Support\Facades\Storage::disk(config('avatar.disk'));
+    abort_unless($disk->exists($path), 404);
+
+    return response($disk->get($path), 200, [
+        'Content-Type' => 'image/jpeg',
+        'Cache-Control' => 'public, max-age=86400',
+        'X-Content-Type-Options' => 'nosniff',
+    ]);
+})->where('key', '[a-f0-9]{40}')->middleware('throttle:avatar')->name('link.thumb');
+
+// Machine-readable / embeddable renderings: /{username}.json | .md | .vcf | .card
+Route::get('/{username}.{format}', [\App\Http\Controllers\ProfileExportController::class, 'show'])
+    ->where(['username' => '[A-Za-z][A-Za-z0-9_]{2,31}', 'format' => 'json|md|vcf|card'])
+    ->middleware('throttle:60,1')->name('profile.export');
+
 // Public profiles live at the site root, like gravatar.com/{username}. Keep these LAST so they never
 // shadow another route; usernames that collide with routes are reserved (App\Rules\Username).
 Route::get('/{username}', [PublicProfileController::class, 'show'])
