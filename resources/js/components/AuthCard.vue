@@ -4,10 +4,10 @@ import { api, ApiError } from '../api';
 import { load } from '../store';
 import { t } from '../i18n';
 
-const props = defineProps({ mode: { type: String, default: 'register' } });
+const props = defineProps({ mode: { type: String, default: 'register' }, email: { type: String, default: '' } });
 const emit = defineEmits(['close', 'switch']);
 
-const form = reactive({ name: '', email: '', password: '', username: '' });
+const form = reactive({ name: '', email: props.email, password: '', username: '' });
 const errors = ref({});
 const busy = ref(false);
 const message = ref('');
@@ -28,12 +28,12 @@ const err = (k) => errors.value[k]?.[0];
 </script>
 
 <template>
-    <div class="fixed inset-0 z-50 grid place-items-center bg-ink/30 p-4" role="dialog" aria-modal="true"
+    <div class="fixed inset-0 z-50 grid place-items-center bg-ink/45 p-4" role="dialog" aria-modal="true"
          @click.self="emit('close')" @keydown.esc="emit('close')">
-        <form class="card w-full max-w-sm p-6" @submit.prevent="submit">
+        <form class="card w-full max-w-sm p-7" @submit.prevent="submit">
             <div class="mb-5 flex items-center justify-between">
-                <h2 class="font-display text-xl font-bold">{{ t(mode) }}</h2>
-                <button type="button" class="text-muted hover:text-ink" :aria-label="t('close')" @click="emit('close')">✕</button>
+                <h2 class="text-2xl font-bold">{{ t(mode) }}</h2>
+                <button type="button" class="icon-btn" :aria-label="t('close')" @click="emit('close')">✕</button>
             </div>
 
             <div class="space-y-4">
@@ -64,7 +64,7 @@ const err = (k) => errors.value[k]?.[0];
                 <p v-if="message" class="text-sm text-red-600" role="alert">{{ message }}</p>
             </div>
 
-            <button class="btn btn-primary mt-6 w-full" :disabled="busy">{{ t(mode) }}</button>
+            <button class="btn btn-primary mt-6 w-full !min-h-[46px]" :disabled="busy">{{ t(mode) }}</button>
             <p class="mt-4 text-center text-sm text-muted">
                 {{ mode === 'register' ? t('haveAccount') : t('needAccount') }}
                 <button type="button" class="font-medium text-brand hover:underline"

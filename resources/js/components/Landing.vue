@@ -3,68 +3,68 @@ import { ref } from 'vue';
 import Logo from './Logo.vue';
 import LangSwitch from './LangSwitch.vue';
 import AuthCard from './AuthCard.vue';
+import Icon from './Icon.vue';
+import SocialIcon from './SocialIcon.vue';
 import { t, i18n } from '../i18n';
 
 const brand = window.__BRAND__ || {};
-const auth = ref(null); // 'login' | 'register' | null
+const auth = ref(null);
+const email = ref('');
 
-// decorative sample profiles (no real data)
+// decorative sample profiles (no real people / data)
 const cards = [
-    { fa: 'سارا احمدی', en: 'Sara Ahmadi', bio: 'طراح محصول', bio_en: 'Product designer', tone: 18, pos: 'top-0 start-6 rotate-3 rtl:-rotate-3' },
-    { fa: 'امیر رضایی', en: 'Amir Rezaei', bio: 'توسعه‌دهنده وب', bio_en: 'Web developer', tone: 8, pos: 'top-36 end-0 -rotate-2 rtl:rotate-2' },
-    { fa: 'مینا کریمی', en: 'Mina Karimi', bio: 'نویسنده و مترجم', bio_en: 'Writer & translator', tone: 28, pos: 'top-72 start-14 rotate-1 rtl:-rotate-1' },
+    { fa: 'سارا احمدی', en: 'Sara Ahmadi', role_fa: 'طراح محصول', role_en: 'Product designer', tone: 0.55, icons: ['instagram', 'x', 'github'] },
+    { fa: 'امیر رضایی', en: 'Amir Rezaei', role_fa: 'توسعه‌دهنده‌ی وب', role_en: 'Web developer', tone: 0.35, icons: ['github', 'linkedin', 'telegram'] },
+    { fa: 'مینا کریمی', en: 'Mina Karimi', role_fa: 'نویسنده و مترجم', role_en: 'Writer & translator', tone: 0.75, icons: ['telegram', 'instagram', 'youtube'] },
 ];
+const fa = () => i18n.locale === 'fa';
 </script>
 
 <template>
-    <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-5">
-        <header class="flex items-center justify-between py-6">
+    <div class="flex min-h-screen flex-col">
+        <header class="relative z-10 flex h-[86px] items-center justify-between bg-white px-5 sm:px-8">
             <Logo />
             <nav class="flex items-center gap-2">
                 <LangSwitch />
                 <button class="btn btn-ghost" @click="auth = 'login'">{{ t('login') }}</button>
-                <button class="btn btn-primary hidden sm:inline-flex" @click="auth = 'register'">{{ t('register') }}</button>
+                <button class="btn btn-primary hidden sm:inline-flex" @click="auth = 'register'">{{ t('start') }}</button>
             </nav>
         </header>
 
-        <main class="grid flex-1 items-center gap-12 py-10 lg:grid-cols-2 lg:py-16">
-            <section>
-                <h1 class="font-display text-4xl font-bold leading-[1.25] tracking-tight text-balance sm:text-6xl">
-                    {{ i18n.locale === 'en' ? (brand.tagline_en || brand.tagline) : brand.tagline }}
-                </h1>
-                <p class="mt-6 max-w-md text-lg leading-8 text-muted">{{ t('heroSub') }}</p>
-                <div class="mt-8 flex flex-wrap gap-3">
-                    <button class="btn btn-primary !px-6 !py-3" @click="auth = 'register'">{{ t('start') }}</button>
-                    <a class="btn btn-ghost !px-6 !py-3" href="#how">{{ t('learn') }}</a>
-                </div>
-            </section>
+        <main class="profile-canvas relative flex-1 overflow-hidden">
+            <div class="mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 sm:px-8 lg:min-h-[640px] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-20">
+                <section class="text-white">
+                    <h1 class="text-5xl font-bold leading-[1.15] tracking-tight text-balance sm:text-7xl" style="text-shadow: 0 1px 24px rgb(0 0 0 / .08)">
+                        {{ i18n.locale === 'en' ? (brand.tagline_en || brand.tagline) : brand.tagline }}
+                    </h1>
+                    <p class="mt-6 max-w-xl text-xl leading-9 text-white/90">{{ t('heroSub') }}</p>
+                    <form class="mt-9 flex max-w-xl flex-col gap-3 sm:flex-row" @submit.prevent="auth = 'register'">
+                        <input v-model="email" type="email" dir="ltr" class="field text-start text-ink sm:flex-1" :placeholder="t('emailPlaceholder')" :aria-label="t('email')" autocomplete="email">
+                        <button class="btn !min-h-[48px] border-white bg-brand text-white hover:!bg-ink">{{ t('claim') }} <Icon name="chevron" :size="18" flip /></button>
+                    </form>
+                </section>
 
-            <section class="relative hidden h-[27rem] lg:block" aria-hidden="true">
-                <div v-for="c in cards" :key="c.en" class="card absolute w-64 p-4" :class="c.pos">
-                    <div class="flex items-center gap-3">
-                        <div class="size-12 rounded-full"
-                             :style="{ background: `color-mix(in srgb, var(--brand) ${c.tone * 3}%, var(--line))` }"></div>
-                        <div>
-                            <div class="font-display font-bold">{{ i18n.locale === 'fa' ? c.fa : c.en }}</div>
-                            <div class="text-sm text-muted">{{ i18n.locale === 'fa' ? c.bio : c.bio_en }}</div>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex gap-2">
-                        <span class="h-2 w-12 rounded-full bg-line"></span>
-                        <span class="h-2 w-8 rounded-full bg-line"></span>
-                    </div>
-                </div>
-            </section>
+                <section class="relative hidden h-[27rem] lg:block" aria-hidden="true">
+                    <article v-for="(c, i) in cards" :key="c.en" class="card absolute top-1/2 w-[20rem] -translate-y-1/2 p-6"
+                             :style="{ insetInlineStart: i * 22 + 'rem' }">
+                        <div class="size-20 rounded-full" :style="{ background: `color-mix(in srgb, var(--brand) ${c.tone * 100}%, #E6E8EC)` }"></div>
+                        <div class="mt-5 text-3xl font-bold leading-tight">{{ fa() ? c.fa : c.en }}</div>
+                        <div class="mt-1 text-muted">{{ fa() ? c.role_fa : c.role_en }}</div>
+                        <div class="mt-5 flex gap-3 text-ink"><SocialIcon v-for="n in c.icons" :key="n" :name="n" :size="22" /></div>
+                        <div class="mt-5 grid gap-2"><span class="h-11 rounded-[4px] border border-line"></span><span class="h-11 rounded-[4px] border border-line"></span></div>
+                    </article>
+                </section>
+            </div>
         </main>
 
-        <section id="how" class="grid gap-8 border-t border-line py-14 sm:grid-cols-3">
+        <section id="how" class="mx-auto grid w-full max-w-7xl gap-10 px-5 py-16 sm:grid-cols-3 sm:px-8">
             <div v-for="n in [1, 2, 3]" :key="n">
-                <div class="font-display text-sm font-bold text-brand">0{{ n }}</div>
-                <h3 class="mt-2 font-display text-lg font-bold">{{ t('how' + n) }}</h3>
+                <div class="text-sm font-bold text-brand">0{{ n }}</div>
+                <h3 class="mt-2 text-xl font-bold">{{ t('how' + n) }}</h3>
                 <p class="mt-2 leading-7 text-muted">{{ t('how' + n + 'd') }}</p>
             </div>
         </section>
 
-        <AuthCard v-if="auth" :mode="auth" @close="auth = null" @switch="auth = $event" />
+        <AuthCard v-if="auth" :mode="auth" :email="email" @close="auth = null" @switch="auth = $event" />
     </div>
 </template>

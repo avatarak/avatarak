@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Avatar;
 use App\Models\Profile;
 use App\Models\UserEmail;
 use Illuminate\Http\UploadedFile;
@@ -64,11 +65,14 @@ class AvatarService
     }
 
     /**
-     * Re-encode an upload as a square JPEG (max 1024px). Re-encoding drops EXIF/GPS
-     * metadata and any non-image payload; the original file is never stored.
+     * Re-encode an upload as a square JPEG (max 1024px) and add it to the user's library,
+     * making it the active avatar. Re-encoding drops EXIF/GPS metadata and any non-image
+     * payload; the original file is never stored.
      */
-    public function store(Profile $profile, UploadedFile $file): void
+    public function store(Profile $profile, UploadedFile $file): Avatar
     {
+        abort_if(Avatar::where('user_id', $profile->user_id)->count() >= Avatar::MAX_PER_USER, 422, __('app.max_avatars'));
+
         $src = @imagecreatefromstring((string) file_get_contents($file->getRealPath()));
         abort_unless($src, 422, __('app.invalid_image'));
 
@@ -85,23 +89,36 @@ class AvatarService
         imagejpeg($dst, null, 90);
         $bytes = ob_get_clean();
 
-        $disk = Storage::disk(config('avatar.disk'));
-        $path = "avatars/{$profile->id}/".Str::random(20).'.jpg';
-        $disk->put($path, $bytes);
+        $path = "avatars/{$profile->user_id}/".Str::random(20).'.jpg';
+        Storage::disk(config('avatar.disk'))->put($path, $bytes);
 
-        $old = $profile->avatar_path;
-        $profile->update(['avatar_path' => $path, 'avatar_version' => Str::random(12)]);
-        if ($old) {
-            $disk->delete($old);
-        }
+        $avatar = Avatar::create(['user_id' => $profile->user_id, 'path' => $path]);
+        $this->activate($profile, $avatar);
+
+        return $avatar;
     }
 
-    public function remove(Profile $profile): void
+    public function activate(Profile $profile, Avatar $avatar): void
     {
-        if ($profile->avatar_path) {
-            Storage::disk(config('avatar.disk'))->delete($profile->avatar_path);
+        abort_unless($avatar->user_id === $profile->user_id, 404);
+        $profile->update(['avatar_id' => $avatar->id, 'avatar_path' => $avatar->path, 'avatar_version' => Str::random(12)]);
+    }
+
+    /** Stop using any avatar; the library is kept. */
+    public function deactivate(Profile $profile): void
+    {
+        $profile->update(['avatar_id' => null, 'avatar_path' => null, 'avatar_version' => null]);
+    }
+
+    /** Delete an avatar from the library (and its file). Deactivates it if it was active. */
+    public function destroy(Profile $profile, Avatar $avatar): void
+    {
+        abort_unless($avatar->user_id === $profile->user_id, 404);
+        if ($profile->avatar_id === $avatar->id) {
+            $this->deactivate($profile);
         }
-        $profile->update(['avatar_path' => null, 'avatar_version' => null]);
+        Storage::disk(config('avatar.disk'))->delete($avatar->path);
+        $avatar->delete();
     }
 
     /** Center-crop to a square and scale to $size. */

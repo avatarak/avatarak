@@ -76,7 +76,7 @@ class AccountTest extends TestCase
         $this->actingAs($u);
 
         $img = UploadedFile::fake()->image('me.png', 400, 300);
-        $this->postJson('/account/avatar', ['avatar' => $img])->assertOk();
+        $this->postJson('/account/avatars', ['avatar' => $img])->assertCreated();
         $path = $u->profile->fresh()->avatar_path;
         Storage::disk('local')->assertExists($path);
         $this->assertSame([300, 300], array_slice(getimagesizefromstring(Storage::disk('local')->get($path)), 0, 2));
@@ -87,9 +87,11 @@ class AccountTest extends TestCase
         $this->verifyPrimary($u);
         $this->get("/avatar/$hash")->assertHeader('Content-Type', 'image/jpeg');
 
-        // replacing deletes the old file
-        $this->postJson('/account/avatar', ['avatar' => UploadedFile::fake()->image('n.jpg', 200, 200)])->assertOk();
-        Storage::disk('local')->assertMissing($path);
+        // a new upload becomes active; the old one stays in the library
+        $this->postJson('/account/avatars', ['avatar' => UploadedFile::fake()->image('n.jpg', 200, 200)])->assertCreated();
+        Storage::disk('local')->assertExists($path);
+        $this->assertSame(2, $u->avatars()->count());
+        $this->assertNotSame($path, $u->profile->fresh()->avatar_path);
 
         $this->deleteJson('/account/avatar')->assertOk();
         $this->get("/avatar/$hash")->assertHeader('Content-Type', 'image/svg+xml');
@@ -99,9 +101,9 @@ class AccountTest extends TestCase
     {
         Storage::fake('local');
         $this->actingAs($this->register());
-        $this->postJson('/account/avatar', ['avatar' => UploadedFile::fake()->create('x.pdf', 10, 'application/pdf')])->assertStatus(422);
-        $this->postJson('/account/avatar', ['avatar' => UploadedFile::fake()->image('tiny.png', 10, 10)])->assertStatus(422);
-        $this->postJson('/account/avatar', ['avatar' => UploadedFile::fake()->image('big.png', 100, 100)->size(6000)])->assertStatus(422);
+        $this->postJson('/account/avatars', ['avatar' => UploadedFile::fake()->create('x.pdf', 10, 'application/pdf')])->assertStatus(422);
+        $this->postJson('/account/avatars', ['avatar' => UploadedFile::fake()->image('tiny.png', 10, 10)])->assertStatus(422);
+        $this->postJson('/account/avatars', ['avatar' => UploadedFile::fake()->image('big.png', 100, 100)->size(6000)])->assertStatus(422);
     }
 
     public function test_multiple_emails_and_primary_rules(): void

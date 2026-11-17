@@ -25,6 +25,10 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::patch('privacy', [AccountController::class, 'updatePrivacy']);
     Route::post('avatar', [AccountController::class, 'uploadAvatar'])->middleware('throttle:20,1');
     Route::get('avatar', [AccountController::class, 'myAvatar']);
+    Route::post('avatars', [AccountController::class, 'uploadAvatar'])->middleware('throttle:20,1');
+    Route::get('avatars/{id}/image', [AccountController::class, 'avatarImage']);
+    Route::post('avatars/{id}/activate', [AccountController::class, 'activateAvatar']);
+    Route::delete('avatars/{id}', [AccountController::class, 'destroyAvatar']);
     Route::delete('avatar', [AccountController::class, 'deleteAvatar']);
 
     Route::get('sites', [SiteController::class, 'index']);

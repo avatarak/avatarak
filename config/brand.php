@@ -12,11 +12,13 @@ return [
     'tagline_en' => env('BRAND_TAGLINE_EN', 'One photo, one identity, everywhere'),
     'default_locale' => env('BRAND_LOCALE', 'fa'),   // fa | en
 
+    // Leave unset to use the design defaults in resources/css/app.css (Gravatar-like blue).
+    // Set any of these in .env (as #RRGGBB) to rebrand; invalid values are ignored.
     'colors' => [
-        'canvas' => env('BRAND_COLOR_CANVAS', '#F8F7F4'),
-        'surface' => env('BRAND_COLOR_SURFACE', '#FFFFFF'),
-        'ink' => env('BRAND_COLOR_INK', '#20242A'),
-        'brand' => env('BRAND_COLOR_PRIMARY', '#3563E9'),
-        'line' => env('BRAND_COLOR_LINE', '#E7E9ED'),
+        'canvas' => env('BRAND_COLOR_CANVAS'),
+        'surface' => env('BRAND_COLOR_SURFACE'),
+        'ink' => env('BRAND_COLOR_INK'),
+        'brand' => env('BRAND_COLOR_PRIMARY'),
+        'line' => env('BRAND_COLOR_LINE'),
     ],
 ];

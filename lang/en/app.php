@@ -13,6 +13,7 @@ return [
     'email_primary_undeletable' => 'The primary email cannot be deleted. Make another email primary first.',
     'email_verified_ok' => 'Your email is verified. You can close this page.',
     'email_taken' => 'This email has already been verified by another account.',
+    'max_avatars' => 'You can keep at most 10 photos. Delete one first.',
     'invalid_image' => 'The image is invalid.',
     'mail_subject' => 'Verify your email on :app',
     'mail_body' => 'Click the link below to verify this email:',

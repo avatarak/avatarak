@@ -42,6 +42,11 @@ class User extends Authenticatable
         return $this->hasMany(UserEmail::class);
     }
 
+    public function avatars(): HasMany
+    {
+        return $this->hasMany(Avatar::class);
+    }
+
     public function sites(): HasMany
     {
         return $this->hasMany(Site::class);

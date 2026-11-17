@@ -28,9 +28,8 @@ async function toggle(key, value) {
 
 <template>
     <div>
-        <h2 class="font-display text-2xl font-bold">{{ t('privacyTitle') }}</h2>
-        <ul class="mt-6 space-y-3">
-            <li v-for="[key, label, desc] in ITEMS" :key="key" class="card flex items-center justify-between gap-4 p-4">
+        <ul class="space-y-3">
+            <li v-for="[key, label, desc] in ITEMS" :key="key" class="flex items-center justify-between gap-4 rounded-[8px] border border-line p-4">
                 <div>
                     <div class="font-medium">{{ t(label) }}</div>
                     <div class="hint mt-0.5">{{ t(desc) }}</div>

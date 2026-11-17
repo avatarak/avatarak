@@ -24,3 +24,14 @@ export async function load() {
     }
     state.ready = true;
 }
+
+/** Re-fetch the account without discarding unsaved form edits in the draft. */
+export async function refresh() {
+    const a = await api('GET', '/account');
+    state.account = a;
+    if (state.draft) {
+        for (const k of ['has_avatar', 'avatar_version', 'avatar_id']) state.draft[k] = a.profile[k];
+    } else {
+        state.draft = JSON.parse(JSON.stringify(a.profile));
+    }
+}
