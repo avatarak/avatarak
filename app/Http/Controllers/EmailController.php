@@ -30,7 +30,7 @@ class EmailController extends Controller
     {
         $request->validate(['email' => ['required', 'email:rfc', 'max:190']]);
 
-        abort_if($request->user()->emails()->count() >= 10, 422, 'حداکثر ۱۰ ایمیل مجاز است.');
+        abort_if($request->user()->emails()->count() >= 10, 422, __('app.max_emails'));
 
         $email = self::attach($request->user(), $request->input('email'));
 
@@ -40,7 +40,7 @@ class EmailController extends Controller
     public function resend(Request $request, int $id): JsonResponse
     {
         $email = $request->user()->emails()->findOrFail($id);
-        abort_if($email->isVerified(), 422, 'این ایمیل قبلاً تأیید شده است.');
+        abort_if($email->isVerified(), 422, __('app.email_already_verified'));
 
         self::attach($request->user(), $email->email);
 
@@ -59,7 +59,7 @@ class EmailController extends Controller
     public function makePrimary(Request $request, int $id): JsonResponse
     {
         $email = $request->user()->emails()->findOrFail($id);
-        abort_unless($email->isVerified(), 422, 'فقط ایمیل تأییدشده می‌تواند اصلی شود.');
+        abort_unless($email->isVerified(), 422, __('app.email_must_be_verified'));
 
         DB::transaction(function () use ($request, $email) {
             $request->user()->emails()->update(['is_primary' => false]);
@@ -72,7 +72,7 @@ class EmailController extends Controller
     public function destroy(Request $request, int $id): JsonResponse
     {
         $email = $request->user()->emails()->findOrFail($id);
-        abort_if($email->is_primary, 422, 'ایمیل اصلی قابل حذف نیست. ابتدا ایمیل دیگری را اصلی کنید.');
+        abort_if($email->is_primary, 422, __('app.email_primary_undeletable'));
         $email->delete();
 
         return response()->json(['message' => 'ok']);
@@ -99,8 +99,8 @@ class EmailController extends Controller
         });
 
         return response($result === 'ok'
-            ? 'ایمیل شما تأیید شد. می‌توانید این صفحه را ببندید.'
-            : 'این ایمیل قبلاً توسط حساب دیگری تأیید شده است.', $result === 'ok' ? 200 : 409);
+            ? __('app.email_verified_ok')
+            : __('app.email_taken'), $result === 'ok' ? 200 : 409);
     }
 
     private function present(UserEmail $e): array

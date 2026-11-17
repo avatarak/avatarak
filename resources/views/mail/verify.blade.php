@@ -1,5 +1,5 @@
-<div dir="rtl" style="font-family:Tahoma,sans-serif">
-    <p>برای تأیید این ایمیل روی لینک زیر بزنید:</p>
+<div dir="{{ app()->getLocale() === 'fa' ? 'rtl' : 'ltr' }}" style="font-family:Tahoma,Arial,sans-serif">
+    <p>{{ __('app.mail_body') }}</p>
     <p><a href="{{ $url }}">{{ $url }}</a></p>
-    <p>اگر شما این درخواست را نداده‌اید، این پیام را نادیده بگیرید.</p>
+    <p>{{ __('app.mail_ignore') }}</p>
 </div>

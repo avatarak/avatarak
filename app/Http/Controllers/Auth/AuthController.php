@@ -36,7 +36,7 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return response()->json(['message' => 'ثبت‌نام انجام شد. ایمیل تأیید ارسال شد.'], 201);
+        return response()->json(['message' => __('app.registered')], 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -44,7 +44,7 @@ class AuthController extends Controller
         $cred = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string']]);
 
         if (! Auth::attempt($cred)) {
-            return response()->json(['message' => 'ایمیل یا گذرواژه نادرست است.'], 422);
+            return response()->json(['message' => __('app.bad_credentials')], 422);
         }
 
         $request->session()->regenerate();

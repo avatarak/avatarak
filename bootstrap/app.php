@@ -22,10 +22,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // There is no server-rendered login route; the exception handler below turns this into a 401.
         $middleware->redirectGuestsTo(fn () => '/');
+        $middleware->web(append: [\App\Http\Middleware\SetLocale::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // No server-rendered login page: unauthenticated requests always get a 401 JSON
-        $exceptions->render(fn (\Illuminate\Auth\AuthenticationException $e) => response()->json(['message' => 'Unauthenticated.'], 401));
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {
+            \App\Http\Middleware\SetLocale::apply($request);
+
+            return response()->json(['message' => __('app.unauthenticated')], 401);
+        });
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

@@ -1,3 +1,5 @@
+import { i18n } from './i18n';
+
 function xsrf() {
     const m = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/);
     return m ? decodeURIComponent(m[1]) : '';
@@ -12,7 +14,7 @@ export class ApiError extends Error {
 }
 
 export async function api(method, url, body) {
-    const headers = { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf() };
+    const headers = { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf(), 'X-Locale': i18n.locale };
     const opts = { method, headers, credentials: 'same-origin' };
     if (body instanceof FormData) {
         opts.body = body;

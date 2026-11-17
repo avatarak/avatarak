@@ -70,7 +70,7 @@ class AvatarService
     public function store(Profile $profile, UploadedFile $file): void
     {
         $src = @imagecreatefromstring((string) file_get_contents($file->getRealPath()));
-        abort_unless($src, 422, 'تصویر نامعتبر است.');
+        abort_unless($src, 422, __('app.invalid_image'));
 
         $w = imagesx($src);
         $h = imagesy($src);
