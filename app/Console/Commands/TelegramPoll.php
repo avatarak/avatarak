@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Http;
 
 class TelegramPoll extends Command
 {
-    protected $signature = 'telegram:poll {--once : Handle pending updates once and exit}';
+    protected $signature = 'telegram:poll
+        {--once : Handle pending updates once and exit}
+        {--timeout=8 : Seconds Telegram holds each request open waiting for messages (lower it if your VPN/network drops idle connections; 0 = no waiting)}';
 
     protected $description = 'Receive bot updates by long polling (for local development, no public URL needed)';
 
@@ -26,14 +28,15 @@ class TelegramPoll extends Command
             $this->warn('Could not reach Telegram yet: '.$this->redact($e->getMessage()));
         }
 
+        $wait = $this->option('once') ? 0 : max(0, min(50, (int) $this->option('timeout')));
         $offset = 0;
         $this->info('Listening for Telegram updates… (Ctrl+C to stop)');
         do {
             try {
-                $res = Http::timeout(35)->get("$base/getUpdates", ['offset' => $offset, 'timeout' => $this->option('once') ? 0 : 25, 'allowed_updates' => json_encode(['message'])]);
+                $res = Http::timeout($wait + 12)->connectTimeout(8)->get("$base/getUpdates", ['offset' => $offset, 'timeout' => $wait, 'allowed_updates' => json_encode(['message'])]);
             } catch (\Throwable $e) {
                 $this->warn('Telegram unreachable: '.$this->redact($e->getMessage()));
-                $this->line('Telegram is filtered in some countries: run this command through a VPN/proxy, e.g. HTTPS_PROXY=http://127.0.0.1:PORT php artisan telegram:poll');
+                $this->line('If other requests to Telegram work, your network is probably dropping the idle long-poll connection: try --timeout=3. If nothing reaches Telegram, run through a VPN/proxy (HTTPS_PROXY=http://127.0.0.1:PORT).');
                 if ($this->option('once')) {
                     return self::FAILURE;
                 }

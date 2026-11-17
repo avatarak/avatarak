@@ -211,4 +211,13 @@ class TelegramVerificationTest extends TestCase
         $this->artisan('telegram:poll', ['--once' => true])->assertSuccessful();
         $this->assertSame(1, VerifiedAccount::count());
     }
+
+    public function test_once_mode_never_holds_the_connection_open(): void
+    {
+        Http::swap(new \Illuminate\Http\Client\Factory);
+        Http::fake(['api.telegram.org/*' => Http::response(['ok' => true, 'result' => []])]);
+
+        $this->artisan('telegram:poll', ['--once' => true, '--timeout' => 40])->assertSuccessful();
+        Http::assertSent(fn ($r) => str_contains($r->url(), 'getUpdates') && str_contains($r->url(), 'timeout=0'));
+    }
 }
