@@ -10,7 +10,7 @@ import { t } from '../i18n';
  * measurements (taken from gravatar.com): 640px cards with 4px radius and 24px gaps, 148px avatar,
  * 34px name, 16px text, 42px buttons, 18px social icons, 192x108 link thumbnails. Keep them in sync.
  */
-const props = defineProps({ profile: Object, avatarSrc: String, verified: Boolean });
+const props = defineProps({ profile: Object, avatarSrc: String, verified: Boolean, verifiedAccounts: { type: Array, default: () => [] } });
 
 const hidden = (s) => (props.profile.hidden_sections || []).includes(s);
 const socials = computed(() => Object.entries(props.profile.socials || {}).filter(([n, v]) => v && SOCIAL_URLS[n]));
@@ -89,6 +89,24 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
                             <span v-if="l.description" class="line-clamp-3 block text-sm leading-[26px] text-ink/75">{{ l.description }}</span>
                             <span v-else class="block truncate text-sm leading-6 text-ink/60"><bdi dir="ltr">{{ host(l.url) }}</bdi></span>
                         </span>
+                    </li>
+                </ul>
+            </section>
+
+            <section v-if="verifiedAccounts.length && !hidden('verified')" class="card !rounded-[4px] px-6 pb-6 pt-8 sm:px-10">
+                <h2 class="text-lg font-bold leading-[1.5]">{{ t('sec_verified') }}</h2>
+                <ul class="mt-3 divide-y divide-line">
+                    <li v-for="v in verifiedAccounts" :key="v.id" class="py-4">
+                        <div class="flex items-center gap-2 text-sm font-bold leading-6">
+                            <SocialIcon v-if="v.network !== 'website'" :name="v.network" :size="18" />
+                            <Icon v-else name="globe" :size="18" />
+                            {{ v.network === 'website' ? t('website') : v.network.charAt(0).toUpperCase() + v.network.slice(1) }}
+                            <svg width="18" height="18" viewBox="0 0 24 24" aria-label="verified" class="text-[#3B6BF0]">
+                                <path fill="currentColor" d="M12 1.5l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.1L12 22.5l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3-1-3 2.6-1.9 1-3 3.2.1z"/>
+                                <path fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.3l2.7 2.7L16 9.6"/>
+                            </svg>
+                        </div>
+                        <div class="mt-0.5 truncate text-base text-[var(--accent)]"><bdi dir="ltr">{{ v.url.replace(/^https?:\/\//, '') }}</bdi></div>
                     </li>
                 </ul>
             </section>

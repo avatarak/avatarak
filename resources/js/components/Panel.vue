@@ -15,13 +15,14 @@ import EmailsSection from './sections/EmailsSection.vue';
 import DesignSection from './sections/DesignSection.vue';
 import PrivacySection from './sections/PrivacySection.vue';
 import DevelopersSection from './sections/DevelopersSection.vue';
+import VerifiedSection from './sections/VerifiedSection.vue';
 
 const SECTIONS = {
-    avatars: AvatarsSection, about: AboutSection, links: LinksSection, emails: EmailsSection,
+    avatars: AvatarsSection, about: AboutSection, links: LinksSection, verified: VerifiedSection, emails: EmailsSection,
     design: DesignSection, privacy: PrivacySection, developers: DevelopersSection,
 };
 const GROUPS = [
-    [['avatars', null], ['about', 'user'], ['links', 'link'], ['emails', 'mail']],
+    [['avatars', null], ['about', 'user'], ['links', 'link'], ['verified', 'verified'], ['emails', 'mail']],
     [['design', 'palette'], ['privacy', 'shield']],
     [['developers', 'code']],
 ];
@@ -111,7 +112,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
             </aside>
 
             <main class="min-w-0 flex-1 overflow-y-auto rounded-ss-[20px]" :class="mobilePreview ? 'block' : 'hidden lg:block'" :aria-label="t('preview')">
-                <ProfileCard :profile="state.draft" :avatar-src="avatarSrc" :verified="verified" />
+                <ProfileCard :profile="state.draft" :avatar-src="avatarSrc" :verified="verified" :verified-accounts="state.account.verified_accounts || []" />
             </main>
         </div>
 

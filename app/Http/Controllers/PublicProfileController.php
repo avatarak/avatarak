@@ -36,6 +36,8 @@ class PublicProfileController extends Controller
             'showImages' => (bool) $profile->show_link_images,
             'showBio' => ! in_array('bio', $hidden, true),
             'showLinks' => ! in_array('links', $hidden, true),
+            'showVerified' => ! in_array('verified', $hidden, true),
+            'verifiedAccounts' => $export->verifiedAccounts($profile),
             'isOwner' => auth()->id() === $profile->user_id,
             'icons' => json_decode(file_get_contents(resource_path('data/social-icons.json')), true) ?: [],
             'verified' => $export->verified($profile),

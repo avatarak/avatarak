@@ -47,6 +47,11 @@ class User extends Authenticatable
         return $this->hasMany(Avatar::class);
     }
 
+    public function verifiedAccounts(): HasMany
+    {
+        return $this->hasMany(VerifiedAccount::class);
+    }
+
     public function sites(): HasMany
     {
         return $this->hasMany(Site::class);

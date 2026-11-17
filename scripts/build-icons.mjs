@@ -6,7 +6,7 @@ const MAP = {
     user: 'user', link: 'link', mail: 'mail', palette: 'palette', shield: 'shield-check', code: 'code',
     back: 'arrow-left', external: 'external-link', chevron: 'chevron-right', eye: 'eye', eyeOff: 'eye-off',
     grip: 'grip-vertical', plus: 'plus', trash: 'trash', check: 'check', camera: 'camera', rotate: 'rotate-clockwise',
-    share: 'share-2', copy: 'copy', logout: 'logout', image: 'photo', close: 'x', settings: 'settings', globe: 'world', pin: 'map-pin', qr: 'qrcode',
+    share: 'share-2', copy: 'copy', logout: 'logout', image: 'photo', close: 'x', settings: 'settings', globe: 'world', pin: 'map-pin', qr: 'qrcode', verified: 'rosette-discount-check',
 };
 
 const out = {};

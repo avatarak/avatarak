@@ -32,6 +32,12 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::delete('avatars/{id}', [AccountController::class, 'destroyAvatar']);
     Route::delete('avatar', [AccountController::class, 'deleteAvatar']);
 
+    Route::get('verifications', [\App\Http\Controllers\VerificationController::class, 'index']);
+    Route::post('verifications/website', [\App\Http\Controllers\VerificationController::class, 'website'])->middleware('throttle:20,1');
+    Route::post('verifications/website/check', [\App\Http\Controllers\VerificationController::class, 'websiteCheck'])->middleware('throttle:10,1');
+    Route::post('verifications/telegram', [\App\Http\Controllers\VerificationController::class, 'telegram'])->middleware('throttle:20,1');
+    Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
+
     Route::get('sites', [SiteController::class, 'index']);
     Route::post('sites', [SiteController::class, 'store'])->middleware('throttle:10,1');
     Route::delete('sites/{id}', [SiteController::class, 'destroy']);

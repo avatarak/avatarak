@@ -27,6 +27,9 @@ class AccountController extends Controller
             'avatars' => $user->avatars()->latest('id')->get()->map(fn ($a) => [
                 'id' => $a->id, 'active' => $a->id === $p->avatar_id, 'created_at' => $a->created_at,
             ])->values(),
+            'verified_accounts' => $user->verifiedAccounts()->orderBy('id')->get()->map(fn ($a) => [
+                'id' => $a->id, 'network' => $a->network, 'identifier' => $a->identifier, 'url' => $a->url(),
+            ])->values(),
             'emails' => $user->emails->map(fn ($e) => $e->only(['id', 'email', 'email_hash', 'is_primary', 'is_public'])
                 + ['verified' => $e->isVerified()])->values(),
         ]);
@@ -77,15 +80,15 @@ class AccountController extends Controller
         return $this->show($request);
     }
 
-    public const SECTIONS = ['bio', 'links'];
+    public const SECTIONS = ['bio', 'links', 'verified'];
 
     public function updateAppearance(Request $request): JsonResponse
     {
         $data = $request->validate([
             'accent_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'section_order' => ['nullable', 'array', 'max:2'],
+            'section_order' => ['nullable', 'array', 'max:3'],
             'section_order.*' => ['string', 'distinct', Rule::in(self::SECTIONS)],
-            'hidden_sections' => ['nullable', 'array', 'max:2'],
+            'hidden_sections' => ['nullable', 'array', 'max:3'],
             'hidden_sections.*' => ['string', 'distinct', Rule::in(self::SECTIONS)],
         ]);
         $request->user()->profile->update($data);

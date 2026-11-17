@@ -2,12 +2,12 @@
     $accent = ($p->accent_color && preg_match('/^#[0-9A-Fa-f]{6}$/', $p->accent_color)) ? $p->accent_color : null;
     $rtl = config('brand.default_locale') !== 'en';
     $t = $rtl ? [
-        'links' => 'لینک‌ها', 'share' => 'اشتراک‌گذاری', 'site' => 'وب‌سایت', 'copied' => 'کپی شد', 'more' => 'نمایش بیشتر', 'less' => 'نمایش کمتر', 'edit' => 'ویرایش پروفایل',
+        'links' => 'لینک‌ها', 'verifiedAccounts' => 'حساب‌های تأییدشده', 'connections' => 'حساب‌های تأییدشده', 'web' => 'وب‌سایت', 'share' => 'اشتراک‌گذاری', 'site' => 'وب‌سایت', 'copied' => 'کپی شد', 'more' => 'نمایش بیشتر', 'less' => 'نمایش کمتر', 'edit' => 'ویرایش پروفایل',
         'adv' => 'جزئیات بیشتر', 'advFor' => 'برای توسعه‌دهنده‌ها', 'advTitle' => 'تجربه‌های شخصی‌سازی‌شده بسازید', 'advText' => 'از داده‌ی عمومی این پروفایل در برنامه یا سایت خودتان استفاده کنید و کارت پروفایل را جاسازی کنید.',
         'created' => 'ساخته‌شده', 'updated' => 'به‌روزرسانی', 'linksN' => 'لینک‌ها', 'socialsN' => 'شبکه‌ها', 'verified' => 'تأییدشده', 'yes' => 'بله', 'no' => 'خیر',
         'embed' => 'کد جاسازی', 'formats' => 'خروجی‌ها', 'qr' => 'کد QR', 'plain' => 'ساده', 'withAvatar' => 'با عکس', 'download' => 'دانلود SVG', 'copy' => 'کپی', 'close' => 'بستن', 'view' => 'مشاهده‌ی پروفایل', 'qrOpen' => 'کد QR',
     ] : [
-        'links' => 'Links', 'share' => 'Share', 'site' => 'Website', 'copied' => 'Copied', 'more' => 'Show more', 'less' => 'Show less', 'edit' => 'Edit profile',
+        'links' => 'Links', 'verifiedAccounts' => 'Verified Accounts', 'connections' => 'Verified connections', 'web' => 'Website', 'share' => 'Share', 'site' => 'Website', 'copied' => 'Copied', 'more' => 'Show more', 'less' => 'Show less', 'edit' => 'Edit profile',
         'adv' => 'Advanced details', 'advFor' => 'For developers', 'advTitle' => 'Craft personalized experiences', 'advText' => 'Use this profile\'s public data in your app or site, and embed the profile card.',
         'created' => 'Created', 'updated' => 'Updated', 'linksN' => 'Links', 'socialsN' => 'Socials', 'verified' => 'Verified', 'yes' => 'Yes', 'no' => 'No',
         'embed' => 'Embed code', 'formats' => 'Formats', 'qr' => 'QR code', 'plain' => 'Plain', 'withAvatar' => 'With avatar', 'download' => 'Download SVG', 'copy' => 'Copy', 'close' => 'Close', 'view' => 'View profile', 'qrOpen' => 'QR code',
@@ -116,6 +116,28 @@
             </section>
         @endif
 
+        @if(count($verifiedAccounts) && $showVerified)
+            <section class="card !rounded-[4px] px-6 pb-6 pt-8 sm:px-10">
+                <h2 class="text-lg font-bold leading-[1.5]">{{ $t['verifiedAccounts'] }}</h2>
+                <ul class="mt-3 divide-y divide-line">
+                    @foreach($verifiedAccounts as $v)
+                        <li class="py-4">
+                            <div class="flex items-center gap-2 text-sm font-bold leading-6">
+                                @if(isset($icons[$v['network']]))
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{ $icons[$v['network']] }}"/></svg>
+                                @else
+                                    <x-icon name="globe" :size="18" />
+                                @endif
+                                {{ $v['network'] === 'website' ? $t['web'] : ucfirst($v['network']) }}
+                                <svg width="18" height="18" viewBox="0 0 24 24" role="img" aria-label="verified" class="text-[#3B6BF0]"><path fill="currentColor" d="M12 1.5l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.1L12 22.5l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3-1-3 2.6-1.9 1-3 3.2.1z"/><path fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.3l2.7 2.7L16 9.6"/></svg>
+                            </div>
+                            <a href="{{ $v['url'] }}" target="_blank" rel="me noopener" class="mt-0.5 block truncate text-base text-[var(--accent)] hover:underline"><bdi dir="ltr">{{ preg_replace('#^https?://#', '', $v['url']) }}</bdi></a>
+                        </li>
+                    @endforeach
+                </ul>
+            </section>
+        @endif
+
         <div class="flex justify-center pt-2">
             <button type="button" data-adv-open class="inline-flex min-h-[42px] items-center gap-2 rounded-full bg-white/60 px-4 py-2 text-sm text-ink backdrop-blur transition-colors hover:bg-white/80">
                 <x-icon name="code" :size="18" /> {{ $t['adv'] }}
@@ -155,6 +177,7 @@
                         <div><dt class="text-ink/60">{{ $t['linksN'] }}</dt><dd class="font-medium">{{ count($links) }}</dd></div>
                         <div><dt class="text-ink/60">{{ $t['socialsN'] }}</dt><dd class="font-medium">{{ $socialCount }}</dd></div>
                         <div><dt class="text-ink/60">{{ $t['verified'] }}</dt><dd class="font-medium">{{ $verified ? $t['yes'] : $t['no'] }}</dd></div>
+                        <div><dt class="text-ink/60">{{ $t['connections'] }}</dt><dd class="font-medium">{{ count($verifiedAccounts) }}</dd></div>
                     </dl>
 
                     <p class="mt-6 text-sm font-semibold">{{ $t['embed'] }}</p>

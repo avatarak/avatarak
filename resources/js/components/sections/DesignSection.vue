@@ -61,8 +61,8 @@ const { busy, message, run, err } = useSubmit('PATCH', '/account/appearance', ()
                 <span class="flex-1">{{ t('sec_intro') }}</span>
                 <span class="px-2 text-sm text-muted">{{ t('pinned') }}</span>
             </li>
-            <li v-for="s in ['bio', 'links']" :key="s" class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5" :class="{ 'opacity-60': hidden(s) }">
-                <span class="grid size-10 place-items-center rounded-[6px] bg-white"><Icon :name="s === 'bio' ? 'user' : 'link'" :size="20" /></span>
+            <li v-for="s in ['bio', 'links', 'verified']" :key="s" class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5" :class="{ 'opacity-60': hidden(s) }">
+                <span class="grid size-10 place-items-center rounded-[6px] bg-white"><Icon :name="s === 'bio' ? 'user' : s === 'links' ? 'link' : 'verified'" :size="20" /></span>
                 <span class="flex-1">{{ t('sec_' + s) }}</span>
                 <button type="button" class="icon-btn" :aria-label="hidden(s) ? t('show') : t('hide')" :aria-pressed="!hidden(s)" @click="toggle(s)">
                     <Icon :name="hidden(s) ? 'eyeOff' : 'eye'" :size="20" />

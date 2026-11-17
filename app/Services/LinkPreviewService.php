@@ -132,7 +132,7 @@ class LinkPreviewService
      * @param  list<string>  $types  accepted content-type prefixes
      * @return array{0:string,1:string} [body, final url]
      */
-    private function get(string $url, int $maxBytes, array $types): array
+    public function get(string $url, int $maxBytes, array $types): array
     {
         $max = (int) config('linkpreview.max_redirects');
 

@@ -19,4 +19,13 @@ return [
     'mail_body' => 'Click the link below to verify this email:',
     'mail_ignore' => 'If you did not request this, you can ignore this message.',
     'not_found' => 'Not found.',
+    'verify_bad_domain' => 'Invalid website. Enter just the domain (like example.com).',
+    'verify_taken' => 'This account is already verified for another user.',
+    'verify_no_challenge' => 'Start verification first.',
+    'verify_err_not_found' => 'Code not found. Make sure it is published and wait a few minutes (DNS can be slow).',
+    'verify_err_expired' => 'This code has expired. Start again.',
+    'verify_err_too_many_attempts' => 'Too many attempts. Get a new code.',
+    'verify_err_taken' => 'This domain is already verified for another user.',
+    'verify_tg_disabled' => 'Telegram verification is not configured on this server.',
+    'verify_tg_bad_handle' => 'Invalid Telegram username (5-32 letters, digits or _).',
 ];

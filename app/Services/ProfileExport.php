@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Profile;
 use App\Models\UserEmail;
+use App\Models\VerifiedAccount;
 
 /**
  * Public, machine-readable renderings of a profile (.json / .md / .vcf).
@@ -49,6 +50,13 @@ class ProfileExport
             ->values()->all();
     }
 
+    /** @return list<array{network:string,identifier:string,url:string}> proven accounts only */
+    public function verifiedAccounts(Profile $p): array
+    {
+        return VerifiedAccount::where('user_id', $p->user_id)->orderBy('id')->get()
+            ->map(fn (VerifiedAccount $a) => ['network' => $a->network, 'identifier' => $a->identifier, 'url' => $a->url()])->all();
+    }
+
     public function avatarUrl(Profile $p, int $size = 512): ?string
     {
         return ($p->show_avatar && $p->avatar_path)
@@ -76,6 +84,7 @@ class ProfileExport
             'verified' => $this->verified($p),
             'socials' => (object) $this->socials($p),
             'links' => $this->links($p),
+            'verified_accounts' => $this->verifiedAccounts($p),
             'created_at' => $p->created_at?->toIso8601String(),
             'updated_at' => $p->updated_at?->toIso8601String(),
         ];
@@ -101,6 +110,14 @@ class ProfileExport
         }
         foreach ($this->socials($p) as $net => $url) {
             $lines[] = '- '.ucfirst($net).': <'.$url.'>';
+        }
+        if ($verified = $this->verifiedAccounts($p)) {
+            $lines[] = '';
+            $lines[] = '## Verified accounts';
+            $lines[] = '';
+            foreach ($verified as $v) {
+                $lines[] = '- '.ucfirst($v['network']).': <'.$v['url'].'>';
+            }
         }
         if ($links = $this->links($p)) {
             $lines[] = '';
