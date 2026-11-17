@@ -25,6 +25,7 @@ class ProfileResource extends JsonResource
         return [
             'hash' => $this->hash,
             'username' => $p->username,
+            'profile_url' => route('profile.show', $p->username),
             'name_fa' => $p->name_fa,
             'name_en' => $p->name_en,
             'bio' => $p->bio,
