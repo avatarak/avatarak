@@ -181,4 +181,34 @@ class TelegramVerificationTest extends TestCase
         config(['verification.telegram.webhook_secret' => self::SECRET]);
         $this->artisan('telegram:webhook', ['url' => 'http://x.ir/hook'])->assertFailed();       // http rejected
     }
+
+    public function test_poll_never_prints_the_bot_token_when_telegram_is_unreachable(): void
+    {
+        Http::fake(['api.telegram.org/*' => fn () => throw new \Illuminate\Http\Client\ConnectionException(
+            'cURL error 56: unexpected eof while reading for https://api.telegram.org/bot123:ABC/getUpdates'
+        )]);
+
+        $code = \Illuminate\Support\Facades\Artisan::call('telegram:poll', ['--once' => true]);
+        $out = \Illuminate\Support\Facades\Artisan::output();
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Telegram unreachable', $out);
+        $this->assertStringContainsString('HTTPS_PROXY', $out);                  // tells the user what to do
+        $this->assertStringNotContainsString('123:ABC', $out);
+        $this->assertStringNotContainsString('ABC', $out);
+    }
+
+    public function test_poll_handles_updates_it_receives(): void
+    {
+        $u = $this->user();
+        $c = VerificationChallenge::issue($u, 'telegram', 'javid_t');
+        Http::swap(new \Illuminate\Http\Client\Factory);      // setUp() already installed a catch-all fake; first fake wins
+        Http::fake([
+            'api.telegram.org/bot123:ABC/getUpdates*' => Http::response(['ok' => true, 'result' => [$this->update($c->token)]]),
+            'api.telegram.org/*' => Http::response(['ok' => true]),
+        ]);
+
+        $this->artisan('telegram:poll', ['--once' => true])->assertSuccessful();
+        $this->assertSame(1, VerifiedAccount::count());
+    }
 }

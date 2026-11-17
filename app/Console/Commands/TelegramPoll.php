@@ -20,7 +20,11 @@ class TelegramPoll extends Command
             return self::FAILURE;
         }
         $base = 'https://api.telegram.org/bot'.config('verification.telegram.bot_token');
-        Http::timeout(15)->post("$base/deleteWebhook");          // polling and webhooks are mutually exclusive
+        try {
+            Http::timeout(15)->post("$base/deleteWebhook");      // polling and webhooks are mutually exclusive
+        } catch (\Throwable $e) {
+            $this->warn('Could not reach Telegram yet: '.$this->redact($e->getMessage()));
+        }
 
         $offset = 0;
         $this->info('Listening for Telegram updates… (Ctrl+C to stop)');
@@ -28,7 +32,11 @@ class TelegramPoll extends Command
             try {
                 $res = Http::timeout(35)->get("$base/getUpdates", ['offset' => $offset, 'timeout' => $this->option('once') ? 0 : 25, 'allowed_updates' => json_encode(['message'])]);
             } catch (\Throwable $e) {
-                $this->warn('Telegram unreachable: '.$e->getMessage());
+                $this->warn('Telegram unreachable: '.$this->redact($e->getMessage()));
+                $this->line('Telegram is filtered in some countries: run this command through a VPN/proxy, e.g. HTTPS_PROXY=http://127.0.0.1:PORT php artisan telegram:poll');
+                if ($this->option('once')) {
+                    return self::FAILURE;
+                }
                 sleep(3);
 
                 continue;
@@ -41,5 +49,14 @@ class TelegramPoll extends Command
         } while (! $this->option('once'));
 
         return self::SUCCESS;
+    }
+
+    /** Exception messages contain the request URL, which contains the bot token. Never print that. */
+    private function redact(string $message): string
+    {
+        $token = (string) config('verification.telegram.bot_token');
+        $message = $token !== '' ? str_replace($token, '[token]', $message) : $message;
+
+        return preg_replace('#/bot\d+:[A-Za-z0-9_-]+#', '/bot[token]', $message);
     }
 }
