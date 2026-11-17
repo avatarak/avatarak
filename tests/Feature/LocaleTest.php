@@ -66,4 +66,68 @@ class LocaleTest extends TestCase
         $this->postJson('/api/v1/profiles/lookup', ['hashes' => ['x']], ['Authorization' => 'Bearer bad'])
             ->assertUnauthorized()->assertJsonPath('message', 'Invalid or missing API key.');
     }
+
+    private function profile(): User
+    {
+        $u = User::factory()->create();
+        \App\Models\Profile::create(['user_id' => $u->id, 'username' => 'sara', 'name_fa' => 'سارا', 'bio' => 'x', 'website' => 'https://s.ir']);
+
+        return $u;
+    }
+
+    public function test_public_profile_follows_the_locale_cookie(): void
+    {
+        $this->profile();
+
+        $en = $this->withUnencryptedCookie('locale', 'en')->get('/sara')->assertOk();
+        $en->assertSee('Share')->assertSee('Advanced details')->assertSee('lang="en"', false)->assertSee('dir="ltr"', false);
+        $en->assertDontSee('اشتراک‌گذاری');
+
+        $fa = $this->withUnencryptedCookie('locale', 'fa')->get('/sara')->assertOk();
+        $fa->assertSee('اشتراک‌گذاری')->assertSee('جزئیات بیشتر')->assertSee('lang="fa"', false)->assertSee('dir="rtl"', false);
+    }
+
+    public function test_owner_edit_button_is_translated(): void
+    {
+        $u = $this->profile();
+        $this->actingAs($u)->withUnencryptedCookie('locale', 'en')->get('/sara')->assertSee('Edit profile')->assertDontSee('ویرایش پروفایل');
+        $this->actingAs($u)->withUnencryptedCookie('locale', 'fa')->get('/sara')->assertSee('ویرایش پروفایل')->assertDontSee('Edit profile');
+    }
+
+    public function test_cookie_falls_back_to_brand_default_and_header_wins_over_cookie(): void
+    {
+        $this->profile();
+        $this->withUnencryptedCookie('locale', 'klingon')->get('/sara')->assertSee('اشتراک‌گذاری');         // invalid -> default (fa)
+        $this->withUnencryptedCookie('locale', '../../x')->get('/sara')->assertSee('اشتراک‌گذاری');
+        $this->get('/sara')->assertSee('اشتراک‌گذاری');                                                      // no cookie -> default
+
+        config(['brand.default_locale' => 'en']);
+        $this->get('/sara')->assertSee('Share');                                                             // default follows brand
+
+        // the SPA header beats the cookie for API calls
+        $this->withUnencryptedCookie('locale', 'fa')->postJson('/register', [], ['X-Locale' => 'en'])
+            ->assertJsonPath('errors.name.0', 'The name field is required.');
+    }
+
+    public function test_card_embed_follows_locale(): void
+    {
+        $this->profile();
+        $this->withUnencryptedCookie('locale', 'en')->get('/sara.card')->assertSee('View profile');
+        $this->withUnencryptedCookie('locale', 'fa')->get('/sara.card')->assertSee('مشاهده‌ی پروفایل');
+    }
+
+    public function test_cookie_is_not_encrypted_by_laravel(): void
+    {
+        $this->profile();
+        // a plain cookie, exactly as JavaScript writes it, must work through the real cookie middleware
+        $this->call('GET', '/sara', [], ['locale' => 'en'])->assertSee('Share');
+    }
+
+    public function test_brand_name_follows_locale_on_the_public_page(): void
+    {
+        $this->profile();
+        config(['brand.name' => 'گراواتار', 'brand.name_en' => 'Iravatar']);
+        $this->withUnencryptedCookie('locale', 'en')->get('/sara')->assertSee('— Iravatar', false)->assertDontSee('گراواتار');
+        $this->withUnencryptedCookie('locale', 'fa')->get('/sara')->assertSee('— گراواتار', false);
+    }
 }

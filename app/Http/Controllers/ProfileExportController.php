@@ -21,7 +21,7 @@ class ProfileExportController extends Controller
             ]),
             'card' => response()->view('cards.profile', [
                 'p' => $profile, 'name' => $export->display($profile), 'avatar' => $export->avatarUrl($profile, 256), 'verified' => $export->verified($profile),
-                'rtl' => config('brand.default_locale') !== 'en',
+                'rtl' => app()->getLocale() !== 'en',
             ]),
         };
 

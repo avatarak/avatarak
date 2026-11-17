@@ -1,6 +1,7 @@
 @php
     $accent = ($p->accent_color && preg_match('/^#[0-9A-Fa-f]{6}$/', $p->accent_color)) ? $p->accent_color : null;
-    $rtl = config('brand.default_locale') !== 'en';
+    $rtl = app()->getLocale() !== 'en';
+    $brand = $rtl ? config('brand.name') : (config('brand.name_en') ?: config('brand.name'));
     $t = $rtl ? [
         'links' => 'لینک‌ها', 'verifiedAccounts' => 'حساب‌های تأییدشده', 'connections' => 'حساب‌های تأییدشده', 'web' => 'وب‌سایت', 'share' => 'اشتراک‌گذاری', 'site' => 'وب‌سایت', 'copied' => 'کپی شد', 'more' => 'نمایش بیشتر', 'less' => 'نمایش کمتر', 'edit' => 'ویرایش پروفایل',
         'adv' => 'جزئیات بیشتر', 'advFor' => 'برای توسعه‌دهنده‌ها', 'advTitle' => 'تجربه‌های شخصی‌سازی‌شده بسازید', 'advText' => 'از داده‌ی عمومی این پروفایل در برنامه یا سایت خودتان استفاده کنید و کارت پروفایل را جاسازی کنید.',
@@ -19,7 +20,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $display }} — {{ config('brand.name') }}</title>
+    <title>{{ $display }} — {{ $brand }}</title>
     @unless($indexable)<meta name="robots" content="noindex, nofollow">@endunless
     @if($p->bio)<meta name="description" content="{{ \Illuminate\Support\Str::limit($p->bio, 160) }}">@endif
     @include('partials.brand')
@@ -143,7 +144,7 @@
                 <x-icon name="code" :size="18" /> {{ $t['adv'] }}
             </button>
         </div>
-        <p class="pb-2 text-center text-sm text-white/90"><a href="/" class="hover:underline">{{ config('brand.name') }}</a></p>
+        <p class="pb-2 text-center text-sm text-white/90"><a href="/" class="hover:underline">{{ $brand }}</a></p>
     </div>
 </div>
 

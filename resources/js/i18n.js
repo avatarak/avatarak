@@ -14,6 +14,8 @@ export function setLocale(l) {
 export function applyDir() {
     document.documentElement.lang = i18n.locale;
     document.documentElement.dir = dir.value;
+    // Server-rendered pages (the public profile) read this cookie so they match the UI language.
+    document.cookie = `locale=${i18n.locale}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 const M = {

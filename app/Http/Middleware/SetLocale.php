@@ -22,10 +22,15 @@ class SetLocale
     /** Also called from the exception handler: `auth` runs before this middleware. */
     public static function apply(Request $request): void
     {
-        $locale = $request->header('X-Locale');
-        if (! in_array($locale, self::SUPPORTED, true)) {
-            $locale = config('brand.default_locale', 'fa');
+        // 1) X-Locale: sent by the SPA with every API call. 2) `locale` cookie: the user's UI language, which
+        // the SPA also stores so server-rendered pages (public profile) follow it. 3) the brand default.
+        foreach ([$request->header('X-Locale'), $request->cookie('locale'), config('brand.default_locale')] as $candidate) {
+            if (is_string($candidate) && in_array($candidate, self::SUPPORTED, true)) {
+                App::setLocale($candidate);
+
+                return;
+            }
         }
-        App::setLocale(in_array($locale, self::SUPPORTED, true) ? $locale : 'fa');
+        App::setLocale('fa');
     }
 }
