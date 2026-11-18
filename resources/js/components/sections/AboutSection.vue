@@ -4,7 +4,7 @@ import { useSubmit } from '../../composables';
 import { t } from '../../i18n';
 import SaveBar from '../SaveBar.vue';
 import LangTabs from '../LangTabs.vue';
-import { k, dirOf } from '../../lang';
+import { k, dirOf, editLang } from '../../lang';
 
 const { busy, message, run, err } = useSubmit('PATCH', '/account/profile', () => {
     const d = state.draft;
@@ -16,14 +16,16 @@ const { busy, message, run, err } = useSubmit('PATCH', '/account/profile', () =>
 <template>
     <form class="space-y-5" @submit.prevent="run">
         <LangTabs />
-        <div>
+        <!-- one display name at a time: the one of the language being edited (the page shows just that one) -->
+        <div v-if="editLang() === 'fa'">
             <label class="label" for="p-fa">{{ t('displayNameFa') }}</label>
-            <input id="p-fa" v-model="state.draft.name_fa" class="field" maxlength="100">
+            <input id="p-fa" v-model="state.draft.name_fa" dir="rtl" class="field text-start" maxlength="100">
             <p v-if="err('name_fa')" class="mt-1 text-sm text-red-600">{{ err('name_fa') }}</p>
         </div>
-        <div>
+        <div v-else>
             <label class="label" for="p-en">{{ t('displayNameEn') }}</label>
             <input id="p-en" v-model="state.draft.name_en" dir="ltr" class="field text-start" maxlength="100">
+            <p v-if="err('name_en')" class="mt-1 text-sm text-red-600">{{ err('name_en') }}</p>
         </div>
         <div>
             <label class="label" for="p-head">{{ t('headline') }}</label>

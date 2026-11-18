@@ -31,15 +31,6 @@ class ProfileExport
         return ($lang === 'en' ? ($p->name_en ?: $p->name_fa) : ($p->name_fa ?: $p->name_en)) ?: $p->username;
     }
 
-    /** The name in the other language, shown under the main one when both exist and differ. */
-    public function otherName(Profile $p): ?string
-    {
-        $lang = $p->lang ?? $p->defaultLang();
-        $other = $lang === 'en' ? $p->name_fa : $p->name_en;
-
-        return $other && $other !== $this->display($p) ? $other : null;
-    }
-
     /** @return array<string, string> network => absolute url */
     public function socials(Profile $p): array
     {
@@ -147,6 +138,7 @@ class ProfileExport
     public function markdown(Profile $p, ?string $lang = null): string
     {
         $p = $this->loc($p, $lang);
+        $L = $p->lang === 'en' ? ['profile' => 'Profile', 'website' => 'Website', 'verified' => 'Verified accounts', 'links' => 'Links', 'gallery' => 'Gallery'] : ['profile' => 'پروفایل', 'website' => 'وب‌سایت', 'verified' => 'حساب‌های تأییدشده', 'links' => 'لینک‌ها', 'gallery' => 'گالری'];
         $esc = fn (string $s) => str_replace(['\\', '[', ']'], ['\\\\', '\\[', '\\]'], $s);
         $lines = ['# '.str_replace(["\r", "\n"], ' ', $this->display($p)), ''];
 
@@ -159,16 +151,16 @@ class ProfileExport
             $lines[] = $p->bio;
             $lines[] = '';
         }
-        $lines[] = '- Profile: <'.route('profile.show', $p->username).'>';
+        $lines[] = '- '.$L['profile'].': <'.route('profile.show', $p->username).'>';
         if ($p->website) {
-            $lines[] = '- Website: <'.$p->website.'>';
+            $lines[] = '- '.$L['website'].': <'.$p->website.'>';
         }
         foreach ($this->socials($p) as $net => $url) {
             $lines[] = '- '.ucfirst($net).': <'.$url.'>';
         }
         if ($verified = $this->verifiedAccounts($p)) {
             $lines[] = '';
-            $lines[] = '## Verified accounts';
+            $lines[] = '## '.$L['verified'];
             $lines[] = '';
             foreach ($verified as $v) {
                 $lines[] = '- '.ucfirst($v['network']).': '.($v['url'] ? '<'.$v['url'].'>' : $v['identifier']);
@@ -176,7 +168,7 @@ class ProfileExport
         }
         if ($links = $this->links($p)) {
             $lines[] = '';
-            $lines[] = '## Links';
+            $lines[] = '## '.$L['links'];
             $lines[] = '';
             foreach ($links as $l) {
                 $lines[] = '- ['.$esc($l['label']).']('.$l['url'].')'.(isset($l['description']) ? ' — '.str_replace(["\r", "\n"], ' ', $l['description']) : '');
@@ -191,7 +183,7 @@ class ProfileExport
         }
         if ($gallery = $this->gallery($p)) {
             $lines[] = '';
-            $lines[] = '## Gallery';
+            $lines[] = '## '.$L['gallery'];
             $lines[] = '';
             foreach ($gallery as $g) {
                 $lines[] = '!['.$esc(str_replace(["\r", "\n"], ' ', (string) $g['caption'])).']('.$g['url'].')';

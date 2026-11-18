@@ -18,7 +18,7 @@ class QrCardTest extends TestCase
     {
         $u = User::factory()->create();
 
-        return Profile::create($attrs + ['user_id' => $u->id, 'username' => 'javid', 'name_fa' => 'جاوید میرزایی', 'name_en' => 'Javid', 'headline' => 'Engineer', 'location' => 'Tehran', 'accent_color' => '#0F766E']);
+        return Profile::create($attrs + ['user_id' => $u->id, 'username' => 'javid', 'languages' => 'both', 'primary_lang' => 'en', 'name_fa' => 'جاوید میرزایی', 'name_en' => 'Javid', 'headline' => 'Engineer', 'location' => 'Tehran', 'accent_color' => '#0F766E']);
     }
 
     private function xml(string $svg): \SimpleXMLElement

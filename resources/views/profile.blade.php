@@ -77,7 +77,6 @@
             </div>
 
             <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.1] tracking-[-0.01em]">{{ $display }}</h1>
-            @if($otherName)<p class="text-base leading-6 text-ink/75"><bdi>{{ $otherName }}</bdi></p>@endif
             @if($p->headline)<p class="text-base leading-6 text-ink/75">{{ $p->headline }}</p>@endif
             @if($p->location)<p class="text-base leading-6 text-ink/75">{{ $p->location }}</p>@endif
 

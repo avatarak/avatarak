@@ -39,7 +39,7 @@
 <body class="bg-soft">
 <div class="no-print mx-auto flex max-w-3xl flex-wrap items-center gap-3 px-4 py-5">
     <a href="{{ route('profile.show', $p->username) }}" class="btn btn-ghost">{{ $t['back'] }}</a>
-    <a href="{{ route('profile.print', ['username' => $p->username, 'sheet' => $sheet ? 0 : 1]) }}" class="btn btn-ghost">{{ $sheet ? $t['single'] : $t['sheet'] }}</a>
+    <a href="{{ route('profile.print', ['username' => $p->username, 'sheet' => $sheet ? 0 : 1] + (request()->query('lang') ? ['lang' => request()->query('lang')] : [])) }}" class="btn btn-ghost">{{ $sheet ? $t['single'] : $t['sheet'] }}</a>
     <button type="button" class="btn btn-primary ms-auto" onclick="window.print()">{{ $t['print'] }}</button>
     <p class="w-full text-sm text-muted">{{ $t['hint'] }}</p>
 </div>

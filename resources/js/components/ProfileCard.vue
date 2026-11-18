@@ -29,7 +29,6 @@ const socials = computed(() => Object.entries(props.profile.socials || {}).filte
 const links = computed(() => (p.value.links || []).filter((l) => l.label && l.url));
 const showImages = computed(() => props.profile.show_link_images !== false);
 const display = computed(() => (pl.value === 'en' ? p.value.name_en || p.value.name_fa : p.value.name_fa || p.value.name_en) || p.value.username || t('yourName'));
-const otherName = computed(() => { const o = pl.value === 'en' ? p.value.name_fa : p.value.name_en; return o && o !== display.value ? o : ''; });
 const host = (u) => { try { return new URL(u).host; } catch { return u; } };
 
 // Bio: 3 lines + "Show more" only when it really overflows.
@@ -64,7 +63,6 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
                 </div>
 
                 <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.1] tracking-[-0.01em]">{{ display }}</h1>
-                <p v-if="otherName" class="text-base leading-6 text-ink/75"><bdi>{{ otherName }}</bdi></p>
                 <p v-if="p.headline" class="text-base leading-6 text-ink/75">{{ p.headline }}</p>
                 <p v-if="p.location" class="text-base leading-6 text-ink/75">{{ p.location }}</p>
 

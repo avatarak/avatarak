@@ -58,8 +58,9 @@ class ProfileLanguagesTest extends TestCase
     public function test_names_show_in_the_page_language(): void
     {
         $this->make();
-        $this->get('/dual?lang=en')->assertSee('<h1', false)->assertSeeInOrder(['Dual', 'دوزبانه']);
-        $this->get('/dual?lang=fa')->assertSeeInOrder(['دوزبانه', 'Dual']);
+        // one name only: never both at once
+        $this->get('/dual?lang=en')->assertSee('Dual')->assertDontSee('دوزبانه');
+        $this->get('/dual?lang=fa')->assertSee('دوزبانه')->assertDontSee('Dual');
     }
 
     public function test_exports_carry_the_language_and_translations(): void
@@ -144,5 +145,20 @@ class ProfileLanguagesTest extends TestCase
         $this->get('/dual?lang=en')->assertSee('Software engineer')->assertSee('Hours');
         $this->actingAs($u)->patchJson('/account/appearance', ['primary_lang' => 'fa']);       // and back again
         $this->assertSame('مهندس نرم‌افزار', $u->profile->fresh()->headline);
+    }
+
+    public function test_print_share_and_card_pages_speak_one_language_too(): void
+    {
+        $this->make();
+        $this->get('/dual/print?lang=en')->assertSee('Software engineer')->assertSee('Dual')->assertDontSee('مهندس نرم‌افزار')->assertDontSee('دوزبانه')->assertSee('dir="ltr"', false);
+        $this->get('/dual/print?lang=fa')->assertSee('مهندس نرم‌افزار')->assertSee('دوزبانه')->assertDontSee('Software engineer');
+        $this->get('/dual/share.svg?lang=en')->assertSee('Software engineer')->assertDontSee('مهندس نرم‌افزار');
+        $this->get('/dual/share.svg?lang=fa')->assertSee('مهندس نرم‌افزار');
+        $this->get('/dual.card?lang=en')->assertSee('Software engineer')->assertSee('View profile');
+        // a single-language profile ignores ?lang= and the visitor's UI language everywhere
+        Profile::where('username', 'dual')->update(['languages' => 'en']);
+        $this->withUnencryptedCookie('locale', 'fa')->get('/dual/print?lang=fa')->assertSee('Software engineer')->assertSee('Dual')->assertDontSee('دوزبانه')->assertDontSee('مهندس نرم‌افزار');
+        $this->withUnencryptedCookie('locale', 'fa')->get('/dual.card')->assertSee('View profile')->assertDontSee('مشاهده');
+        $this->get('/dual/share.svg')->assertSee('Software engineer')->assertDontSee('مهندس نرم‌افزار');
     }
 }

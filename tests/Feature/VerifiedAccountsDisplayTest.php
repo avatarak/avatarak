@@ -69,7 +69,7 @@ class VerifiedAccountsDisplayTest extends TestCase
             ['network' => 'website', 'identifier' => 'javid.ir', 'url' => 'https://javid.ir'],
             ['network' => 'telegram', 'identifier' => 'javid_t', 'url' => 'https://t.me/javid_t'],
         ], $d);
-        $this->assertStringContainsString('## Verified accounts', $this->get('/javid.md')->getContent());
+        $this->assertStringContainsString('## حساب‌های تأییدشده', $this->get('/javid.md')->getContent());
         $this->assertStringNotContainsString('external_id', $this->get('/javid.json')->getContent());
         $this->assertStringNotContainsString('777', $this->get('/javid.json')->getContent());
     }

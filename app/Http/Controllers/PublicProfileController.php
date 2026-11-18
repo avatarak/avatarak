@@ -45,7 +45,6 @@ class PublicProfileController extends Controller
         $res = response()->view('profile', [
             'p' => $profile,
             'bilingual' => $original->languages === 'both',
-            'otherName' => $export->otherName($profile),
             'socials' => $export->socials($profile),
             'links' => $links,
             'showImages' => (bool) $profile->show_link_images,
