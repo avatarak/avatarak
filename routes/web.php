@@ -16,6 +16,8 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
 
     return view('app');
 });
+// the signed-in dashboard lives at /panel so that "/" can always show the home page, signed in or not
+Route::view('/panel', 'app');
 Route::get('/avatar', function (\Illuminate\Http\Request $request) {
     $p = $request->attributes->get('custom_profile');
     abort_unless($p, 404);

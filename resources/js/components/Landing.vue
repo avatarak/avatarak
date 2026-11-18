@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { state } from '../store';
 import AuthCard from './AuthCard.vue';
 import LandingHeader from './landing/LandingHeader.vue';
 import LandingHero from './landing/LandingHero.vue';
@@ -17,10 +18,17 @@ import LandingFooter from './landing/LandingFooter.vue';
 import Icon from './Icon.vue';
 import { lt } from './landing/copy';
 
-const auth = ref('register');
-const authOpen = ref(false);
+const props = defineProps({ askLogin: Boolean });       // /panel while signed out: ask to sign in
+const auth = ref(props.askLogin ? 'login' : 'register');
+const authOpen = ref(props.askLogin);
 const email = ref('');
-const show = (mode, prefill) => { auth.value = mode; if (typeof prefill === 'string') email.value = prefill; authOpen.value = true; };
+const show = (mode, prefill) => {
+    if (state.account) { location.href = '/panel'; return; }       // already signed in: every call to action leads to the dashboard
+    auth.value = mode;
+    if (typeof prefill === 'string') email.value = prefill;
+    authOpen.value = true;
+};
+watch(() => state.account, (a) => { if (a && authOpen.value) location.href = '/panel'; });
 </script>
 
 <template>

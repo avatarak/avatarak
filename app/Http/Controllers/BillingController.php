@@ -66,10 +66,10 @@ class BillingController extends Controller
         $payment = strlen($authority) > 5 ? Payment::where('authority', $authority)->first() : null;
         $gateway = GatewayManager::driver();
         if (! $payment || ! $gateway || $payment->gateway !== $gateway->name()) {
-            return redirect('/?billing=failed');
+            return redirect('/panel?billing=failed');
         }
         if ($payment->status === 'paid') {
-            return redirect('/?billing=ok');                       // a refresh of the callback page
+            return redirect('/panel?billing=ok');                       // a refresh of the callback page
         }
 
         $result = $gateway->verify($payment, $request->query());
@@ -78,7 +78,7 @@ class BillingController extends Controller
                 $payment->update(['status' => 'failed']);
             }
 
-            return redirect('/?billing=failed');
+            return redirect('/panel?billing=failed');
         }
 
         $sub = DB::transaction(function () use ($payment, $plans, $result) {
@@ -95,6 +95,6 @@ class BillingController extends Controller
             BillingNotices::send($payment->user, 'receipt', $sub, $payment->fresh());
         }
 
-        return redirect('/?billing=ok');
+        return redirect('/panel?billing=ok');
     }
 }

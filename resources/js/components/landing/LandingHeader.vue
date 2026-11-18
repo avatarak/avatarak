@@ -2,6 +2,7 @@
 import Logo from '../Logo.vue';
 import LangSwitch from '../LangSwitch.vue';
 import { t } from '../../i18n';
+import { state } from '../../store';
 import { lt } from './copy';
 
 defineEmits(['login', 'register']);
@@ -21,8 +22,11 @@ defineEmits(['login', 'register']);
         </div>
         <div class="flex items-center gap-2">
             <LangSwitch />
-            <button class="btn btn-ghost" @click="$emit('login')">{{ t('login') }}</button>
-            <button class="btn btn-primary hidden sm:inline-flex" @click="$emit('register')">{{ t('start') }}</button>
+            <a v-if="state.account" href="/panel" class="btn btn-primary">{{ t('myPanel') }}</a>
+            <template v-else>
+                <button class="btn btn-ghost" @click="$emit('login')">{{ t('login') }}</button>
+                <button class="btn btn-primary hidden sm:inline-flex" @click="$emit('register')">{{ t('start') }}</button>
+            </template>
         </div>
     </header>
 </template>

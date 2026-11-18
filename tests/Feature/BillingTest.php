@@ -38,7 +38,7 @@ class BillingTest extends TestCase
     private function pay(User $u, string $plan = 'pro', string $period = 'month'): Payment
     {
         $url = $this->actingAs($u)->postJson('/account/billing/checkout', ['plan' => $plan, 'period' => $period])->assertOk()->json('url');
-        $this->get($url)->assertRedirect('/?billing=ok');
+        $this->get($url)->assertRedirect('/panel?billing=ok');
 
         return Payment::latest('id')->first();
     }
@@ -135,9 +135,9 @@ class BillingTest extends TestCase
         $u = $this->user();
         $url = $this->actingAs($u)->postJson('/account/billing/checkout', ['plan' => 'pro', 'period' => 'month'])->json('url');
 
-        $this->get($url)->assertRedirect('/?billing=ok');
-        $this->get($url)->assertRedirect('/?billing=ok');
-        $this->get($url)->assertRedirect('/?billing=ok');
+        $this->get($url)->assertRedirect('/panel?billing=ok');
+        $this->get($url)->assertRedirect('/panel?billing=ok');
+        $this->get($url)->assertRedirect('/panel?billing=ok');
 
         $this->assertSame(1, Subscription::count());
         Mail::assertQueued(BillingNotice::class, 1);
@@ -150,13 +150,13 @@ class BillingTest extends TestCase
         $url = $this->actingAs($u)->postJson('/account/billing/checkout', ['plan' => 'pro', 'period' => 'month'])->json('url');
         parse_str(parse_url($url, PHP_URL_QUERY), $q);
 
-        $this->get(route('billing.callback', ['Authority' => $q['Authority'], 'Status' => 'NOK']))->assertRedirect('/?billing=failed');
+        $this->get(route('billing.callback', ['Authority' => $q['Authority'], 'Status' => 'NOK']))->assertRedirect('/panel?billing=failed');
         $this->assertSame('failed', Payment::first()->status);
         $this->assertSame(0, Subscription::count());
 
-        $this->get(route('billing.callback', ['Authority' => 'FAKEdoesnotexistatall', 'Status' => 'OK']))->assertRedirect('/?billing=failed');
-        $this->get(route('billing.callback'))->assertRedirect('/?billing=failed');
-        $this->get(route('billing.callback', ['Authority' => 'x']))->assertRedirect('/?billing=failed');
+        $this->get(route('billing.callback', ['Authority' => 'FAKEdoesnotexistatall', 'Status' => 'OK']))->assertRedirect('/panel?billing=failed');
+        $this->get(route('billing.callback'))->assertRedirect('/panel?billing=failed');
+        $this->get(route('billing.callback', ['Authority' => 'x']))->assertRedirect('/panel?billing=failed');
         $this->assertSame(0, Subscription::count());
         $this->assertSame('free', app(PlanService::class)->planKey($u));
     }
@@ -178,7 +178,7 @@ class BillingTest extends TestCase
             && $r['merchant_id'] === 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' && $r['amount'] === 1500000 && $r['currency'] === 'IRT'
             && $r['callback_url'] === route('billing.callback') && $r['metadata']['email'] === 'ali@example.com');
 
-        $this->get(route('billing.callback', ['Authority' => 'A00000000000000000000000000000012345', 'Status' => 'OK']))->assertRedirect('/?billing=ok');
+        $this->get(route('billing.callback', ['Authority' => 'A00000000000000000000000000000012345', 'Status' => 'OK']))->assertRedirect('/panel?billing=ok');
         Http::assertSent(fn ($r) => str_ends_with($r->url(), '/verify.json') && $r['amount'] === 1500000 && $r['authority'] === 'A00000000000000000000000000000012345');
 
         $p = Payment::first();
@@ -209,12 +209,12 @@ class BillingTest extends TestCase
         $p = Payment::create(['user_id' => $u->id, 'plan' => 'pro', 'period' => 'month', 'amount' => 150000, 'currency' => 'IRT', 'gateway' => 'zarinpal', 'authority' => $auth]);
 
         Http::fake(['payment.zarinpal.com/*/verify.json' => Http::sequence()->push(['data' => ['code' => -50]])->push(['data' => ['code' => 101, 'ref_id' => 55, 'card_pan' => '1']])]);
-        $this->get(route('billing.callback', ['Authority' => $auth, 'Status' => 'OK']))->assertRedirect('/?billing=failed');
+        $this->get(route('billing.callback', ['Authority' => $auth, 'Status' => 'OK']))->assertRedirect('/panel?billing=failed');
         $this->assertSame(0, Subscription::count());
 
         $this->assertSame('failed', $p->fresh()->status);
         // the customer comes back again (or refreshes) and the gateway now says "already verified" (101): that is still a paid order
-        $this->get(route('billing.callback', ['Authority' => $auth, 'Status' => 'OK']))->assertRedirect('/?billing=ok');
+        $this->get(route('billing.callback', ['Authority' => $auth, 'Status' => 'OK']))->assertRedirect('/panel?billing=ok');
         $this->assertSame(1, Subscription::count());
     }
 
@@ -224,7 +224,7 @@ class BillingTest extends TestCase
         Http::fake();
         $u = $this->user();
         Payment::create(['user_id' => $u->id, 'plan' => 'pro', 'period' => 'month', 'amount' => 150000, 'currency' => 'IRT', 'gateway' => 'zarinpal', 'authority' => 'A0000000000000000000000000000000BBBB']);
-        $this->get(route('billing.callback', ['Authority' => 'A0000000000000000000000000000000BBBB', 'Status' => 'NOK']))->assertRedirect('/?billing=failed');
+        $this->get(route('billing.callback', ['Authority' => 'A0000000000000000000000000000000BBBB', 'Status' => 'NOK']))->assertRedirect('/panel?billing=failed');
         Http::assertNothingSent();
     }
 

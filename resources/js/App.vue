@@ -7,6 +7,7 @@ import Panel from './components/Panel.vue';
 import AdminGate from './components/admin/AdminGate.vue';
 import AnnouncementBar from './components/AnnouncementBar.vue';
 
+const isPanel = location.pathname === '/panel';
 const isAdmin = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
 
 applyDir();
@@ -34,13 +35,13 @@ onMounted(async () => {
     <div v-if="!state.ready" class="grid min-h-screen place-items-center text-muted">{{ t('loading') }}</div>
     <AdminGate v-else-if="isAdmin" />
     <template v-else>
-        <div v-if="state.account" class="flex h-dvh flex-col">
+        <div v-if="isPanel && state.account" class="flex h-dvh flex-col">
             <AnnouncementBar class="shrink-0" />
             <div class="min-h-0 flex-1"><Panel /></div>
         </div>
         <template v-else>
             <AnnouncementBar />
-            <Landing />
+            <Landing :ask-login="isPanel" />
         </template>
     </template>
 

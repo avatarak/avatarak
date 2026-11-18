@@ -54,7 +54,7 @@ class LinkedInVerificationTest extends TestCase
             'api.linkedin.com/v2/userinfo' => Http::response(['sub' => 'abC123_xyz', 'name' => 'Ali Rezaei', 'picture' => 'https://x/y.jpg', 'email' => 'secret@x.ir']),
         ]);
 
-        $this->get('/account/verifications/linkedin/callback?code=abc&state='.$state)->assertRedirect('/?verify=linkedin-ok');
+        $this->get('/account/verifications/linkedin/callback?code=abc&state='.$state)->assertRedirect('/panel?verify=linkedin-ok');
 
         $a = VerifiedAccount::first();
         $this->assertSame(['linkedin', 'abC123_xyz', 'Ali Rezaei', 'abC123_xyz', 'linkedin_oauth'], [$a->network, $a->identifier, $a->label, $a->external_id, $a->method]);
@@ -74,17 +74,17 @@ class LinkedInVerificationTest extends TestCase
         $this->on();
         $u = $this->user();
         $this->start($u);
-        $this->get('/account/verifications/linkedin/callback?code=abc&state=forged')->assertRedirect('/?verify=linkedin-linkedin_failed');
+        $this->get('/account/verifications/linkedin/callback?code=abc&state=forged')->assertRedirect('/panel?verify=linkedin-linkedin_failed');
 
         foreach ([Http::response(['error' => 'invalid_grant'], 400)] as $r) {
             $state = $this->start($u);
             Http::fake(['www.linkedin.com/*' => $r]);
-            $this->get('/account/verifications/linkedin/callback?code=abc&state='.$state)->assertRedirect('/?verify=linkedin-linkedin_failed');
+            $this->get('/account/verifications/linkedin/callback?code=abc&state='.$state)->assertRedirect('/panel?verify=linkedin-linkedin_failed');
         }
         foreach ([['sub' => ''], ['sub' => 'has space'], ['name' => 'no sub'], ['sub' => str_repeat('a', 101)]] as $info) {
             $state = $this->start($u);
             Http::fake(['www.linkedin.com/*' => Http::response(['access_token' => 't']), 'api.linkedin.com/*' => Http::response($info)]);
-            $this->get('/account/verifications/linkedin/callback?code=abc&state='.$state)->assertRedirect('/?verify=linkedin-linkedin_failed');
+            $this->get('/account/verifications/linkedin/callback?code=abc&state='.$state)->assertRedirect('/panel?verify=linkedin-linkedin_failed');
         }
         $this->assertSame(0, VerifiedAccount::count());
     }
@@ -101,14 +101,14 @@ class LinkedInVerificationTest extends TestCase
         };
 
         $fake('same-sub-1', 'Ali');
-        $this->get('/account/verifications/linkedin/callback?code=x&state='.$this->start($a))->assertRedirect('/?verify=linkedin-ok');
+        $this->get('/account/verifications/linkedin/callback?code=x&state='.$this->start($a))->assertRedirect('/panel?verify=linkedin-ok');
 
         $fake('same-sub-1', 'Ali');                                                       // somebody else proving the same LinkedIn account
-        $this->get('/account/verifications/linkedin/callback?code=x&state='.$this->start($b))->assertRedirect('/?verify=linkedin-taken');
+        $this->get('/account/verifications/linkedin/callback?code=x&state='.$this->start($b))->assertRedirect('/panel?verify=linkedin-taken');
         $this->assertSame($a->id, VerifiedAccount::first()->user_id);
 
         $fake('other-sub-2', 'Ali Two');                                                  // the first user switches LinkedIn accounts
-        $this->get('/account/verifications/linkedin/callback?code=x&state='.$this->start($a))->assertRedirect('/?verify=linkedin-ok');
+        $this->get('/account/verifications/linkedin/callback?code=x&state='.$this->start($a))->assertRedirect('/panel?verify=linkedin-ok');
         $this->assertSame(['other-sub-2'], VerifiedAccount::pluck('identifier')->all());
     }
 

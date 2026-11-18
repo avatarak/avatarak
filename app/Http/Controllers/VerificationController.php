@@ -124,7 +124,7 @@ class VerificationController extends Controller
         $ok = $expected !== '' && hash_equals($expected, (string) $request->query('state')) && is_string($request->query('code'));
         $result = $ok ? $github->completeOAuth($request->user(), $request->query('code'), route('verify.github.callback')) : ['ok' => false, 'error' => 'github_oauth_failed'];
 
-        return redirect('/?verify=github-'.($result['ok'] ? 'ok' : $result['error']));
+        return redirect('/panel?verify=github-'.($result['ok'] ? 'ok' : $result['error']));
     }
 
     public function linkedinRedirect(Request $request, LinkedInVerifier $linkedin)
@@ -144,7 +144,7 @@ class VerificationController extends Controller
         $ok = $expected !== '' && hash_equals($expected, (string) $request->query('state')) && is_string($request->query('code'));
         $result = $ok ? $linkedin->complete($request->user(), $request->query('code'), route('verify.linkedin.callback')) : ['ok' => false, 'error' => 'linkedin_failed'];
 
-        return redirect('/?verify=linkedin-'.($result['ok'] ? 'ok' : $result['error']));
+        return redirect('/panel?verify=linkedin-'.($result['ok'] ? 'ok' : $result['error']));
     }
 
     public function destroy(Request $request, int $id): JsonResponse

@@ -165,7 +165,7 @@ class GitHubVerificationTest extends TestCase
             'github.com/login/oauth/access_token' => Http::response(['access_token' => 'tok']),
             'api.github.com/user' => Http::response(['login' => 'Octo-Cat', 'id' => 583231]),
         ]);
-        $this->get('/account/verifications/github/callback?code=abc&state='.$q['state'])->assertRedirect('/?verify=github-ok');
+        $this->get('/account/verifications/github/callback?code=abc&state='.$q['state'])->assertRedirect('/panel?verify=github-ok');
 
         $a = VerifiedAccount::first();
         $this->assertSame(['github', 'octo-cat', '583231', 'github_oauth'], [$a->network, $a->identifier, $a->external_id, $a->method]);
@@ -177,13 +177,13 @@ class GitHubVerificationTest extends TestCase
         $this->actingAs($this->user());
         $this->get('/account/verifications/github/redirect');
 
-        $this->get('/account/verifications/github/callback?code=abc&state=forged')->assertRedirect('/?verify=github-github_oauth_failed');
+        $this->get('/account/verifications/github/callback?code=abc&state=forged')->assertRedirect('/panel?verify=github-github_oauth_failed');
         $this->assertSame(0, VerifiedAccount::count());
 
         $this->get('/account/verifications/github/redirect');
         $state = session('github_oauth_state');
         Http::fake(['github.com/login/oauth/access_token' => Http::response(['error' => 'bad_verification_code'])]);
-        $this->get('/account/verifications/github/callback?code=abc&state='.$state)->assertRedirect('/?verify=github-github_oauth_failed');
+        $this->get('/account/verifications/github/callback?code=abc&state='.$state)->assertRedirect('/panel?verify=github-github_oauth_failed');
         $this->assertSame(0, VerifiedAccount::count());
     }
 

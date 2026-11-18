@@ -23,7 +23,7 @@ const open = ref(true);
             <template v-else>
                 <h1 class="text-xl font-bold">404</h1>
                 <p class="mt-1 text-muted">{{ t('a_forbidden') }}</p>
-                <a href="/" class="btn btn-ghost mt-5 w-full">{{ t('a_back') }}</a>
+                <a href="/panel" class="btn btn-ghost mt-5 w-full">{{ t('a_back') }}</a>
             </template>
             <div class="mt-5 flex justify-center"><LangSwitch /></div>
         </div>

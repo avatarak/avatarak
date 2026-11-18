@@ -39,7 +39,7 @@
 </head>
 <body class="min-h-screen">
 @if($isOwner)
-    <a href="/" class="fixed end-4 top-4 z-10 flex items-center gap-2 rounded-full bg-white py-1 pe-3.5 ps-1 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-soft">
+    <a href="/panel" class="fixed end-4 top-4 z-10 flex items-center gap-2 rounded-full bg-white py-1 pe-3.5 ps-1 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-soft">
         @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" class="size-7 rounded-full object-cover">@else<img src="{{ route('profile.avatar', ['username' => $p->username, 's' => 64, 'd' => 'initials']) }}" alt="" class="size-7 rounded-full object-cover">@endif
         {{ $t['edit'] }}
     </a>

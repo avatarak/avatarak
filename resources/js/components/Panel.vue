@@ -48,6 +48,7 @@ const publicPath = computed(() => `${window.location.host}/${profile.value.usern
 async function logout() {
     await api('POST', '/logout');
     setAccount(null);
+    location.href = '/';
 }
 async function copyUrl() { await copyText(publicUrl.value); toast(t('linkCopied')); }
 function outside(e) { if (menu.value && !menuRoot.value?.contains(e.target)) menu.value = false; }

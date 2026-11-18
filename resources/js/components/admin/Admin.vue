@@ -58,7 +58,7 @@ const reportsBadge = computed(() => adm.counts?.reports_open || 0);
                 </a>
             </nav>
             <div class="border-t border-line p-3">
-                <a href="/" class="flex items-center gap-3 rounded-[6px] px-3 py-2.5 text-sm text-ink-2 hover:bg-soft"><Icon name="back" :size="18" flip /> {{ t('a_back') }}</a>
+                <a href="/panel" class="flex items-center gap-3 rounded-[6px] px-3 py-2.5 text-sm text-ink-2 hover:bg-soft"><Icon name="back" :size="18" flip /> {{ t('a_back') }}</a>
             </div>
         </aside>
 
