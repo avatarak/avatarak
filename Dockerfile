@@ -25,7 +25,7 @@ FROM ${IMAGE_REGISTRY}/php:8.5-fpm-alpine AS app
 RUN apk add --no-cache libpng libjpeg-turbo libwebp libzip icu-libs fcgi mariadb-client \
  && apk add --no-cache --virtual .build $PHPIZE_DEPS libpng-dev libjpeg-turbo-dev libwebp-dev libzip-dev icu-dev linux-headers \
  && docker-php-ext-configure gd --with-jpeg --with-webp \
- && docker-php-ext-install -j"$(nproc)" gd pdo_mysql zip intl opcache pcntl \
+ && docker-php-ext-install -j"$(nproc)" gd pdo_mysql zip intl pcntl \
  && pecl install redis \
  && docker-php-ext-enable redis \
  && apk del .build \
