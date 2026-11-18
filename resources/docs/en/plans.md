@@ -33,6 +33,10 @@ You go back to Free. **Nothing is deleted.** Things above the Free limits keep w
 
 A key's rate limit comes from its owner's plan. In rare cases (support, abuse) an administrator can set an explicit limit on one key; that overrides the plan, up or down, until it is cleared.
 
+## Custom domains
+
+Pro and Business can show their profile on their own domain (**Custom domain** in the dashboard). The customer adds a **TXT** record to prove they own it and a **CNAME** to `CUSTOM_DOMAIN_TARGET` (or an A record to the same server). On that domain the visitor sees **only** the profile (`/`), its photo (`/avatar`) and its exports (`/profile.json`, `.md`, `.vcf`, `.card`, `.qr`); every other path, including the dashboard, sign-in and the API, answers `404`. If the plan ends, the profile is hidden or the owner is suspended, the domain stops at once.
+
 ## Self-hosting
 
 Billing is **off** unless you turn it on. Set `BILLING_GATEWAY=zarinpal` with your `ZARINPAL_MERCHANT_ID` (add `ZARINPAL_SANDBOX=true` to test), and change the numbers in `config/plans.php` or the `PLAN_*_PRICE_*` variables. `BILLING_GATEWAY=fake` pretends every payment succeeds so you can try the flow on your computer; it refuses to run in production. With billing off, administrators can still give any plan for any number of days from the admin area.

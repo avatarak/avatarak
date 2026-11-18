@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // There is no server-rendered login route; the exception handler below turns this into a 401.
         $middleware->redirectGuestsTo(fn () => '/');
         $middleware->alias(['admin' => \App\Http\Middleware\EnsureAdmin::class]);
+        // global, so it runs BEFORE routing: a customer's domain can only ever reach the profile routes (never even a 405 elsewhere)
+        $middleware->prepend(\App\Http\Middleware\ResolveCustomDomain::class);
         $middleware->web(append: [\App\Http\Middleware\SetLocale::class, \App\Http\Middleware\EnsureNotSuspended::class]);
         // the UI language cookie is set by JS in plain text (see resources/js/i18n.js)
         $middleware->encryptCookies(except: ['locale']);

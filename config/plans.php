@@ -16,7 +16,7 @@ return [
             'name' => ['fa' => 'رایگان', 'en' => 'Free'],
             'tagline' => ['fa' => 'برای افراد و سایت‌های کوچک', 'en' => 'For people and small sites'],
             'price' => ['month' => 0, 'year' => 0],
-            'limits' => ['sites' => 3, 'rate_limit' => 600, 'gallery' => 3, 'sections' => 2, 'webhooks' => 0],
+            'limits' => ['sites' => 3, 'rate_limit' => 600, 'gallery' => 3, 'sections' => 2, 'webhooks' => 0, 'domains' => 0],
             'features' => ['custom_domain' => false, 'white_label' => false],
         ],
         'pro' => [
@@ -24,7 +24,7 @@ return [
             'name' => ['fa' => 'حرفه‌ای', 'en' => 'Pro'],
             'tagline' => ['fa' => 'برای فروشگاه‌ها و وب‌سایت‌های فعال', 'en' => 'For shops and busy sites'],
             'price' => ['month' => (int) env('PLAN_PRO_PRICE_MONTH', 150000), 'year' => (int) env('PLAN_PRO_PRICE_YEAR', 1500000)],
-            'limits' => ['sites' => 25, 'rate_limit' => 6000, 'gallery' => 12, 'sections' => 6, 'webhooks' => 3],
+            'limits' => ['sites' => 25, 'rate_limit' => 6000, 'gallery' => 12, 'sections' => 6, 'webhooks' => 3, 'domains' => 1],
             'features' => ['custom_domain' => true, 'white_label' => false],
         ],
         'business' => [
@@ -32,7 +32,7 @@ return [
             'name' => ['fa' => 'سازمانی', 'en' => 'Business'],
             'tagline' => ['fa' => 'وایت‌لیبل و سقف‌های بالا', 'en' => 'White-label and high limits'],
             'price' => ['month' => (int) env('PLAN_BUSINESS_PRICE_MONTH', 600000), 'year' => (int) env('PLAN_BUSINESS_PRICE_YEAR', 6000000)],
-            'limits' => ['sites' => 200, 'rate_limit' => 60000, 'gallery' => 30, 'sections' => 12, 'webhooks' => 20],
+            'limits' => ['sites' => 200, 'rate_limit' => 60000, 'gallery' => 30, 'sections' => 12, 'webhooks' => 20, 'domains' => 5],
             'features' => ['custom_domain' => true, 'white_label' => true],
         ],
     ],

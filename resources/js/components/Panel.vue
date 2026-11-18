@@ -21,15 +21,16 @@ import SecuritySection from './sections/SecuritySection.vue';
 import ShareSection from './sections/ShareSection.vue';
 import StatsSection from './sections/StatsSection.vue';
 import BillingSection from './sections/BillingSection.vue';
+import DomainSection from './sections/DomainSection.vue';
 
 const SECTIONS = {
     avatars: AvatarsSection, about: AboutSection, links: LinksSection, verified: VerifiedSection, emails: EmailsSection,
-    share: ShareSection, stats: StatsSection, billing: BillingSection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
+    share: ShareSection, stats: StatsSection, billing: BillingSection, domain: DomainSection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
 };
 const GROUPS = [
     [['avatars', null], ['about', 'user'], ['links', 'link'], ['verified', 'verified'], ['emails', 'mail']],
     [['stats', 'chart'], ['share', 'qr'], ['design', 'palette'], ['privacy', 'shield'], ['security', 'lock']],
-    [['developers', 'code'], ['billing', 'gift']],
+    [['developers', 'code'], ['domain', 'globe'], ['billing', 'gift']],
 ];
 
 const open = ref(null);        // null = sidebar list
@@ -105,7 +106,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
                         <button type="button" class="icon-btn !bg-soft" :aria-label="t('back')" @click="open = null"><Icon name="back" :size="20" flip /></button>
                         <h1 class="mt-5 text-xl font-bold">{{ t('nav_' + open) }}</h1>
                         <p class="hint mt-1">{{ t('d_' + open) }}</p>
-                        <div class="mt-6"><component :is="SECTIONS[open]" :key="open" /></div>
+                        <div class="mt-6"><component :is="SECTIONS[open]" :key="open" @goto="open = $event" /></div>
                     </div>
                 </div>
 

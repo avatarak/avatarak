@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
     }
 
+    public function customDomains(): HasMany
+    {
+        return $this->hasMany(CustomDomain::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);

@@ -97,4 +97,8 @@ return [
     'billing_failed' => 'Could not reach the payment gateway. Please try again shortly.',
     'billing_bad_plan' => 'Invalid plan or period.',
     'plan_limit_sites' => 'You have reached the site limit of your plan. Upgrade to add more.',
+    'domain_invalid' => 'Invalid domain. Enter only your own domain (like example.com).',
+    'domain_plan' => 'Your plan does not include custom domains. Upgrade to use one.',
+    'domain_limit' => 'You have reached the domain limit of your plan.',
+    'domain_taken' => 'This domain is already registered to another account.',
 ];

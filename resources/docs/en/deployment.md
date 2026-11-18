@@ -68,6 +68,23 @@ A changed photo keeps its URL, so a CDN may keep showing the old one for up to `
 
 Two practical notes. The format depends on the `Accept` header (WebP or JPEG, `Vary: Accept`), so use a CDN setting that respects `Vary`, or cache JPEG only. And do not cache `/admin`, `/account` or `/login`: they are dynamic and private.
 
+## Custom domains and HTTPS
+
+Customers' domains need a certificate each. With Caddy this is automatic (*on-demand TLS*): Caddy asks the app, before it gets a certificate, whether it really serves that domain.
+
+```text
+{
+    on_demand_tls { ask http://127.0.0.1:8080/_internal/domain-check?key=YOUR_DOMAIN_CHECK_KEY }
+}
+avatarak.ir { reverse_proxy 127.0.0.1:8080 }
+https:// {
+    tls { on_demand }
+    reverse_proxy 127.0.0.1:8080
+}
+```
+
+Set `DOMAIN_CHECK_KEY` (a long random string) and `CUSTOM_DOMAIN_TARGET` (for example `domains.avatarak.ir`, a DNS name pointing at your server) in `.env`. Without a key the check endpoint is off and no certificates are issued. It approves only verified domains whose owner still has a plan with custom domains and is not suspended.
+
 ## 6. Backups
 
 ```bash

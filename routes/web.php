@@ -8,7 +8,27 @@ use App\Http\Controllers\PublicProfileController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'app');
+// "/" is the app on our own address, and the owner's profile on a customer's verified domain (see ResolveCustomDomain).
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    if ($p = $request->attributes->get('custom_profile')) {
+        return app(\App\Http\Controllers\PublicProfileController::class)->show($request, app(\App\Services\ProfileExport::class), $p->username);
+    }
+
+    return view('app');
+});
+Route::get('/avatar', function (\Illuminate\Http\Request $request) {
+    $p = $request->attributes->get('custom_profile');
+    abort_unless($p, 404);
+
+    return app(\App\Http\Controllers\AvatarController::class)->profile($request, app(\App\Services\AvatarService::class), $p->username);
+});
+Route::get('/profile.{format}', function (\Illuminate\Http\Request $request, string $format) {
+    $p = $request->attributes->get('custom_profile');
+    abort_unless($p, 404);
+
+    return app(\App\Http\Controllers\ProfileExportController::class)->show($request, app(\App\Services\ProfileExport::class), app(\App\Services\QrService::class), $p->username, $format);
+})->where('format', 'json|md|vcf|card|qr');
+Route::get('/_internal/domain-check', [\App\Http\Controllers\DomainController::class, 'tlsCheck'])->middleware('throttle:120,1');
 Route::get('/pricing.json', function () {
     $plans = collect(config('plans.plans'))->map(fn ($p, $k) => ['key' => $k, 'name' => $p['name'], 'tagline' => $p['tagline'], 'price' => $p['price'], 'limits' => $p['limits'], 'features' => $p['features']])->values();
 
@@ -67,6 +87,10 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::delete('sessions/{handle}', [\App\Http\Controllers\SessionsController::class, 'destroy'])->where('handle', '[a-f0-9]{20}');
     Route::get('billing', [\App\Http\Controllers\BillingController::class, 'status']);
     Route::post('billing/checkout', [\App\Http\Controllers\BillingController::class, 'checkout'])->middleware('throttle:10,1');
+    Route::get('domains', [\App\Http\Controllers\DomainController::class, 'index']);
+    Route::post('domains', [\App\Http\Controllers\DomainController::class, 'store'])->middleware('throttle:10,1');
+    Route::post('domains/{id}/check', [\App\Http\Controllers\DomainController::class, 'check'])->middleware('throttle:20,1');
+    Route::delete('domains/{id}', [\App\Http\Controllers\DomainController::class, 'destroy']);
     Route::get('stats', [\App\Http\Controllers\StatsController::class, 'show']);
     Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');
 

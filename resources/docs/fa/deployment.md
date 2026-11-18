@@ -68,6 +68,23 @@ docker compose exec app php artisan telegram:webhook
 
 دو نکته‌ی عملی. فرمت (WebP یا JPEG) به هدر `Accept` بستگی دارد (`Vary: Accept`)، پس تنظیمی از CDN را انتخاب کنید که `Vary` را رعایت می‌کند، یا فقط JPEG را کش کنید. و `/admin`، `/account` و `/login` را کش نکنید: پویا و خصوصی‌اند.
 
+## دامنه‌ی اختصاصی و HTTPS
+
+دامنه‌ی مشتری‌ها هرکدام گواهی لازم دارند. با Caddy خودکار است (*on-demand TLS*): Caddy قبل از گرفتن گواهی از برنامه می‌پرسد که واقعاً به آن دامنه سرویس می‌دهد یا نه.
+
+```text
+{
+    on_demand_tls { ask http://127.0.0.1:8080/_internal/domain-check?key=YOUR_DOMAIN_CHECK_KEY }
+}
+avatarak.ir { reverse_proxy 127.0.0.1:8080 }
+https:// {
+    tls { on_demand }
+    reverse_proxy 127.0.0.1:8080
+}
+```
+
+`DOMAIN_CHECK_KEY` (یک رشته‌ی تصادفی بلند) و `CUSTOM_DOMAIN_TARGET` (مثلاً `domains.avatarak.ir`، یک نام DNS که به سرور شما اشاره می‌کند) را در `.env` بگذارید. بدون کلید، آدرس بررسی خاموش است و هیچ گواهی صادر نمی‌شود. فقط دامنه‌های تأییدشده‌ای را تأیید می‌کند که صاحبشان هنوز پلنِ دارای دامنه‌ی اختصاصی دارد و مسدود نیست.
+
 ## ۶. پشتیبان‌گیری
 
 ```bash
