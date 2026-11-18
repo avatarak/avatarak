@@ -8,6 +8,10 @@ export default {
         vGithub: 'گیت‌هاب', vGhHandle: 'نام کاربری گیت‌هاب', vGhStart: 'شروع تأیید گیت‌هاب', vGhGistHelp: 'در گیت‌هاب با همین حساب یک Gist «عمومی» (Public) بسازید. نام فایل و محتوا را دقیقاً این‌طور بگذارید و بعد «بررسی» را بزنید:',
         vGhFilename: 'نام فایل', vGhContent: 'محتوا', vGhOpenGist: 'ساخت Gist در گیت‌هاب', vGhOauth: 'ورود با گیت‌هاب', vGhOr: 'یا', vGhRemoveGist: 'بعد از تأیید می‌توانید Gist را پاک کنید.',
         vGhOk: 'گیت‌هاب تأیید شد ✓', vGhFail: 'تأیید گیت‌هاب ناموفق بود.',
+        // share / business card
+        nav_share: 'کد QR و کارت', d_share: 'کد QR، کارت ویزیت چاپی و تصویر اشتراک‌گذاری پروفایل شما.', shareQr: 'کد QR پروفایل', shareLink: 'کپی لینک', shareQrSvg: 'دانلود QR (SVG)', shareQrPng: 'دانلود QR (PNG)',
+        shareCardTitle: 'کارت ویزیت چاپی', shareCardD: 'کارت ۸۵×۵۵ میلی‌متر یا یک برگه‌ی A4 با ۱۰ کارت، آماده‌ی چاپ.', shareCardOpen: 'باز کردن کارت برای چاپ', shareImgTitle: 'تصویر اشتراک‌گذاری', shareImgD: 'یک کارت عمودی برای پست یا استوری، با عکس، نام و کد QR.',
+        shareImgPng: 'دانلود PNG', shareImgSvg: 'دانلود SVG', shareVcard: 'دانلود کارت مخاطب (vCard)', shareHidden: 'پروفایل شما خصوصی است. برای ساخت QR و کارت، «نمایش پروفایل» را در بخش حریم خصوصی روشن کنید.', shareDownloading: 'در حال ساخت تصویر…',
         // security
         nav_security: 'امنیت', d_security: 'گذرواژه‌ی حساب خود را تغییر دهید.', currentPassword: 'گذرواژه‌ی فعلی', newPassword: 'گذرواژه‌ی جدید', confirmPassword: 'تکرار گذرواژه‌ی جدید',
         changePassword: 'تغییر گذرواژه', passwordChanged: 'گذرواژه تغییر کرد', recentCodeNote: 'چون تازه با کد ایمیلی وارد شده‌اید، لازم نیست گذرواژه‌ی فعلی را وارد کنید.',
@@ -18,6 +22,9 @@ export default {
         vGithub: 'GitHub', vGhHandle: 'GitHub username', vGhStart: 'Start GitHub verification', vGhGistHelp: 'On GitHub, create a PUBLIC gist with this account. Use exactly this file name and content, then press “Check now”:',
         vGhFilename: 'File name', vGhContent: 'Content', vGhOpenGist: 'Create a gist on GitHub', vGhOauth: 'Sign in with GitHub', vGhOr: 'or', vGhRemoveGist: 'You can delete the gist once you are verified.',
         vGhOk: 'GitHub verified ✓', vGhFail: 'GitHub verification failed.',
+        nav_share: 'QR code & card', d_share: 'A QR code, a printable business card and a shareable image of your profile.', shareQr: 'Profile QR code', shareLink: 'Copy link', shareQrSvg: 'Download QR (SVG)', shareQrPng: 'Download QR (PNG)',
+        shareCardTitle: 'Printable business card', shareCardD: 'An 85×55 mm card, or an A4 sheet of ten, ready to print.', shareCardOpen: 'Open the card for printing', shareImgTitle: 'Shareable image', shareImgD: 'A portrait card for a post or story, with your photo, name and QR code.',
+        shareImgPng: 'Download PNG', shareImgSvg: 'Download SVG', shareVcard: 'Download contact card (vCard)', shareHidden: 'Your profile is private. Turn on “Show profile” in Privacy to get a QR code and card.', shareDownloading: 'Making the image…',
         nav_security: 'Security', d_security: 'Change your account password.', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Repeat the new password',
         changePassword: 'Change password', passwordChanged: 'Password changed', recentCodeNote: 'You just signed in with an email code, so the current password is not needed.',
     },

@@ -75,14 +75,18 @@ Route::get('/thumb/{key}', function (string $key) {
     ]);
 })->where('key', '[a-f0-9]{40}')->middleware('throttle:avatar')->name('link.thumb');
 
-// Machine-readable / embeddable renderings: /{username}.json | .md | .vcf | .card
+// Machine-readable / embeddable renderings: /{username}.json | .md | .vcf | .card | .qr
 Route::get('/{username}.{format}', [\App\Http\Controllers\ProfileExportController::class, 'show'])
-    ->where(['username' => '[A-Za-z][A-Za-z0-9_]{2,31}', 'format' => 'json|md|vcf|card'])
+    ->where(['username' => '[A-Za-z][A-Za-z0-9_]{2,31}', 'format' => 'json|md|vcf|card|qr'])
     ->middleware('throttle:60,1')->name('profile.export');
 
 // Public profiles live at the site root, like gravatar.com/{username}. Keep these LAST so they never
 // shadow another route; usernames that collide with routes are reserved (App\Rules\Username).
 Route::get('/{username}', [PublicProfileController::class, 'show'])
     ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->name('profile.show');
+Route::get('/{username}/print', [\App\Http\Controllers\ProfileExportController::class, 'printCard'])
+    ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:60,1')->name('profile.print');
+Route::get('/{username}/share.svg', [\App\Http\Controllers\ProfileExportController::class, 'shareImage'])
+    ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:60,1')->name('profile.share');
 Route::get('/{username}/avatar', [AvatarController::class, 'profile'])
     ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:avatar')->name('profile.avatar');

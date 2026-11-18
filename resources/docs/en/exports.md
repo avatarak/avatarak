@@ -1,6 +1,6 @@
 ---
 title: Public profile data
-description: JSON, Markdown, vCard and an embeddable card for every public profile, with no API key.
+description: JSON, Markdown, vCard, QR code, printable business card and an embeddable card for every public profile, with no API key.
 ---
 
 Every **public** profile page has machine-readable versions, built from the same data the page shows. They need **no API key** and are meant for other sites to use. Emails are never included.
@@ -11,6 +11,9 @@ Every **public** profile page has machine-readable versions, built from the same
 | Markdown | `{{origin}}/{username}.md` | `text/markdown` |
 | vCard 3.0 | `{{origin}}/{username}.vcf` | `text/vcard` (downloads as `{username}.vcf`) |
 | Embeddable card | `{{origin}}/{username}.card` | `text/html` |
+| QR code | `{{origin}}/{username}.qr` | `image/svg+xml` |
+| Share image | `{{origin}}/{username}/share.svg` | `image/svg+xml` (1080×1350) |
+| Printable card | `{{origin}}/{username}/print` | `text/html` |
 
 If the profile does not exist or the user switched the page off, every format returns `404`.
 
@@ -74,6 +77,20 @@ A small profile card you can place on your own page:
 ```
 
 The same code is available in the **Advanced details** window of any profile page, together with a downloadable **QR code** of the profile URL (made in the browser).
+
+## QR code, business card and share image
+
+`/{username}.qr` is a vector QR code of the profile address, so it stays sharp at any print size.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `size` | `512` | width and height in pixels, `64`–`2048` |
+| `fg`, `bg` | `101517`, `ffffff` | colours as hex (`1D4FC4` or `#abc`). A pair with a contrast below 3:1 is refused with `422`, because a phone could not scan it. |
+| `margin` | `2` | quiet-zone width in modules, `0`–`8` |
+| `content` | the address | `vcard` encodes the contact card instead (falls back to the address if it would be too dense to scan reliably) |
+| `download` | | `1` sends it as a file attachment |
+
+`/{username}/share.svg` is a portrait card (photo or initials, name, headline, QR code) for a post or story; add `?download=1` to save it. `/{username}/print` is a print-ready **85×55 mm business card**; add `?sheet=1` for an A4 sheet of ten.
 
 ## Headers and limits
 
