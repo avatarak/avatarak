@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
 use App\Models\Profile;
 use App\Models\UserEmail;
+use App\Services\StatsRecorder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,13 +14,15 @@ class ProfileApiController extends Controller
 {
     public const MAX_BATCH = 100;
 
-    public function show(string $hash): JsonResponse
+    public function show(Request $request, string $hash): JsonResponse
     {
         $hash = strtolower($hash);
         $profile = $this->resolve([$hash])[$hash] ?? null;
 
         // Same 404 for unknown, unverified, private or hidden: no probing.
         abort_unless($profile, 404, 'Profile not found.');
+
+        StatsRecorder::record($profile->user_id, 'api', null, $request->attributes->get('site')?->domain);
 
         return (new ProfileResource($profile, $hash))->response()
             ->header('Cache-Control', 'private, max-age=60');
@@ -36,6 +39,9 @@ class ProfileApiController extends Controller
         $found = $this->resolve($hashes);
 
         $out = [];
+        foreach ($found as $profile) {
+            StatsRecorder::record($profile->user_id, 'api', null, $request->attributes->get('site')?->domain);
+        }
         foreach ($hashes as $h) {
             $out[$h] = isset($found[$h]) ? (new ProfileResource($found[$h], $h))->resolve() : null;
         }

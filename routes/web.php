@@ -44,6 +44,7 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::get('verifications/github/callback', [\App\Http\Controllers\VerificationController::class, 'githubCallback'])->middleware('throttle:20,1')->name('verify.github.callback');
     Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
 
+    Route::get('stats', [\App\Http\Controllers\StatsController::class, 'show']);
     Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');
 
     Route::get('sites', [SiteController::class, 'index']);

@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Services\AvatarService;
 use App\Services\DefaultAvatars;
 use App\Services\ProfileExport;
+use App\Services\StatsRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -49,6 +50,8 @@ class AvatarController extends Controller
         $gen = app(DefaultAvatars::class);
 
         if ($result) {
+            StatsRecorder::record($result['user_id'], 'avatar', $request);
+
             return $this->cached($request, $result['body'], $result['mime'], $result['etag'], config('avatar.max_age'));
         }
 

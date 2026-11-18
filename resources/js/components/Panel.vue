@@ -19,14 +19,15 @@ import DevelopersSection from './sections/DevelopersSection.vue';
 import VerifiedSection from './sections/VerifiedSection.vue';
 import SecuritySection from './sections/SecuritySection.vue';
 import ShareSection from './sections/ShareSection.vue';
+import StatsSection from './sections/StatsSection.vue';
 
 const SECTIONS = {
     avatars: AvatarsSection, about: AboutSection, links: LinksSection, verified: VerifiedSection, emails: EmailsSection,
-    share: ShareSection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
+    share: ShareSection, stats: StatsSection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
 };
 const GROUPS = [
     [['avatars', null], ['about', 'user'], ['links', 'link'], ['verified', 'verified'], ['emails', 'mail']],
-    [['share', 'qr'], ['design', 'palette'], ['privacy', 'shield'], ['security', 'lock']],
+    [['stats', 'chart'], ['share', 'qr'], ['design', 'palette'], ['privacy', 'shield'], ['security', 'lock']],
     [['developers', 'code']],
 ];
 

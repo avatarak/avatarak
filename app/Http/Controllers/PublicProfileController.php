@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use App\Services\ProfileExport;
+use App\Services\StatsRecorder;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class PublicProfileController extends Controller
@@ -21,9 +23,14 @@ class PublicProfileController extends Controller
         'rubika' => 'https://rubika.ir/%s',
     ];
 
-    public function show(ProfileExport $export, string $username): Response
+    public function show(Request $request, ProfileExport $export, string $username): Response
     {
         $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
+
+        // the owner looking at their own page is not a view
+        if (auth()->id() !== $profile->user_id) {
+            StatsRecorder::record($profile->user_id, 'profile', $request);
+        }
 
         $hidden = $profile->hidden_sections ?? [];
         $links = $export->links($profile);

@@ -7,6 +7,7 @@ use App\Services\AvatarService;
 use App\Services\DefaultAvatars;
 use App\Services\ProfileExport;
 use App\Services\QrService;
+use App\Services\StatsRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,6 +16,10 @@ class ProfileExportController extends Controller
     public function show(Request $request, ProfileExport $export, QrService $qr, string $username, string $format): Response
     {
         $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
+
+        if (auth()->id() !== $profile->user_id) {
+            StatsRecorder::record($profile->user_id, 'export', $request);
+        }
 
         $res = match ($format) {
             'json' => response(json_encode($export->data($profile), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json; charset=utf-8']),

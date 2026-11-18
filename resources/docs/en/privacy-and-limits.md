@@ -40,6 +40,10 @@ Cache politely and your integration stays fast and well inside the limits:
 
 If a profile later returns `404`, the user hid it or removed it: stop showing the data you stored.
 
+## Statistics
+
+Each user can see how often their avatar, profile, exports and API data were used, and on which sites. We store **daily counters only**: how many times, and the **host** of the referring site (for example `blog.example.com`). We do **not** store IP addresses, browsers, cookies or anything about the visitor, and the owner's own visits, bots and `HEAD` requests are not counted. Rows older than 90 days are deleted. Only the data of a **real photo or profile** is counted, never the generic default image, so statistics cannot be used to find out whether an address has an account.
+
 ## Responsible use
 
 - **Do not enumerate or guess** hashes, or test lists of emails to find who has an account.
