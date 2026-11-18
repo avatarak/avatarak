@@ -22,14 +22,15 @@ RUN composer dump-autoload --no-dev --optimize --classmap-authoritative --no-scr
 
 # ---- 3) runtime: PHP-FPM ---------------------------------------------------------------
 FROM ${IMAGE_REGISTRY}/php:8.5-fpm-alpine AS app
+ADD --checksum=sha256:cb8f81df1a275599e4f8ddcfec7e1f65ed1953e6f5673649149fd680ebff4cad https://codeload.github.com/phpredis/phpredis/tar.gz/refs/tags/6.3.0 /tmp/phpredis.tar.gz
 RUN apk add --no-cache libpng libjpeg-turbo libwebp libzip icu-libs fcgi mariadb-client \
  && apk add --no-cache --virtual .build $PHPIZE_DEPS libpng-dev libjpeg-turbo-dev libwebp-dev libzip-dev icu-dev linux-headers \
  && docker-php-ext-configure gd --with-jpeg --with-webp \
- && docker-php-ext-install -j"$(nproc)" gd pdo_mysql zip intl pcntl \
- && pecl install redis \
- && docker-php-ext-enable redis \
+ && mkdir -p /usr/src/php/ext/redis \
+ && tar -xzf /tmp/phpredis.tar.gz -C /usr/src/php/ext/redis --strip-components=1 \
+ && docker-php-ext-install -j"$(nproc)" gd pdo_mysql zip intl pcntl redis \
  && apk del .build \
- && rm -rf /tmp/pear
+ && rm -rf /tmp/pear /tmp/phpredis.tar.gz
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-avatarak.ini
 COPY docker/fpm-pool.conf /usr/local/etc/php-fpm.d/zz-avatarak.conf
 
