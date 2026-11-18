@@ -21,12 +21,16 @@ No API key is needed. `{hash}` is the [SHA-256 hash](/docs/hash) of the email ad
 | Parameter | Default | Description |
 |---|---|---|
 | `s` (or `size`) | `80` | Square size in pixels, from `16` to `512`. Values outside the range are clamped. Request about **2×** the displayed size for sharp images on high-density screens. |
-| `d` (or `default`) | `mp` | What to return when there is no public avatar: `mp` a neutral silhouette (SVG), `blank` a 1×1 transparent PNG, `404` an empty `404` response. Any other value behaves like `mp`. URLs are **not** accepted. |
+| `d` (or `default`) | `mp` | What to return when there is no public avatar: `mp` a neutral silhouette (SVG), `identicon` a generated pattern (SVG), `blank` a 1×1 transparent PNG, `404` an empty `404` response. Any other value behaves like `mp`. URLs are **not** accepted. |
 
 ## Response
 
 - A **square** image, centre-cropped. **JPEG**, or **WebP** when your `Accept` header contains `image/webp`.
-- Defaults are served as `image/svg+xml` (`mp`), `image/png` (`blank`) or a `404`.
+- Defaults are served as `image/svg+xml` (`mp`, `identicon`), `image/png` (`blank`) or a `404`.
+
+### Identicons
+
+`d=identicon` draws a symmetric 5×5 pattern from the hash itself, so every address gets its own recognisable picture. It depends on **nothing but the hash**: an unknown address, an unverified one, a private one and one that simply has no photo all look equally random, so it cannot be used to find out whether an address has an account.
 
 | Header | Value |
 |---|---|
@@ -50,7 +54,7 @@ Public profile pages use a URL based on the username instead of an email:
 GET {{origin}}/{username}/avatar
 ```
 
-It accepts the same `s` and `d` parameters and returns the photo whenever the profile is public and *show avatar* is on. No email is involved, so verification is not required.
+It accepts the same `s` and `d` parameters and returns the photo whenever the profile is public and *show avatar* is on. No email is involved, so verification is not required. When there is no photo, this URL returns the person's **initials** on a colour chosen from their username (`d=initials`, the default here); `d=mp`, `identicon`, `blank` and `404` work too. The initials are available only on this URL, never on `/avatar/{hash}`, because showing a name for a hash would reveal that the address has an account.
 
 ## Examples
 

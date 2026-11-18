@@ -30,7 +30,7 @@
 <body class="min-h-screen">
 @if($isOwner)
     <a href="/" class="fixed end-4 top-4 z-10 flex items-center gap-2 rounded-full bg-white py-1 pe-3.5 ps-1 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-soft">
-        @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" class="size-7 rounded-full object-cover">@else<span class="size-7 rounded-full bg-line"></span>@endif
+        @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" class="size-7 rounded-full object-cover">@else<img src="{{ route('profile.avatar', ['username' => $p->username, 's' => 64, 'd' => 'initials']) }}" alt="" class="size-7 rounded-full object-cover">@endif
         {{ $t['edit'] }}
     </a>
 @endif
@@ -48,7 +48,7 @@
                 @if($avatarUrl)
                     <img src="{{ $avatarUrl }}" alt="{{ $display }}" width="148" height="148" class="size-[9.25rem] rounded-full bg-line object-cover">
                 @else
-                    <div class="size-[9.25rem] rounded-full bg-line"></div>
+                    <img src="{{ route('profile.avatar', ['username' => $p->username, 's' => 296, 'd' => 'initials']) }}" alt="{{ $display }}" width="148" height="148" class="size-[9.25rem] rounded-full bg-line object-cover">
                 @endif
                 <button type="button" data-adv-open data-adv-qr class="absolute end-0 top-0 grid size-[38px] place-items-center rounded-full bg-ink text-white transition-opacity hover:opacity-80" aria-label="{{ $t['qrOpen'] }}" title="{{ $t['qrOpen'] }}">
                     <x-icon name="qr" :size="20" />
@@ -165,7 +165,7 @@
                     <button type="button" data-adv-close class="icon-btn absolute end-3 top-3" aria-label="{{ $t['close'] }}"><x-icon name="close" :size="20" /></button>
 
                     <a href="{{ route('profile.show', $p->username) }}" class="mt-6 flex items-center gap-4 rounded-[4px] border border-line p-4 md:mt-0">
-                        @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" width="52" height="52" class="size-[52px] shrink-0 rounded-full bg-line object-cover">@else<span class="size-[52px] shrink-0 rounded-full bg-line"></span>@endif
+                        @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" width="52" height="52" class="size-[52px] shrink-0 rounded-full bg-line object-cover">@else<img src="{{ route('profile.avatar', ['username' => $p->username, 's' => 104, 'd' => 'initials']) }}" alt="" width="52" height="52" class="size-[52px] shrink-0 rounded-full bg-line object-cover">@endif
                         <span class="min-w-0">
                             <span class="block truncate text-base font-bold">{{ $display }}</span>
                             @if($p->headline)<span class="block truncate text-sm text-ink/75">{{ $p->headline }}</span>@endif

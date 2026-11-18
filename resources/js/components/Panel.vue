@@ -6,6 +6,7 @@ import { t, i18n } from '../i18n';
 import { copyText } from '../composables';
 import Logo from './Logo.vue';
 import Icon from './Icon.vue';
+import InitialsAvatar from './InitialsAvatar.vue';
 import LangSwitch from './LangSwitch.vue';
 import ProfileCard from './ProfileCard.vue';
 import AvatarsSection from './sections/AvatarsSection.vue';
@@ -61,7 +62,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
                 <div ref="menuRoot" class="relative ms-1">
                     <button type="button" class="flex items-center gap-1 rounded-full p-1 hover:bg-soft" :aria-expanded="menu" :aria-label="t('menu')" @click="menu = !menu">
                         <img v-if="avatarSrc" :src="avatarSrc" alt="" class="size-9 rounded-full object-cover">
-                        <span v-else class="grid size-9 place-items-center rounded-full bg-line font-bold uppercase text-muted">{{ profile.username.charAt(0) }}</span>
+                        <span v-else class="size-9 overflow-hidden rounded-full"><InitialsAvatar :name="profile.name_fa || profile.name_en || profile.username" :seed="profile.username" /></span>
                     </button>
                     <div v-if="menu" class="card absolute end-0 top-full z-30 mt-2 w-56 overflow-hidden py-1">
                         <div dir="ltr" class="truncate border-b border-line px-4 py-2 text-start text-sm text-muted">@{{ profile.username }}</div>

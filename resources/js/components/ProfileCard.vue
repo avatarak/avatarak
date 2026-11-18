@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import Icon from './Icon.vue';
+import InitialsAvatar from './InitialsAvatar.vue';
 import SocialIcon from './SocialIcon.vue';
 import { SOCIAL_URLS } from '../icons';
 import { t } from '../i18n';
@@ -46,7 +47,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
 
                 <div class="relative w-fit">
                     <img v-if="avatarSrc" :src="avatarSrc" alt="" class="size-[9.25rem] rounded-full bg-line object-cover">
-                    <div v-else class="size-[9.25rem] rounded-full bg-line"></div>
+                    <div v-else class="size-[9.25rem] overflow-hidden rounded-full bg-line"><InitialsAvatar :name="display" :seed="profile.username" /></div>
                     <span class="absolute end-0 top-0 grid size-[38px] place-items-center rounded-full bg-ink text-white"><Icon name="qr" :size="20" /></span>
                 </div>
 

@@ -82,7 +82,8 @@ class ProfileUrlTest extends TestCase
 
         $u->profile->update(['show_avatar' => false]);
         $this->get('/javid/avatar')->assertHeader('Content-Type', 'image/svg+xml');
-        $this->get('/javid')->assertDontSee('/javid/avatar?', false);
+        // no photo URL (those carry a version); the generated initials image is fine
+        $this->get('/javid')->assertDontSee('&amp;v=', false)->assertSee('d=initials', false);
 
         $u->profile->update(['show_avatar' => true, 'show_profile' => false]);
         $this->get('/javid/avatar')->assertHeader('Content-Type', 'image/svg+xml');
