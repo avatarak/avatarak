@@ -8,6 +8,10 @@ if (brand.pageLocale && location.pathname === '/' && ['fa', 'en'].includes(saved
     location.replace(`/${saved}${location.search}${location.hash}`);
 } else {
     // the home page arrives already rendered (see scripts/prerender-landing.mjs): attach to it instead of building it again
+    // ...but only when it was made from exactly this code. A stale pre-render (an old build, `npm run dev`, a half-finished
+    // deploy) would not line up with the components and would leave a broken page, so it is thrown away and the app starts clean.
     const el = document.getElementById('app');
-    (el.hasAttribute('data-prerendered') ? createSSRApp(App) : createApp(App)).mount(el);
+    const fresh = el.hasAttribute('data-prerendered') && el.dataset.prerenderHash === __LANDING_HASH__;
+    if (!fresh) el.innerHTML = '';
+    (fresh ? createSSRApp(App) : createApp(App)).mount(el);
 }

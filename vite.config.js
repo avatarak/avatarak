@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
+import { landingHash } from './scripts/landing-hash.mjs';
 
 export default defineConfig({
     plugins: [
@@ -13,7 +14,7 @@ export default defineConfig({
         tailwindcss(),
     ],
     // VUE_DEBUG_HYDRATION=1 npm run build  -> the browser console names every difference between the pre-rendered HTML and the app
-    define: process.env.VUE_DEBUG_HYDRATION ? { __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true } : {},
+    define: { __LANDING_HASH__: JSON.stringify(landingHash()), ...(process.env.VUE_DEBUG_HYDRATION ? { __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true } : {}) },
     server: {
         watch: { ignored: ['**/storage/framework/views/**'] },
     },

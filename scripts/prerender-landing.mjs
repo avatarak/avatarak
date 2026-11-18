@@ -6,6 +6,7 @@ process.env.NODE_ENV = 'production';
 import { createServer } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { landingHash } from './landing-hash.mjs';
 
 // the browser objects the components read at load time
 globalThis.window = globalThis;
@@ -25,6 +26,7 @@ try {
         writeFileSync(new URL(`../resources/data/landing-prerender-${lang}.html`, import.meta.url), html);
         console.log(`landing-prerender-${lang}.html: ${(html.length / 1024).toFixed(0)} KB`);
     }
+    writeFileSync(new URL('../resources/data/landing-prerender-meta.json', import.meta.url), JSON.stringify({ hash: landingHash() }) + '\n');
 } finally {
     await server.close();
 }

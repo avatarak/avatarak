@@ -268,9 +268,12 @@ class SeoTest extends TestCase
         $backup = is_file($file) ? file_get_contents($file) : null;
         try {
             file_put_contents($file, '<div class="x"><h1>سلام</h1><b>@@BRAND_NAME@@|@@BRAND_NAME_EN@@|@@ORIGIN@@</b></div>');
+            $meta = resource_path('data/landing-prerender-meta.json');
+            $metaBackup = is_file($meta) ? file_get_contents($meta) : null;
+            file_put_contents($meta, '{"hash":"abc123def4567890"}');
             config(['brand.name' => 'برند <من>', 'brand.name_en' => '', 'brand.logo_url' => null]);
             $h = $this->get('/')->assertOk()->getContent();
-            $this->assertStringContainsString('<div id="app" data-prerendered><div class="x"><h1>سلام</h1>', $h);     // attached node-for-node: no whitespace in between
+            $this->assertStringContainsString('<div id="app" data-prerendered data-prerender-hash="abc123def4567890"><div class="x"><h1>سلام</h1>', $h);     // attached node-for-node: no whitespace in between; the hash lets the browser refuse a stale copy
             $this->assertStringContainsString('<b>برند &lt;من&gt;|برند &lt;من&gt;|'.rtrim(url('/'), '/').'</b>', $h);      // tokens filled in and escaped
             $this->assertStringNotContainsString('position:absolute;width:1px', $h);                                      // the crawler-only copy is not needed
 
@@ -281,6 +284,7 @@ class SeoTest extends TestCase
             $this->assertStringContainsString('position:absolute;width:1px', $h);
         } finally {
             $backup === null ? @unlink($file) : file_put_contents($file, $backup);
+            isset($meta) && ($metaBackup === null ? @unlink($meta) : file_put_contents($meta, $metaBackup));
         }
     }
 

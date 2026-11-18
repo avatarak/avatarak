@@ -38,6 +38,7 @@
     if ($landing && ! config('brand.logo_url') && ! is_file(public_path('hot')) && is_file($pf = resource_path("data/landing-prerender-{$seoLoc}.html"))) {
         $tokens = ['@@BRAND_NAME@@' => $brandJs['name'], '@@BRAND_NAME_EN@@' => $brandJs['name_en'] ?: $brandJs['name'], '@@TAGLINE@@' => $brandJs['tagline'], '@@TAGLINE_EN@@' => $brandJs['tagline_en'] ?: $brandJs['tagline'],
             '@@ORIGIN@@' => rtrim(url('/'), '/'), '@@HOST@@' => request()->getHttpHost()];
+        $prerenderHash = json_decode((string) @file_get_contents(resource_path('data/landing-prerender-meta.json')), true)['hash'] ?? '';
         $prerender = strtr(file_get_contents($pf), array_map('e', $tokens));
     }
 @endphp
@@ -83,7 +84,7 @@
     {{-- What a crawler (or a browser without JavaScript) reads. Vue replaces it the moment the app starts. --}}
     @if($prerender)
         {{-- no whitespace between the tags and the markup: the browser attaches to it node by node --}}
-        <div id="app" data-prerendered>{!! $prerender !!}</div>
+        <div id="app" data-prerendered data-prerender-hash="{{ $prerenderHash }}">{!! $prerender !!}</div>
     @else
     <div id="app">
         @if($landing)
