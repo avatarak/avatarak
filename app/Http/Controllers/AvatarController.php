@@ -52,7 +52,7 @@ class AvatarController extends Controller
         if ($result) {
             StatsRecorder::record($result['user_id'], 'avatar', $request);
 
-            return $this->cached($request, $result['body'], $result['mime'], $result['etag'], config('avatar.max_age'));
+            return $this->cached($request, $result['body'], $result['mime'], $result['etag'], config('avatar.max_age'), true);
         }
 
         // Identical response whether unknown, unverified or private.
@@ -68,12 +68,12 @@ class AvatarController extends Controller
         };
     }
 
-    private function cached(Request $request, string $body, string $mime, string $etag, int $maxAge): Response
+    private function cached(Request $request, string $body, string $mime, string $etag, int $maxAge, bool $photo = false): Response
     {
         $headers = [
             'Content-Type' => $mime,
             'ETag' => $etag,
-            'Cache-Control' => "public, max-age={$maxAge}",
+            'Cache-Control' => $this->cacheControl($maxAge, $photo),
             'Vary' => 'Accept',
             'X-Content-Type-Options' => 'nosniff',
             'Access-Control-Allow-Origin' => '*',
@@ -85,5 +85,19 @@ class AvatarController extends Controller
         }
 
         return response($body, 200, $headers);
+    }
+
+    /** Browsers get max-age; shared caches (a CDN) may get a separate s-maxage, only for real photos. */
+    private function cacheControl(int $maxAge, bool $photo): string
+    {
+        $v = "public, max-age={$maxAge}";
+        if ($photo && ($s = (int) config('avatar.s_maxage')) > 0) {
+            $v .= ", s-maxage={$s}";
+            if (($w = (int) config('avatar.stale_while_revalidate')) > 0) {
+                $v .= ", stale-while-revalidate={$w}";
+            }
+        }
+
+        return $v;
     }
 }

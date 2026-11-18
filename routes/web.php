@@ -9,6 +9,7 @@ use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'app');
+Route::get('/up/ready', \App\Http\Controllers\ReadyController::class)->middleware('throttle:60,1');
 
 // Public
 Route::get('/u/{username}', fn (string $username) => redirect()->route('profile.show', strtolower($username), 301))->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}');

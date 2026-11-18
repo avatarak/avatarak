@@ -18,5 +18,6 @@ Artisan::command('codes:prune', function (LoginCodeService $codes) {
     $this->info('Deleted '.$codes->prune().' expired sign-in codes.');
 })->purpose('Delete expired one-time sign-in codes');
 
+Schedule::command('backup:run')->dailyAt('02:30')->onOneServer()->withoutOverlapping();
 Schedule::command('stats:prune')->dailyAt('03:10');
 Schedule::command('codes:prune')->dailyAt('03:20');

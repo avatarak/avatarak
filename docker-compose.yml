@@ -1,0 +1,78 @@
+# Avatarak.ir production stack: nginx + php-fpm + queue worker + scheduler + MySQL + Redis.
+# 1) cp .env.production.example .env   and fill it in (see /docs/deployment)
+# 2) docker compose up -d --build
+# TLS: put Caddy, Traefik, a load balancer or Cloudflare in front of the "web" service (port 8080 by default).
+x-app: &app
+  build:
+    context: .
+    target: app
+  image: avatarak/app:latest
+  env_file: .env
+  restart: unless-stopped
+  depends_on:
+    mysql: { condition: service_healthy }
+    redis: { condition: service_healthy }
+  volumes:
+    - storage:/var/www/html/storage
+
+services:
+  app:
+    <<: *app
+    command: ["php-fpm"]
+
+  web:
+    build:
+      context: .
+      target: web
+    image: avatarak/web:latest
+    restart: unless-stopped
+    depends_on: [app]
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/up/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  queue:
+    <<: *app
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+
+  scheduler:
+    <<: *app
+    command: ["php", "artisan", "schedule:work"]
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-avatarak}
+      MYSQL_USER: ${DB_USERNAME:-avatarak}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  storage:
+  mysql:
+  redis:
