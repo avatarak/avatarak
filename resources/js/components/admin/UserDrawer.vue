@@ -40,6 +40,9 @@ const cfg = computed(() => {
         rename: { title: t('a_rename'), body: t('a_rename_text'), inputLabel: t('a_new_username'), inputValue: u.value?.username || '', label: t('a_rename') },
         avatar: { title: t('a_remove_avatar'), body: t('a_remove_avatar_text'), checks: [{ key: 'all', label: t('a_remove_avatar_all') }], danger: true, label: t('a_remove_avatar') },
         clear: { title: t('a_clear_profile'), body: t('a_clear_text'), checks: FIELDS.map((f) => ({ key: f, label: t('a_f_' + f) })), danger: true, label: t('a_clear_profile') },
+        planPro: { title: t('a_plan_grant_pro'), body: t('a_plan_grant_text'), inputLabel: t('a_plan_days'), inputValue: '30', inputType: 'number', label: t('a_plan_grant_pro') },
+        planBusiness: { title: t('a_plan_grant_business'), body: t('a_plan_grant_text'), inputLabel: t('a_plan_days'), inputValue: '30', inputType: 'number', label: t('a_plan_grant_business') },
+        planEnd: { title: t('a_plan_end'), body: t('a_plan_end_text'), danger: true, label: t('a_plan_end') },
         delete: { title: `${t('a_delete_user')}: ${name}`, body: t('a_delete_text'), typed: u.value?.email, typedLabel: t('a_type_email'), danger: true, label: t('a_delete_confirm') },
     })[k] || {};
 });
@@ -51,6 +54,9 @@ async function run({ reason, checks, input }) {
         switch (dlg.kind) {
             case 'suspend': await adminApi('POST', `/users/${id}/suspend`, { reason }); break;
             case 'unsuspend': await adminApi('POST', `/users/${id}/unsuspend`); break;
+            case 'planPro': await adminApi('POST', `/users/${id}/plan`, { plan: 'pro', days: Number(input) }); break;
+            case 'planBusiness': await adminApi('POST', `/users/${id}/plan`, { plan: 'business', days: Number(input) }); break;
+            case 'planEnd': await adminApi('POST', `/users/${id}/plan`, { plan: 'free' }); break;
             case 'promote': await adminApi('POST', `/users/${id}/admin`, { is_admin: true }); break;
             case 'demote': await adminApi('POST', `/users/${id}/admin`, { is_admin: false }); break;
             case 'rename': await adminApi('POST', `/users/${id}/rename`, { username: input }); break;
@@ -152,6 +158,19 @@ const verifiedEmails = computed(() => (u.value?.emails || []).filter((e) => e.ve
                                 <div v-for="m in ['avatar', 'profile', 'export', 'api']" :key="m" class="rounded-[8px] bg-soft py-2"><div class="font-bold tabular-nums">{{ fmtNum(u.stats[m]) }}</div><div class="text-xs text-muted">{{ t('a_m_' + m) }}</div></div>
                             </div>
                             <div class="mt-2 text-sm text-muted">{{ t('a_avatars') }}: {{ fmtNum(u.avatars_count) }} · {{ t('a_reports_against') }}: {{ fmtNum(u.reports.total) }} ({{ fmtNum(u.reports.open) }} {{ t('a_rp_open') }})</div>
+                        </section>
+
+                        <section>
+                            <h3 class="mb-2 text-sm font-bold">{{ t('a_plan') }}</h3>
+                            <div class="flex flex-wrap items-center gap-2 text-sm">
+                                <Badge :tone="u.plan === 'free' ? 'gray' : 'violet'">{{ t('a_plan_' + u.plan) }}</Badge>
+                                <span v-if="u.plan_ends_at" class="text-muted">{{ t('a_plan_until') }} {{ fmtDateTime(u.plan_ends_at) }}</span>
+                            </div>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-ghost !py-1.5 text-sm" @click="open('planPro')">{{ t('a_plan_pro') }} +</button>
+                                <button type="button" class="btn btn-ghost !py-1.5 text-sm" @click="open('planBusiness')">{{ t('a_plan_business') }} +</button>
+                                <button v-if="u.plan !== 'free'" type="button" class="btn btn-ghost !py-1.5 text-sm !text-red-700" @click="open('planEnd')">{{ t('a_plan_end') }}</button>
+                            </div>
                         </section>
 
                         <section v-if="u.audit.length">

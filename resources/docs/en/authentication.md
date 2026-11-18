@@ -9,7 +9,7 @@ The [avatar URL](/docs/avatars) is public. The **REST API** needs an **API key**
 
 1. Sign in to your dashboard and open **Developers**.
 2. Enter a **site name** and its **domain**, then press **Create key**.
-3. **Copy the key immediately.** It is shown only once; only a hash is stored, so it cannot be recovered. You can have up to 10 sites.
+3. **Copy the key immediately.** It is shown only once; only a hash is stored, so it cannot be recovered. How many sites you can have depends on your [plan](/docs/plans) (3 on Free).
 
 Keys look like `avk_` followed by 40 random characters.
 

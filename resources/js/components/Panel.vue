@@ -20,15 +20,16 @@ import VerifiedSection from './sections/VerifiedSection.vue';
 import SecuritySection from './sections/SecuritySection.vue';
 import ShareSection from './sections/ShareSection.vue';
 import StatsSection from './sections/StatsSection.vue';
+import BillingSection from './sections/BillingSection.vue';
 
 const SECTIONS = {
     avatars: AvatarsSection, about: AboutSection, links: LinksSection, verified: VerifiedSection, emails: EmailsSection,
-    share: ShareSection, stats: StatsSection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
+    share: ShareSection, stats: StatsSection, billing: BillingSection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
 };
 const GROUPS = [
     [['avatars', null], ['about', 'user'], ['links', 'link'], ['verified', 'verified'], ['emails', 'mail']],
     [['stats', 'chart'], ['share', 'qr'], ['design', 'palette'], ['privacy', 'shield'], ['security', 'lock']],
-    [['developers', 'code']],
+    [['developers', 'code'], ['billing', 'gift']],
 ];
 
 const open = ref(null);        // null = sidebar list

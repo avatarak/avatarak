@@ -21,7 +21,7 @@ class SiteController extends Controller
             'domain' => ['required', 'string', 'max:190', 'regex:/^(?=.{1,190}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i'],
         ]);
 
-        abort_if($request->user()->sites()->count() >= 10, 422, __('app.max_sites'));
+        abort_if($request->user()->sites()->count() >= app(\App\Services\PlanService::class)->limit($request->user(), 'sites'), 422, __('app.plan_limit_sites'));
 
         [$site, $key] = Site::createWithKey([
             'user_id' => $request->user()->id,

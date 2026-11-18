@@ -68,6 +68,16 @@ class User extends Authenticatable
         return $this->hasMany(VerifiedAccount::class);
     }
 
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function sites(): HasMany
     {
         return $this->hasMany(Site::class);

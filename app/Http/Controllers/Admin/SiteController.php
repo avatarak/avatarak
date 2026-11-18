@@ -13,7 +13,7 @@ class SiteController extends Controller
     private static function present(Site $s): array
     {
         return [
-            'id' => $s->id, 'name' => $s->name, 'domain' => $s->domain, 'prefix' => $s->api_key_prefix, 'rate_limit' => $s->rate_limit_per_minute,
+            'id' => $s->id, 'name' => $s->name, 'domain' => $s->domain, 'prefix' => $s->api_key_prefix, 'rate_limit' => $s->effectiveRateLimit(), 'rate_limit_override' => $s->rate_limit_per_minute !== null,
             'plan' => $s->plan, 'disabled' => $s->disabled_at !== null, 'owner_suspended' => (bool) $s->user?->isSuspended(),
             'last_used_at' => $s->last_used_at?->toIso8601String(), 'created_at' => $s->created_at?->toIso8601String(),
             'owner' => ['id' => $s->user?->id, 'email' => $s->user?->email],
@@ -45,11 +45,11 @@ class SiteController extends Controller
 
     public function update(Request $request, int $id): JsonResponse
     {
-        $data = $request->validate(['rate_limit_per_minute' => ['sometimes', 'integer', 'min:1', 'max:100000'], 'disabled' => ['sometimes', 'boolean']]);
+        $data = $request->validate(['rate_limit_per_minute' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:1000000'], 'disabled' => ['sometimes', 'boolean']]);
         $s = Site::with('user')->findOrFail($id);
 
         $meta = [];
-        if (isset($data['rate_limit_per_minute'])) {
+        if (array_key_exists('rate_limit_per_minute', $data)) {                 // null clears the override: back to the plan's limit
             $meta['rate_limit'] = [$s->rate_limit_per_minute, $data['rate_limit_per_minute']];
             $s->rate_limit_per_minute = $data['rate_limit_per_minute'];
         }

@@ -9,6 +9,13 @@ use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'app');
+Route::get('/pricing.json', function () {
+    $plans = collect(config('plans.plans'))->map(fn ($p, $k) => ['key' => $k, 'name' => $p['name'], 'tagline' => $p['tagline'], 'price' => $p['price'], 'limits' => $p['limits'], 'features' => $p['features']])->values();
+
+    return response()->json(['currency' => config('plans.currency'), 'plans' => $plans, 'payments_enabled' => \App\Services\Payment\GatewayManager::enabled()])
+        ->header('Cache-Control', 'public, max-age=300')->header('Access-Control-Allow-Origin', '*');
+})->name('pricing');
+Route::get('/billing/callback', [\App\Http\Controllers\BillingController::class, 'callback'])->middleware('throttle:30,1')->name('billing.callback');
 Route::get('/up/ready', \App\Http\Controllers\ReadyController::class)->middleware('throttle:60,1');
 
 // Public
@@ -58,6 +65,8 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::get('sessions', [\App\Http\Controllers\SessionsController::class, 'index']);
     Route::delete('sessions', [\App\Http\Controllers\SessionsController::class, 'destroyOthers']);
     Route::delete('sessions/{handle}', [\App\Http\Controllers\SessionsController::class, 'destroy'])->where('handle', '[a-f0-9]{20}');
+    Route::get('billing', [\App\Http\Controllers\BillingController::class, 'status']);
+    Route::post('billing/checkout', [\App\Http\Controllers\BillingController::class, 'checkout'])->middleware('throttle:10,1');
     Route::get('stats', [\App\Http\Controllers\StatsController::class, 'show']);
     Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');
 
@@ -86,6 +95,9 @@ Route::prefix('admin/api')->middleware(['auth', 'admin'])->group(function () {
     Route::post('users/{id}/avatar/remove', [\App\Http\Controllers\Admin\UserController::class, 'removeAvatar'])->whereNumber('id');
     Route::post('users/{id}/profile/clear', [\App\Http\Controllers\Admin\UserController::class, 'clearProfile'])->whereNumber('id');
     Route::delete('users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->whereNumber('id');
+
+    Route::post('users/{id}/plan', [\App\Http\Controllers\Admin\UserController::class, 'plan'])->whereNumber('id');
+    Route::get('payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index']);
 
     Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index']);
     Route::post('reports/{id}/resolve', [\App\Http\Controllers\Admin\ReportController::class, 'resolve'])->whereNumber('id');

@@ -15,9 +15,10 @@ import Reports from './Reports.vue';
 import Sites from './Sites.vue';
 import Verified from './Verified.vue';
 import Audit from './Audit.vue';
+import Payments from './Payments.vue';
 
-const PAGES = { dashboard: Dashboard, users: Users, reports: Reports, sites: Sites, verified: Verified, audit: Audit };
-const NAV = [['dashboard', 'dashboard'], ['users', 'users'], ['reports', 'flag'], ['sites', 'key'], ['verified', 'verified'], ['audit', 'history']];
+const PAGES = { dashboard: Dashboard, users: Users, reports: Reports, sites: Sites, verified: Verified, payments: Payments, audit: Audit };
+const NAV = [['dashboard', 'dashboard'], ['users', 'users'], ['reports', 'flag'], ['sites', 'key'], ['verified', 'verified'], ['payments', 'gift'], ['audit', 'history']];
 
 const menu = ref(false);
 const page = computed(() => (PAGES[route.page] ? route.page : 'dashboard'));

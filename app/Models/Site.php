@@ -37,6 +37,16 @@ class Site extends Model
         return static::where('api_key_hash', hash('sha256', $plain))->first();
     }
 
+    /** Requests per minute: an administrator's override if there is one, else what the owner's plan allows. */
+    public function effectiveRateLimit(): int
+    {
+        if ($this->rate_limit_per_minute !== null) {
+            return max(1, (int) $this->rate_limit_per_minute);
+        }
+
+        return max(1, $this->user ? app(\App\Services\PlanService::class)->limit($this->user, 'rate_limit') : (int) config('plans.plans.free.limits.rate_limit'));
+    }
+
     public function isDisabled(): bool
     {
         return $this->disabled_at !== null || $this->user?->isSuspended() === true;

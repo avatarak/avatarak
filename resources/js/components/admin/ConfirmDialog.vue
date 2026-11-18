@@ -13,7 +13,7 @@ import Modal from '../Modal.vue';
 const props = defineProps({
     open: Boolean, title: String, body: String, confirmLabel: String, danger: Boolean, busy: Boolean, error: String,
     reasonLabel: String, noteLabel: String, typed: String, typedLabel: String, checks: { type: Array, default: () => [] },
-    inputLabel: String, inputValue: { type: String, default: '' }, inputDir: { type: String, default: 'ltr' }, inputType: { type: String, default: 'text' },
+    inputLabel: String, allowEmpty: Boolean, inputValue: { type: String, default: '' }, inputDir: { type: String, default: 'ltr' }, inputType: { type: String, default: 'text' },
 });
 const emit = defineEmits(['close', 'confirm']);
 
@@ -22,7 +22,7 @@ watch(() => props.open, (v) => { if (v) { reason.value = ''; note.value = ''; ty
 
 const ok = computed(() => (!props.reasonLabel || reason.value.trim().length >= 3)
     && (!props.typed || typedIn.value.trim().toLowerCase() === props.typed.toLowerCase())
-    && (!props.inputLabel || String(input.value).trim() !== ''));
+    && (!props.inputLabel || props.allowEmpty || String(input.value).trim() !== ''));
 const submit = () => ok.value && !props.busy && emit('confirm', { reason: reason.value.trim(), note: note.value.trim(), checks: { ...picked.value }, input: String(input.value).trim() });
 </script>
 

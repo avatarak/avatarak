@@ -54,6 +54,14 @@ class OverviewController extends Controller
                 'uploads' => $sum('uploads'), 'uploads_prev' => $prev('avatars'),
                 'requests' => $sum('avatar') + $sum('profile') + $sum('export') + $sum('api'),
             ],
+            'billing' => [
+                'revenue_30d' => (int) DB::table('payments')->where('status', 'paid')->where('paid_at', '>=', $from)->sum('amount'),
+                'revenue_prev' => (int) DB::table('payments')->where('status', 'paid')->where('paid_at', '>=', now()->subDays(2 * $days - 1)->startOfDay())->where('paid_at', '<', $from)->sum('amount'),
+                'currency' => config('plans.currency'),
+                'paying_users' => DB::table('subscriptions')->where('starts_at', '<=', now())->where('ends_at', '>', now())->distinct()->count('user_id'),
+                'by_plan' => DB::table('subscriptions')->where('starts_at', '<=', now())->where('ends_at', '>', now())->selectRaw('plan, count(distinct user_id) as c')->groupBy('plan')->pluck('c', 'plan'),
+                'gateway' => config('billing.gateway'),
+            ],
             'series' => $series,
             'referrers' => DB::table('stat_referrers')->where('date', '>=', $from->toDateString())->selectRaw('host, sum(count) as total')->groupBy('host')->orderByDesc('total')->limit(8)->get()
                 ->map(fn ($r) => ['host' => $r->host, 'count' => (int) $r->total])->all(),

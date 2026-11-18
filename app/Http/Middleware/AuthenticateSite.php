@@ -25,7 +25,7 @@ class AuthenticateSite
             return response()->json(['message' => 'Invalid or missing API key.'], 401, ['WWW-Authenticate' => 'Bearer']);
         }
 
-        $limit = max(1, $site->rate_limit_per_minute);
+        $limit = $site->effectiveRateLimit();
         $bucket = 'site-api:'.$site->id;
 
         if (RateLimiter::tooManyAttempts($bucket, $limit)) {

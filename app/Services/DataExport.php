@@ -47,7 +47,7 @@ class DataExport
                 'network' => $a->network, 'identifier' => $a->identifier, 'method' => $a->method, 'verified_at' => $a->verified_at?->toIso8601String(),
             ])->values()->all(),
             'sites' => $user->sites->map(fn ($s) => [
-                'name' => $s->name, 'domain' => $s->domain, 'key_prefix' => $s->api_key_prefix, 'rate_limit_per_minute' => $s->rate_limit_per_minute,
+                'name' => $s->name, 'domain' => $s->domain, 'key_prefix' => $s->api_key_prefix, 'rate_limit_per_minute' => $s->effectiveRateLimit(),
                 'created_at' => $s->created_at?->toIso8601String(), 'last_used_at' => $s->last_used_at?->toIso8601String(),
             ])->values()->all(),
             'avatars' => $avatars,

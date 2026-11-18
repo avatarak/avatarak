@@ -11,6 +11,7 @@ import MockIdentities from './landing/MockIdentities.vue';
 import MockPrivacy from './landing/MockPrivacy.vue';
 import DevSection from './landing/DevSection.vue';
 import FaqSection from './landing/FaqSection.vue';
+import PricingSection from './landing/PricingSection.vue';
 import FinalCta from './landing/FinalCta.vue';
 import LandingFooter from './landing/LandingFooter.vue';
 import Icon from './Icon.vue';
@@ -42,6 +43,7 @@ const show = (mode, prefill) => { auth.value = mode; if (typeof prefill === 'str
             <FeatureRow id="identities" tone="gray" :title="lt('idTitle')" :text="lt('idText')"><MockIdentities /></FeatureRow>
             <FeatureRow id="privacy" reverse :title="lt('privTitle')" :text="lt('privText')"><MockPrivacy /></FeatureRow>
             <DevSection @cta="show('register')" />
+            <PricingSection @start="show('register')" />
             <FaqSection />
             <FinalCta @start="show('register')" />
         </main>

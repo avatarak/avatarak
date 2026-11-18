@@ -272,7 +272,7 @@ class DocsTest extends TestCase
 
     public function test_documented_rate_limit_headers_and_429(): void
     {
-        $this->assertSame(600, Site::createWithKey(['user_id' => User::factory()->create()->id, 'name' => 's', 'domain' => 's.ir'])[0]->fresh()->rate_limit_per_minute);
+        $this->assertSame(600, Site::createWithKey(['user_id' => User::factory()->create()->id, 'name' => 's', 'domain' => 's.ir'])[0]->fresh()->effectiveRateLimit());
         $site = Site::first();
         $plain = $this->key();
         $site = Site::latest('id')->first();
@@ -292,7 +292,8 @@ class DocsTest extends TestCase
         $u = User::factory()->create();
         Profile::create(['user_id' => $u->id, 'username' => 'abc']);
         $this->actingAs($u)->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
-        for ($i = 0; $i < 10; $i++) {
+        $max = config('plans.plans.free.limits.sites');
+        for ($i = 0; $i < $max; $i++) {
             $this->postJson('/account/sites', ['name' => "s$i", 'domain' => "s$i.example.ir"])->assertCreated();
         }
         $this->postJson('/account/sites', ['name' => 'x', 'domain' => 'x.example.ir'])->assertStatus(422);

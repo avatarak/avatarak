@@ -59,6 +59,7 @@ class PublicProfileController extends Controller
                 'vcf' => route('profile.export', [$name, 'vcf']), 'card' => route('profile.export', [$name, 'card']),
             ],
             'indexable' => $profile->allow_indexing,
+            'whiteLabel' => $profile->user ? app(\App\Services\PlanService::class)->can($profile->user, 'white_label') : false,
         ]);
 
         if (! $profile->allow_indexing) {

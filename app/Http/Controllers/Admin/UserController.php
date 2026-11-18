@@ -8,6 +8,8 @@ use App\Models\Report;
 use App\Models\User;
 use App\Rules\Username;
 use App\Services\AvatarService;
+use App\Services\BillingNotices;
+use App\Services\PlanService;
 use App\Services\StatsRecorder;
 use App\Services\UserDeletion;
 use Illuminate\Http\JsonResponse;
@@ -87,6 +89,7 @@ class UserController extends Controller
             'verified_accounts' => $u->verifiedAccounts->map(fn ($a) => ['id' => $a->id, 'network' => $a->network, 'identifier' => $a->identifier, 'method' => $a->method, 'url' => $a->url()])->values(),
             'sites' => $u->sites->map(fn ($s) => ['id' => $s->id, 'name' => $s->name, 'domain' => $s->domain, 'prefix' => $s->api_key_prefix, 'disabled' => $s->isDisabled(), 'last_used_at' => $s->last_used_at?->toIso8601String()])->values(),
             'avatars_count' => $u->avatars_count,
+            'plan' => app(PlanService::class)->planKey($u), 'plan_ends_at' => app(PlanService::class)->active($u)?->ends_at?->toIso8601String(),
             'stats' => $stats->forUser($u->id, 30)['totals'],
             'reports' => ['total' => $reports?->count() ?? 0, 'open' => $reports?->where('status', 'open')->count() ?? 0],
             'audit' => AuditLog::where('target_type', 'user')->where('target_id', $u->id)->latest('id')->limit(10)->get()
@@ -126,6 +129,26 @@ class UserController extends Controller
         AuditLog::record($data['is_admin'] ? 'user.promote' : 'user.demote', $u);
 
         return response()->json(self::brief($u->fresh('profile')));
+    }
+
+    /** Give someone a plan for a number of days (support, partners, compensation) or end their paid plan now (plan = free). */
+    public function plan(Request $request, PlanService $plans, int $id): JsonResponse
+    {
+        $data = $request->validate(['plan' => ['required', 'string'], 'days' => ['nullable', 'integer', 'min:1', 'max:3650']]);
+        $u = User::findOrFail($id);
+        abort_unless(PlanService::exists($data['plan']), 422, __('app.billing_bad_plan'));
+
+        if ($data['plan'] === 'free') {
+            $u->subscriptions()->where('ends_at', '>', now())->update(['ends_at' => now()]);
+            AuditLog::record('user.plan_ended', $u);
+        } else {
+            abort_unless(! empty($data['days']), 422, __('app.billing_bad_plan'));
+            $sub = $plans->grant($u, $data['plan'], (int) $data['days'], 'admin');
+            AuditLog::record('user.plan_granted', $u, ['plan' => $data['plan'], 'days' => (int) $data['days'], 'until' => $sub->ends_at->toDateString()]);
+            BillingNotices::send($u, 'granted', $sub);
+        }
+
+        return response()->json(['plan' => $plans->planKey($u->fresh())]);
     }
 
     public function rename(Request $request, int $id): JsonResponse

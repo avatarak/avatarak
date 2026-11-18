@@ -150,8 +150,8 @@
                 <x-icon name="code" :size="18" /> {{ $t['adv'] }}
             </button>
         </div>
-        <p class="pb-2 text-center text-sm text-white/90"><a href="/" class="hover:underline">{{ $brand }}</a>
-            @unless($isOwner) · <button type="button" data-report-open class="underline-offset-2 hover:underline">{{ $rt['report'] }}</button>@endunless</p>
+        <p class="pb-2 text-center text-sm text-white/90">@unless($whiteLabel)<a href="/" class="hover:underline">{{ $brand }}</a>@endunless
+            @unless($isOwner)@unless($whiteLabel) · @endunless<button type="button" data-report-open class="underline-offset-2 hover:underline">{{ $rt['report'] }}</button>@endunless</p>
     </div>
 </div>
 

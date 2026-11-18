@@ -15,6 +15,7 @@ defineEmits(['login', 'register']);
                 <a href="#profile" class="hover:text-brand">{{ lt('navFeatures') }}</a>
                 <a href="#developers" class="hover:text-brand">{{ lt('navDevelopers') }}</a>
                 <a href="/docs" class="hover:text-brand">{{ lt('navDocs') }}</a>
+                <a href="#pricing" class="hover:text-brand">{{ t('prTitle') }}</a>
                 <a href="#faq" class="hover:text-brand">{{ lt('navFaq') }}</a>
             </nav>
         </div>

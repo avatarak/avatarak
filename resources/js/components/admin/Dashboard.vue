@@ -24,6 +24,7 @@ const cards = computed(() => {
         { icon: 'globe', label: t('a_public_profiles'), value: c.public_profiles, sub: `${fmtNum(c.suspended)} ${t('a_suspended')} · ${fmtNum(c.admins)} ${t('a_admins')}`, to: 'users' },
         { icon: 'image', label: t('a_avatars'), value: c.avatars, sub: `+${fmtNum(p.uploads)} ${t('a_uploads_30d')}`, delta: delta(p.uploads, p.uploads_prev) },
         { icon: 'trend', label: t('a_requests_30d'), value: p.requests, sub: '' },
+        { icon: 'gift', label: t('a_revenue_30d'), value: d.billing.revenue_30d, sub: `${fmtNum(d.billing.paying_users)} ${t('a_paying_users')} · ${d.billing.currency}`, delta: delta(d.billing.revenue_30d, d.billing.revenue_prev), to: 'payments' },
         { icon: 'verified', label: t('a_verified'), value: c.verified_accounts, sub: Object.entries(c.verified_by_network || {}).map(([n, v]) => `${n} ${fmtNum(v)}`).join(' · '), to: 'verified' },
         { icon: 'key', label: t('a_sites'), value: c.sites, sub: `${fmtNum(c.sites_active_24h)} ${t('a_active_24h')}`, to: 'sites' },
         { icon: 'flag', label: t('a_reports_open'), value: c.reports_open, sub: '', to: 'reports', alert: c.reports_open > 0 },

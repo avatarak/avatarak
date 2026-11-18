@@ -19,7 +19,7 @@ const cfg = computed(() => {
     return ({
         disable: { title: `${t('a_disable')}: ${d}`, body: t('a_disable_text'), label: t('a_disable'), danger: true },
         enable: { title: `${t('a_enable')}: ${d}`, label: t('a_enable') },
-        limit: { title: `${t('a_edit_limit')}: ${d}`, body: t('a_limit_help'), inputLabel: t('a_limit'), inputValue: String(s?.rate_limit ?? ''), inputType: 'number', label: t('a_save') },
+        limit: { title: `${t('a_edit_limit')}: ${d}`, body: t('a_limit_help') + ' ' + t('a_limit_help2'), inputLabel: t('a_limit'), inputValue: s?.rate_limit_override ? String(s.rate_limit) : '', inputType: 'number', label: t('a_save'), allowEmpty: true },
         delete: { title: `${t('a_delete_site')}: ${d}`, body: t('a_delete_site_text'), typed: d, label: t('a_delete_site'), danger: true },
     })[dlg.kind] || {};
 });
@@ -28,7 +28,7 @@ async function run({ input }) {
     try {
         const id = dlg.site.id;
         if (dlg.kind === 'delete') await adminApi('DELETE', `/sites/${id}`);
-        else if (dlg.kind === 'limit') await adminApi('PATCH', `/sites/${id}`, { rate_limit_per_minute: Number(input) });
+        else if (dlg.kind === 'limit') await adminApi('PATCH', `/sites/${id}`, { rate_limit_per_minute: input === '' ? null : Number(input) });
         else await adminApi('PATCH', `/sites/${id}`, { disabled: dlg.kind === 'disable' });
         dlg.open = false; toast(t('a_done')); await list.load();
     } catch (e) { dlg.error = errorText(e); } finally { dlg.busy = false; }
@@ -56,7 +56,7 @@ async function run({ input }) {
                         <tr v-for="s in list.rows" :key="s.id" class="hover:bg-soft">
                             <td class="px-4 py-2.5"><div class="font-medium" dir="ltr">{{ s.domain }}</div><div class="text-xs text-muted"><span dir="ltr">{{ s.name }} · {{ s.prefix }}…</span> · {{ fmtDate(s.created_at) }}</div></td>
                             <td class="px-4 py-2.5"><button type="button" dir="ltr" class="text-start text-brand hover:underline" @click="go('users', null, s.owner.id)">{{ s.owner.email }}</button></td>
-                            <td class="px-4 py-2.5 tabular-nums">{{ fmtNum(s.rate_limit) }}</td>
+                            <td class="px-4 py-2.5 tabular-nums">{{ fmtNum(s.rate_limit) }} <span v-if="s.rate_limit_override" class="text-xs text-amber-700">({{ t('a_limit_override') }})</span></td>
                             <td class="whitespace-nowrap px-4 py-2.5 text-muted">{{ s.last_used_at ? ago(s.last_used_at) : t('a_never') }}</td>
                             <td class="px-4 py-2.5"><div class="flex flex-wrap gap-1"><Badge v-if="s.disabled" tone="red">{{ t('a_disabled') }}</Badge><Badge v-else tone="green">{{ t('a_active') }}</Badge><Badge v-if="s.owner_suspended" tone="amber">{{ t('a_owner_suspended') }}</Badge></div></td>
                             <td class="whitespace-nowrap px-4 py-2.5 text-end">
@@ -75,6 +75,6 @@ async function run({ input }) {
         </div>
 
         <ConfirmDialog :open="dlg.open" :title="cfg.title" :body="cfg.body" :confirm-label="cfg.label" :danger="cfg.danger" :busy="dlg.busy" :error="dlg.error" :typed="cfg.typed" :typed-label="t('a_type_domain')"
-                       :input-label="cfg.inputLabel" :input-value="cfg.inputValue || ''" :input-type="cfg.inputType || 'text'" @close="dlg.open = false" @confirm="run" />
+                       :input-label="cfg.inputLabel" :allow-empty="!!cfg.allowEmpty" :input-value="cfg.inputValue || ''" :input-type="cfg.inputType || 'text'" @close="dlg.open = false" @confirm="run" />
     </div>
 </template>
