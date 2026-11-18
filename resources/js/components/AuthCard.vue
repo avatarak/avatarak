@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, onBeforeUnmount } from 'vue';
 import { api, ApiError } from '../api';
 import { load } from '../store';
 import { t } from '../i18n';
@@ -9,7 +9,10 @@ import Icon from './Icon.vue';
 const props = defineProps({ open: Boolean, mode: { type: String, default: 'register' }, email: { type: String, default: '' } });
 const emit = defineEmits(['close', 'switch']);
 
-const form = reactive({ name: '', email: '', password: '', username: '' });
+const form = reactive({ name: '', email: '', password: '', username: '', code: '' });
+const step = ref('password');   // password | email | code  (login only)
+const wait = ref(0);
+let timer;
 const errors = ref({});
 const busy = ref(false);
 const message = ref('');
@@ -17,12 +20,44 @@ const message = ref('');
 // start clean every time it opens (keeps a prefilled email from the landing form)
 watch(() => props.open, (v) => {
     if (!v) return;
-    Object.assign(form, { name: '', email: props.email, password: '', username: '' });
-    errors.value = {}; message.value = ''; busy.value = false;
+    Object.assign(form, { name: '', email: props.email, password: '', username: '', code: '' });
+    errors.value = {}; message.value = ''; busy.value = false; step.value = 'password';
 });
+
+function startWait() {
+    wait.value = 60; clearInterval(timer);
+    timer = setInterval(() => { if (--wait.value <= 0) clearInterval(timer); }, 1000);
+}
+onBeforeUnmount(() => clearInterval(timer));
+
+async function sendCode() {
+    if (busy.value) return;
+    busy.value = true; errors.value = {}; message.value = '';
+    try {
+        await api('POST', '/login/code', { email: form.email });
+        step.value = 'code'; form.code = ''; startWait();
+    } catch (e) {
+        if (!(e instanceof ApiError)) throw e;
+        errors.value = e.errors; message.value = Object.keys(e.errors).length ? '' : e.message;
+    }
+    busy.value = false;
+}
 
 async function submit() {
     if (busy.value) return;
+    if (props.mode === 'login' && step.value === 'email') return sendCode();
+    if (props.mode === 'login' && step.value === 'code') {
+        busy.value = true; errors.value = {}; message.value = '';
+        try {
+            await api('POST', '/login/code/verify', { email: form.email, code: form.code });
+            await load();
+        } catch (e) {
+            if (!(e instanceof ApiError)) throw e;
+            errors.value = e.errors; message.value = Object.keys(e.errors).length ? '' : e.message;
+            busy.value = false;
+        }
+        return;
+    }
     busy.value = true; errors.value = {}; message.value = '';
     try {
         await api('POST', props.mode === 'register' ? '/register' : '/login', form);
@@ -59,10 +94,18 @@ const err = (k) => errors.value[k]?.[0];
                 </template>
                 <div>
                     <label class="label" for="a-email">{{ t('email') }}</label>
-                    <input id="a-email" v-model="form.email" type="email" dir="ltr" class="field text-start" autocomplete="email" :data-autofocus="mode === 'login' ? '' : null">
+                    <input id="a-email" v-model="form.email" type="email" dir="ltr" class="field text-start" autocomplete="email" :readonly="step === 'code'" :data-autofocus="mode === 'login' ? '' : null">
                     <p v-if="err('email')" class="mt-1 text-sm text-red-600">{{ err('email') }}</p>
                 </div>
-                <div>
+                <div v-if="step === 'code'">
+                    <label class="label" for="a-code">{{ t('codeLabel') }}</label>
+                    <input id="a-code" v-model="form.code" dir="ltr" inputmode="numeric" maxlength="12" class="field text-center text-xl tracking-[0.4em]" autocomplete="one-time-code" data-autofocus>
+                    <p v-if="err('code')" class="mt-1 text-sm text-red-600">{{ err('code') }}</p>
+                    <p v-else class="hint mt-1">{{ t('codeSent') }}</p>
+                    <button v-if="wait <= 0" type="button" class="mt-2 text-sm font-semibold text-brand hover:underline" @click="sendCode">{{ t('codeResend') }}</button>
+                    <p v-else class="hint mt-2">{{ t('codeResendIn') }} {{ wait }} {{ t('seconds') }}</p>
+                </div>
+                <div v-if="step === 'password'">
                     <label class="label" for="a-pass">{{ t('password') }}</label>
                     <input id="a-pass" v-model="form.password" type="password" dir="ltr" class="field text-start"
                            :autocomplete="mode === 'register' ? 'new-password' : 'current-password'">
@@ -72,7 +115,13 @@ const err = (k) => errors.value[k]?.[0];
                 <p v-if="message" class="text-sm text-red-600" role="alert">{{ message }}</p>
             </div>
 
-            <button class="btn btn-primary mt-7 w-full !min-h-[48px]" :disabled="busy">{{ busy ? t('saving') : t(mode) }}</button>
+            <button class="btn btn-primary mt-7 w-full !min-h-[48px]" :disabled="busy">
+                {{ busy ? t('saving') : (mode === 'login' && step === 'email') ? t('sendCode') : (mode === 'login' && step === 'code') ? t('codeEnter') : t(mode) }}
+            </button>
+            <p v-if="mode === 'login'" class="mt-4 text-center text-sm">
+                <button v-if="step === 'password'" type="button" class="font-semibold text-brand hover:underline" @click="step = 'email'; errors = {}; message = ''">{{ t('codeLogin') }}</button>
+                <button v-else type="button" class="font-semibold text-brand hover:underline" @click="step = 'password'; errors = {}; message = ''">{{ t('passwordLogin') }}</button>
+            </p>
             <p class="mt-5 text-center text-sm text-muted">
                 {{ mode === 'register' ? t('haveAccount') : t('needAccount') }}
                 <button type="button" class="font-semibold text-brand hover:underline" @click="emit('switch', mode === 'register' ? 'login' : 'register')">

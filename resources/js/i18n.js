@@ -1,4 +1,5 @@
 import { reactive, computed } from 'vue';
+import extra from './i18n-extra';
 
 const brand = window.__BRAND__ || {};
 const saved = (() => { try { return localStorage.getItem('locale'); } catch { return null; } })();
@@ -100,6 +101,8 @@ const M = {
         docsLink: 'Read the API documentation', preview: 'Preview', back: 'Back', menu: 'Menu', yourAddress: 'Your profile address', linkCopied: 'Link copied',
     },
 };
+
+for (const l of Object.keys(extra)) Object.assign(M[l], extra[l]);
 
 export function t(key) {
     return M[i18n.locale]?.[key] ?? M.fa[key] ?? key;

@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // There is no server-rendered login route; the exception handler below turns this into a 401.
         $middleware->redirectGuestsTo(fn () => '/');
-        $middleware->web(append: [\App\Http\Middleware\SetLocale::class]);
+        $middleware->web(append: [\App\Http\Middleware\SetLocale::class, \App\Http\Middleware\EnsureNotSuspended::class]);
         // the UI language cookie is set by JS in plain text (see resources/js/i18n.js)
         $middleware->encryptCookies(except: ['locale']);
     })

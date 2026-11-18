@@ -17,6 +17,8 @@ Route::get('/verify-email/{token}', [EmailController::class, 'verify'])->name('e
 // Auth (session based, same-origin SPA)
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+Route::post('/login/code', [\App\Http\Controllers\Auth\CodeLoginController::class, 'send'])->middleware('throttle:6,1');
+Route::post('/login/code/verify', [\App\Http\Controllers\Auth\CodeLoginController::class, 'verify'])->middleware('throttle:10,1');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::middleware('auth')->prefix('account')->group(function () {
@@ -37,6 +39,8 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::post('verifications/website/check', [\App\Http\Controllers\VerificationController::class, 'websiteCheck'])->middleware('throttle:10,1');
     Route::post('verifications/telegram', [\App\Http\Controllers\VerificationController::class, 'telegram'])->middleware('throttle:20,1');
     Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
+
+    Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');
 
     Route::get('sites', [SiteController::class, 'index']);
     Route::post('sites', [SiteController::class, 'store'])->middleware('throttle:10,1');

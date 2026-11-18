@@ -16,14 +16,15 @@ import DesignSection from './sections/DesignSection.vue';
 import PrivacySection from './sections/PrivacySection.vue';
 import DevelopersSection from './sections/DevelopersSection.vue';
 import VerifiedSection from './sections/VerifiedSection.vue';
+import SecuritySection from './sections/SecuritySection.vue';
 
 const SECTIONS = {
     avatars: AvatarsSection, about: AboutSection, links: LinksSection, verified: VerifiedSection, emails: EmailsSection,
-    design: DesignSection, privacy: PrivacySection, developers: DevelopersSection,
+    design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
 };
 const GROUPS = [
     [['avatars', null], ['about', 'user'], ['links', 'link'], ['verified', 'verified'], ['emails', 'mail']],
-    [['design', 'palette'], ['privacy', 'shield']],
+    [['design', 'palette'], ['privacy', 'shield'], ['security', 'lock']],
     [['developers', 'code']],
 ];
 

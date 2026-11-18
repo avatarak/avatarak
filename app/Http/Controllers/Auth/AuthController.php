@@ -47,6 +47,13 @@ class AuthController extends Controller
             return response()->json(['message' => __('app.bad_credentials')], 422);
         }
 
+        if (Auth::user()->isSuspended()) {
+            Auth::logout();
+            $request->session()->invalidate();
+
+            return response()->json(['message' => __('app.account_suspended')], 403);
+        }
+
         $request->session()->regenerate();
 
         return response()->json(['message' => 'ok']);

@@ -28,4 +28,11 @@ return [
     'verify_err_taken' => 'This domain is already verified for another user.',
     'verify_tg_disabled' => 'Telegram verification is not configured on this server.',
     'verify_tg_bad_handle' => 'Invalid Telegram username (5-32 letters, digits or _).',
+    'code_subject' => 'Your :app sign-in code: :code',
+    'code_body' => 'Here is your one-time sign-in code. It is valid for :minutes minutes:',
+    'code_ignore' => 'If you did not ask to sign in, ignore this email and do not share the code.',
+    'code_sent' => 'If this email has an account, a sign-in code was sent to it.',
+    'code_invalid' => 'The code is wrong or has expired.',
+    'wrong_current_password' => 'The current password is incorrect.',
+    'account_suspended' => 'This account has been suspended. Contact support for details.',
 ];
