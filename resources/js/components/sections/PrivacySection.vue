@@ -2,6 +2,7 @@
 import { api } from '../../api';
 import { state, setAccount, toast } from '../../store';
 import { t } from '../../i18n';
+import SearchPreview from './SearchPreview.vue';
 
 const ITEMS = [
     ['show_avatar', 'showAvatar', 'showAvatarD'],
@@ -42,5 +43,6 @@ async function toggle(key, value) {
                 </button>
             </li>
         </ul>
+        <SearchPreview />
     </div>
 </template>

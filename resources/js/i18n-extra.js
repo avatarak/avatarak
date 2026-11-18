@@ -35,6 +35,9 @@ export default {
         plRedirect: 'در حال رفتن به درگاه پرداخت…', plOk: 'پرداخت موفق بود؛ پلن شما فعال شد ✓', plFail: 'پرداخت انجام نشد. اگر مبلغی کم شده، تا چند دقیقه به حسابتان برمی‌گردد.', plManual: 'فعال‌سازی توسط پشتیبانی', plPayment: 'پرداخت آنلاین', plSource: 'نوع',
         prTitle: 'قیمت‌ها', prSub: 'رایگان شروع کنید. وقتی بزرگ شدید، ارتقا دهید.',
         // gallery, sections, themes
+        seoTitle: 'دیده‌شدن در گوگل', seo_private: 'صفحه‌تان خصوصی است و هیچ موتور جست‌وجویی آن را نمی‌بیند.', seo_off: 'به موتورهای جست‌وجو گفته شده صفحه‌تان را ایندکس نکنند (noindex). برای دیده‌شدن در گوگل «ایندکس شدن در گوگل» را روشن کنید.',
+        seo_thin: 'ایندکس روشن است، اما صفحه‌تان هنوز در نقشه‌ی سایت (sitemap) نمی‌آید چون اطلاعاتش کم است.', seo_ok: 'ایندکس روشن است و صفحه‌تان در نقشه‌ی سایت هست. گوگل ممکن است چند روز تا چند هفته طول بکشد تا آن را پیدا کند.',
+        seoNeedName: 'یک نام نمایشی (فارسی یا انگلیسی)', seoNeedText: 'یک بیو یا یک عنوان شغلی', seoPreview: 'پیش‌نمایش نتیجه در گوگل', seoNote: 'شکل نهایی را گوگل تعیین می‌کند؛ این فقط تخمین است. جایگاه در نتایج تضمین نمی‌شود.',
         lgTitle: 'زبان صفحه‌ی عمومی', lgHelp: 'صفحه‌تان فقط یک زبان داشته باشد یا دو زبان؟', lgFa: 'فقط فارسی', lgEn: 'فقط English', lgBoth: 'دوزبانه',
         lgD_fa: 'کل صفحه همیشه فارسی و راست‌به‌چپ است، حتی اگر بازدیدکننده سایت را انگلیسی دیده باشد.', lgD_en: 'کل صفحه همیشه انگلیسی و چپ‌به‌راست است، حتی اگر بازدیدکننده سایت را فارسی دیده باشد.',
         lgD_both: 'هر متن دو نسخه دارد (تب فارسی | English بالای فرم‌ها). بازدیدکننده نسخه‌ی زبان خودش را می‌بیند و یک سوییچ زبان هم بالای صفحه می‌آید.', lgPrimary: 'زبان اصلی', lgEditHint: 'متن‌ها را به همین زبان بنویسید. با تغییر زبان، متن زبان دیگر که قبلاً نوشته‌اید پنهان می‌ماند و پاک نمی‌شود.',
@@ -82,6 +85,9 @@ export default {
         plRedirect: 'Taking you to the payment page…', plOk: 'Payment received; your plan is active ✓', plFail: 'The payment did not go through. If money was taken it returns to your account within minutes.', plManual: 'Activated by support', plPayment: 'Online payment', plSource: 'Type',
         prTitle: 'Pricing', prSub: 'Start free. Upgrade when you grow.',
         // gallery, sections, themes
+        seoTitle: 'Showing up on Google', seo_private: 'Your page is private, so no search engine can see it.', seo_off: 'Search engines are told not to index your page (noindex). Turn on “Search engine indexing” to appear on Google.',
+        seo_thin: 'Indexing is on, but your page is not in the sitemap yet because it says too little.', seo_ok: 'Indexing is on and your page is in the sitemap. Google can take a few days to a few weeks to find it.',
+        seoNeedName: 'A display name (Persian or English)', seoNeedText: 'A bio or a headline', seoPreview: 'Preview of the Google result', seoNote: 'Google decides the final look; this is an estimate. A position in the results is never guaranteed.',
         lgTitle: 'Language of your public page', lgHelp: 'Should your page speak one language or two?', lgFa: 'Persian only', lgEn: 'English only', lgBoth: 'Bilingual',
         lgD_fa: 'The whole page is always Persian and right-to-left, even if the visitor uses the site in English.', lgD_en: 'The whole page is always English and left-to-right, even if the visitor uses the site in Persian.',
         lgD_both: 'Every text has two versions (a Persian | English tab above the forms). Visitors see their own language, and a language switch appears at the top of the page.', lgPrimary: 'Primary language', lgEditHint: 'Write your texts in this language. If you switch language, texts you wrote in the other one stay hidden, not deleted.',
