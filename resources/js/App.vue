@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, defineAsyncComponent } from 'vue';
 import { state, load, toast } from './store';
 import { applyDir, t } from './i18n';
 import Landing from './components/Landing.vue';
-import Panel from './components/Panel.vue';
-import AdminGate from './components/admin/AdminGate.vue';
+// the dashboard and the admin panel are big and most visitors never open them: load them only when needed
+const Panel = defineAsyncComponent(() => import('./components/Panel.vue'));
+const AdminGate = defineAsyncComponent(() => import('./components/admin/AdminGate.vue'));
 import AnnouncementBar from './components/AnnouncementBar.vue';
 
 const isPanel = location.pathname === '/panel';

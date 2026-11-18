@@ -11,6 +11,7 @@
     @include('partials.seo-page')
     <x-brand-head />
     <link rel="alternate" type="text/plain" href="{{ route('docs.llms') }}" title="llms.txt">
+    @include('partials.font-preload')
     @include('partials.brand')
     @vite(array_merge(['resources/css/app.css', 'resources/js/docs.js'], ($withExplorer ?? false) ? ['resources/js/explorer.js'] : []))
     @stack('head')

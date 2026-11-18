@@ -33,6 +33,7 @@
     <title>{{ $display }} — {{ $brand }}</title>
     @unless($indexable)<meta name="robots" content="noindex, nofollow">@endunless
     @include('partials.profile-seo')
+    @include('partials.font-preload')
     @include('partials.brand')
     <x-brand-head />
     @vite(['resources/css/app.css', 'resources/js/profile.js'])

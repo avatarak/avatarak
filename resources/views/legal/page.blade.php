@@ -14,6 +14,7 @@
     @php $seo = app(\App\Services\Seo::class)->legal($page, $title, $description, $locale, $brand); @endphp
     @include('partials.seo-page')
     <x-brand-head />
+    @include('partials.font-preload')
     @include('partials.brand')
     @vite(['resources/css/app.css'])
 </head>
