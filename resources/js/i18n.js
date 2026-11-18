@@ -105,6 +105,7 @@ const M = {
 
 for (const l of Object.keys(extra)) Object.assign(M[l], extra[l], adminMessages[l]);
 
-export function t(key) {
-    return M[i18n.locale]?.[key] ?? M.fa[key] ?? key;
+export function t(key, vars) {
+    const s = M[i18n.locale]?.[key] ?? M.fa[key] ?? key;
+    return vars ? s.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m)) : s;
 }

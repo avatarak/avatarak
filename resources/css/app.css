@@ -84,6 +84,25 @@
                 color-mix(in srgb, var(--accent) 62%, #fff) 48%,
                 color-mix(in srgb, var(--accent) 100%, #000 0%) 100%);
     }
+    .adv-chip { background: rgb(255 255 255 / .6); color: var(--ink); }
+    .adv-chip:hover { background: rgb(255 255 255 / .8); }
+    .profile-canvas[data-theme='dark'] .adv-chip { background: rgb(255 255 255 / .08); }
+    .profile-canvas[data-theme='dark'] .adv-chip:hover { background: rgb(255 255 255 / .16); }
+    .pf-foot { color: rgb(255 255 255 / .9); }
+    /* other looks for the public profile: the same markup, different variables */
+    .profile-canvas[data-theme='dark'] {
+        --accent: color-mix(in srgb, var(--brand) 50%, #fff);
+        --surface: #171B22; --ink: #E8EAED; --line: #2B323C; --muted: #9AA3AE; --soft: #1F252E;
+        background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent) 38%, #0B0D11) 0%, #0B0D11 62%);
+        color: var(--ink);
+    }
+    .profile-canvas[data-theme='paper'] { background: #F3EFE6; }
+    .profile-canvas[data-theme='plain'] { background: #F2F3F5; }
+    .profile-canvas[data-theme='dark'] .accent-btn { background: transparent; }
+    .profile-canvas[data-theme='dark'] .accent-btn:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+    .profile-canvas[data-theme='dark'] .pf-foot, .profile-canvas[data-theme='paper'] .pf-foot, .profile-canvas[data-theme='plain'] .pf-foot { color: var(--muted); }
+    .profile-canvas[data-theme='dark'] .card > div[aria-hidden='true']:first-child { background: color-mix(in srgb, var(--accent) 28%, #171B22) !important; }
+    .profile-canvas[data-theme='dark'] .card { box-shadow: 0 0 0 1px var(--line); }
     .accent-btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
                   background: #fff; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, #fff); border-radius: var(--radius-control);
                   min-height: 42px; padding: 6px 12px; font-size: 1rem; font-weight: 600; text-align: center; transition: background .12s, border-color .12s; cursor: pointer; }

@@ -10,6 +10,7 @@ const THEMES = [
     ['classic', '#1D4FC4'], ['mocha', '#A8561A'], ['mint', '#0A8F6E'], ['mustard', '#F2A900'],
     ['midnight', '#6D4AE8'], ['molten', '#E0360B'], ['earth', '#2E6B30'], ['cyber', '#D63AF2'],
 ];
+const LOOKS = ['gradient', 'dark', 'paper', 'plain'];
 const current = computed(() => (state.draft.accent_color || '#1D4FC4').toUpperCase());
 const isCustom = computed(() => !THEMES.some(([, c]) => c === current.value));
 
@@ -21,7 +22,7 @@ function toggle(s) {
 }
 
 const { busy, message, run, err } = useSubmit('PATCH', '/account/appearance', () => ({
-    accent_color: state.draft.accent_color || null, hidden_sections: state.draft.hidden_sections,
+    accent_color: state.draft.accent_color || null, theme: state.draft.theme || 'gradient', hidden_sections: state.draft.hidden_sections,
 }));
 </script>
 
@@ -54,6 +55,15 @@ const { busy, message, run, err } = useSubmit('PATCH', '/account/appearance', ()
         </div>
         <p v-if="err('accent_color')" class="mt-2 text-sm text-red-600">{{ err('accent_color') }}</p>
 
+        <h3 class="mt-9 text-lg font-bold">{{ t('themeTitle') }}</h3>
+        <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <button v-for="l in LOOKS" :key="l" type="button" class="rounded-[6px] border bg-white p-2 text-sm transition-colors"
+                    :class="(state.draft.theme || 'gradient') === l ? 'border-ink ring-1 ring-ink' : 'border-line hover:border-muted'" :aria-pressed="(state.draft.theme || 'gradient') === l" @click="state.draft.theme = l">
+                <span class="mb-2 block h-12 rounded-[4px]" :class="{ 'bg-[#0B0D11]': l === 'dark', 'bg-[#F3EFE6]': l === 'paper', 'bg-[#F2F3F5]': l === 'plain' }" :style="l === 'gradient' ? { background: `linear-gradient(120deg, ${current}, color-mix(in srgb, ${current} 60%, #fff))` } : null"></span>
+                {{ t('tm_' + l) }}
+            </button>
+        </div>
+
         <h3 class="mt-9 text-lg font-bold">{{ t('sections') }}</h3>
         <ul class="mt-3 space-y-2">
             <li class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5">
@@ -61,8 +71,8 @@ const { busy, message, run, err } = useSubmit('PATCH', '/account/appearance', ()
                 <span class="flex-1">{{ t('sec_intro') }}</span>
                 <span class="px-2 text-sm text-muted">{{ t('pinned') }}</span>
             </li>
-            <li v-for="s in ['bio', 'links', 'verified']" :key="s" class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5" :class="{ 'opacity-60': hidden(s) }">
-                <span class="grid size-10 place-items-center rounded-[6px] bg-white"><Icon :name="s === 'bio' ? 'user' : s === 'links' ? 'link' : 'verified'" :size="20" /></span>
+            <li v-for="s in ['bio', 'links', 'gallery', 'verified']" :key="s" class="flex items-center gap-3 rounded-[6px] bg-soft p-2.5" :class="{ 'opacity-60': hidden(s) }">
+                <span class="grid size-10 place-items-center rounded-[6px] bg-white"><Icon :name="s === 'bio' ? 'user' : s === 'links' ? 'link' : s === 'gallery' ? 'image' : 'verified'" :size="20" /></span>
                 <span class="flex-1">{{ t('sec_' + s) }}</span>
                 <button type="button" class="icon-btn" :aria-label="hidden(s) ? t('show') : t('hide')" :aria-pressed="!hidden(s)" @click="toggle(s)">
                     <Icon :name="hidden(s) ? 'eyeOff' : 'eye'" :size="20" />

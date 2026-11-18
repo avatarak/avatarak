@@ -11,8 +11,14 @@ import { t } from '../i18n';
  * measurements (taken from gravatar.com): 640px cards with 4px radius and 24px gaps, 148px avatar,
  * 34px name, 16px text, 42px buttons, 18px social icons, 192x108 link thumbnails. Keep them in sync.
  */
-const props = defineProps({ profile: Object, avatarSrc: String, verified: Boolean, verifiedAccounts: { type: Array, default: () => [] } });
+const props = defineProps({ profile: Object, avatarSrc: String, verified: Boolean, verifiedAccounts: { type: Array, default: () => [] }, gallery: { type: Array, default: () => [] } });
 
+const accent = computed(() => {
+    const c = props.profile.accent_color;
+    if (!c || props.profile.theme !== 'dark' || !/^#[0-9a-f]{6}$/i.test(c)) return c;
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+    return '#' + [r, g, b].map((v) => Math.round(v + (255 - v) * 0.5).toString(16).padStart(2, '0')).join('');
+});
 const hidden = (s) => (props.profile.hidden_sections || []).includes(s);
 const socials = computed(() => Object.entries(props.profile.socials || {}).filter(([n, v]) => v && SOCIAL_URLS[n]));
 const links = computed(() => (props.profile.links || []).filter((l) => l.label && l.url));
@@ -38,7 +44,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
 </script>
 
 <template>
-    <div class="profile-canvas min-h-full px-4 py-12" :style="profile.accent_color ? { '--accent': profile.accent_color } : null">
+    <div class="profile-canvas min-h-full px-4 py-12" :data-theme="profile.theme || 'gradient'" :style="accent ? { '--accent': accent } : null">
         <div class="mx-auto max-w-[640px] space-y-6">
             <article class="card relative overflow-hidden !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
                 <div class="absolute inset-x-0 top-0 h-36 overflow-hidden bg-[color-mix(in_srgb,var(--accent)_22%,#fff)]" aria-hidden="true">
@@ -92,6 +98,18 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
                         </span>
                     </li>
                 </ul>
+            </section>
+
+            <section v-if="(gallery || []).length && !hidden('gallery')" class="card !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
+                <h2 class="text-lg font-bold leading-[1.5]">{{ t('sec_gallery') }}</h2>
+                <ul class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    <li v-for="g in gallery" :key="g.id"><img :src="`/account/gallery/${g.id}/thumb`" :alt="g.caption || ''" loading="lazy" class="aspect-square w-full rounded-[4px] bg-line object-cover"></li>
+                </ul>
+            </section>
+
+            <section v-for="(s, i) in (profile.custom_sections || [])" :key="'cs' + i" class="card !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
+                <h2 class="text-lg font-bold leading-[1.5]">{{ s.title }}</h2>
+                <p class="mt-3 whitespace-pre-line break-words text-base leading-[1.6]">{{ s.body }}</p>
             </section>
 
             <section v-if="verifiedAccounts.length && !hidden('verified')" class="card !rounded-[4px] px-6 pb-6 pt-8 sm:px-10">

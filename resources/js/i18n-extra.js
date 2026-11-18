@@ -34,6 +34,10 @@ export default {
         plDomain: 'دامنه‌ی اختصاصی', plWhite: 'حذف برند (وایت‌لیبل)', plUsage: 'سایت‌های شما', plToman: 'تومان', plHistory: 'سوابق پرداخت', plNoPayments: 'هنوز پرداختی ندارید.', plRef: 'پیگیری', plPaid: 'پرداخت‌شده', plFailed: 'ناموفق', plPending: 'در انتظار',
         plRedirect: 'در حال رفتن به درگاه پرداخت…', plOk: 'پرداخت موفق بود؛ پلن شما فعال شد ✓', plFail: 'پرداخت انجام نشد. اگر مبلغی کم شده، تا چند دقیقه به حسابتان برمی‌گردد.', plManual: 'فعال‌سازی توسط پشتیبانی', plPayment: 'پرداخت آنلاین', plSource: 'نوع',
         prTitle: 'قیمت‌ها', prSub: 'رایگان شروع کنید. وقتی بزرگ شدید، ارتقا دهید.',
+        // gallery, sections, themes
+        nav_gallery: 'گالری و بخش‌ها', d_gallery: 'عکس‌ها و بخش‌های متنی دلخواه برای صفحه‌ی عمومی‌تان.', gaPhotos: 'گالری عکس', gaPhotosHelp: 'تا {n} عکس. عکس‌ها فشرده می‌شوند و اطلاعات مکانی (EXIF) آن‌ها پاک می‌شود.', gaCaption: 'توضیح کوتاه (اختیاری)', gaUp: 'بالاتر', gaDown: 'پایین‌تر', gaEmpty: 'هنوز عکسی ندارید.', gaAdd: 'افزودن عکس', gaFull: 'به سقف عکس‌های پلنتان رسیده‌اید.',
+        csTitle: 'بخش‌های دلخواه', csHelp: 'تا {n} بخش متنی (مثلاً «ساعت کاری» یا «خدمات»). فقط متن ساده.', csName: 'عنوان بخش', csBody: 'متن', csAdd: 'افزودن بخش', csFull: 'به سقف بخش‌های پلنتان رسیده‌اید.',
+        themeTitle: 'ظاهر صفحه', tm_gradient: 'گرادیان', tm_dark: 'تیره', tm_paper: 'کاغذی', tm_plain: 'ساده', sec_gallery: 'گالری',
         // webhooks & key scopes
         whTitle: 'وب‌هوک‌ها', whHelp: 'وقتی پروفایل‌تان تغییر کند، یک درخواست امضاشده به آدرس شما فرستاده می‌شود.', whUrl: 'آدرس (https)', whAdd: 'افزودن وب‌هوک', whNeedPlan: 'وب‌هوک در پلن حرفه‌ای و بالاتر است.', whEvents: 'رویدادها', whSecretOnce: 'این رمز امضا فقط همین یک بار نشان داده می‌شود. آن را همین حالا ذخیره کنید:',
         whPing: 'ارسال آزمایشی', whPinged: 'درخواست آزمایشی در صف قرار گرفت', whRotate: 'رمز جدید', whOn: 'فعال', whOff: 'غیرفعال', whAutoOff: 'به‌خاطر شکست‌های پیاپی خودکار خاموش شد', whLast: 'آخرین ارسال', whDeliveries: 'ارسال‌های اخیر',
@@ -74,6 +78,10 @@ export default {
         plDomain: 'Custom domain', plWhite: 'No branding (white-label)', plUsage: 'Your sites', plToman: 'Toman', plHistory: 'Payment history', plNoPayments: 'No payments yet.', plRef: 'Reference', plPaid: 'Paid', plFailed: 'Failed', plPending: 'Pending',
         plRedirect: 'Taking you to the payment page…', plOk: 'Payment received; your plan is active ✓', plFail: 'The payment did not go through. If money was taken it returns to your account within minutes.', plManual: 'Activated by support', plPayment: 'Online payment', plSource: 'Type',
         prTitle: 'Pricing', prSub: 'Start free. Upgrade when you grow.',
+        // gallery, sections, themes
+        nav_gallery: 'Gallery & sections', d_gallery: 'Photos and free-text sections for your public page.', gaPhotos: 'Photo gallery', gaPhotosHelp: 'Up to {n} photos. They are compressed and location data (EXIF) is removed.', gaCaption: 'Short caption (optional)', gaUp: 'Move up', gaDown: 'Move down', gaEmpty: 'No photos yet.', gaAdd: 'Add a photo', gaFull: 'You have reached the photo limit of your plan.',
+        csTitle: 'Custom sections', csHelp: 'Up to {n} text sections (for example “Opening hours” or “Services”). Plain text only.', csName: 'Section title', csBody: 'Text', csAdd: 'Add a section', csFull: 'You have reached the section limit of your plan.',
+        themeTitle: 'Page look', tm_gradient: 'Gradient', tm_dark: 'Dark', tm_paper: 'Paper', tm_plain: 'Plain', sec_gallery: 'Gallery',
         // webhooks & key scopes
         whTitle: 'Webhooks', whHelp: 'When your profile changes we send a signed request to your address.', whUrl: 'Address (https)', whAdd: 'Add webhook', whNeedPlan: 'Webhooks come with the Pro plan and above.', whEvents: 'Events', whSecretOnce: 'This signing secret is shown only once. Save it now:',
         whPing: 'Send a test', whPinged: 'Test request queued', whRotate: 'New secret', whOn: 'On', whOff: 'Off', whAutoOff: 'Switched off automatically after repeated failures', whLast: 'Last delivery', whDeliveries: 'Recent deliveries',

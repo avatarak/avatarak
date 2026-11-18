@@ -39,6 +39,7 @@ class UserDeletion
         }
         try {
             $disk->deleteDirectory("avatars/{$user->id}");
+            $disk->deleteDirectory("gallery/{$user->id}");
         } catch (\Throwable $e) {
             report($e);
         }

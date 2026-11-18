@@ -22,13 +22,14 @@ import ShareSection from './sections/ShareSection.vue';
 import StatsSection from './sections/StatsSection.vue';
 import BillingSection from './sections/BillingSection.vue';
 import DomainSection from './sections/DomainSection.vue';
+import GallerySection from './sections/GallerySection.vue';
 
 const SECTIONS = {
     avatars: AvatarsSection, about: AboutSection, links: LinksSection, verified: VerifiedSection, emails: EmailsSection,
-    share: ShareSection, stats: StatsSection, billing: BillingSection, domain: DomainSection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
+    share: ShareSection, stats: StatsSection, billing: BillingSection, domain: DomainSection, gallery: GallerySection, design: DesignSection, privacy: PrivacySection, security: SecuritySection, developers: DevelopersSection,
 };
 const GROUPS = [
-    [['avatars', null], ['about', 'user'], ['links', 'link'], ['verified', 'verified'], ['emails', 'mail']],
+    [['avatars', null], ['about', 'user'], ['links', 'link'], ['gallery', 'image'], ['verified', 'verified'], ['emails', 'mail']],
     [['stats', 'chart'], ['share', 'qr'], ['design', 'palette'], ['privacy', 'shield'], ['security', 'lock']],
     [['developers', 'code'], ['domain', 'globe'], ['billing', 'gift']],
 ];
@@ -119,7 +120,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
             </aside>
 
             <main class="min-w-0 flex-1 overflow-y-auto rounded-ss-[20px]" :class="mobilePreview ? 'block' : 'hidden lg:block'" :aria-label="t('preview')">
-                <ProfileCard :profile="state.draft" :avatar-src="avatarSrc" :verified="verified" :verified-accounts="state.account.verified_accounts || []" />
+                <ProfileCard :profile="state.draft" :avatar-src="avatarSrc" :verified="verified" :verified-accounts="state.account.verified_accounts || []" :gallery="state.account.gallery || []" />
             </main>
         </div>
 

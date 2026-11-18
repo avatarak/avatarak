@@ -27,7 +27,8 @@ class AccountController extends Controller
             'recent_code_login' => now()->timestamp - (int) $request->session()->get('reauth_at', 0) < 900,
             'profile' => $p->only(['username', 'name_fa', 'name_en', 'bio', 'website', 'socials',
                 'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order',
-                'headline', 'location', 'links', 'hidden_sections', 'show_link_images']) + ['has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
+                'headline', 'location', 'links', 'hidden_sections', 'show_link_images', 'theme', 'custom_sections']) + ['section_limit' => app(\App\Services\PlanService::class)->limit($user, 'sections'), 'has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
+            'gallery' => $user->galleryImages()->get()->map(fn ($g) => ['id' => $g->id, 'caption' => $g->caption])->values(),
             'avatars' => $user->avatars()->latest('id')->get()->map(fn ($a) => [
                 'id' => $a->id, 'active' => $a->id === $p->avatar_id, 'created_at' => $a->created_at,
             ])->values(),
@@ -84,18 +85,36 @@ class AccountController extends Controller
         return $this->show($request);
     }
 
-    public const SECTIONS = ['bio', 'links', 'verified'];
+    public const SECTIONS = ['bio', 'links', 'verified', 'gallery'];
 
     public function updateAppearance(Request $request): JsonResponse
     {
         $data = $request->validate([
             'accent_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'section_order' => ['nullable', 'array', 'max:3'],
+            'theme' => ['sometimes', 'string', Rule::in(\App\Models\Profile::THEMES)],
+            'section_order' => ['nullable', 'array', 'max:4'],
             'section_order.*' => ['string', 'distinct', Rule::in(self::SECTIONS)],
-            'hidden_sections' => ['nullable', 'array', 'max:3'],
+            'hidden_sections' => ['nullable', 'array', 'max:4'],
             'hidden_sections.*' => ['string', 'distinct', Rule::in(self::SECTIONS)],
         ]);
         $request->user()->profile->update($data);
+
+        return $this->show($request);
+    }
+
+    /** Free-text sections ("Services", "Hours", …). Plain text only; how many depends on the plan. */
+    public function updateSections(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'sections' => ['present', 'array', 'max:50'],
+            'sections.*.title' => ['required', 'string', 'max:60'],
+            'sections.*.body' => ['required', 'string', 'max:1500'],
+        ]);
+        $limit = app(\App\Services\PlanService::class)->limit($request->user(), 'sections');
+        abort_if(count($data['sections']) > $limit, 422, __('app.sections_limit'));
+        $request->user()->profile->update(['custom_sections' => collect($data['sections'])->map(fn ($s) => [
+            'title' => trim($s['title']), 'body' => trim($s['body']),
+        ])->values()->all()]);
 
         return $this->show($request);
     }

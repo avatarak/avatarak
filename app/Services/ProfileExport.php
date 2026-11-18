@@ -57,6 +57,26 @@ class ProfileExport
             ->map(fn (VerifiedAccount $a) => ['network' => $a->network, 'identifier' => $a->label ?: $a->identifier, 'url' => $a->url()])->all();
     }
 
+    /** @return list<array{url:string,thumb_url:string,caption:?string,width:int,height:int}> */
+    public function gallery(Profile $p): array
+    {
+        if (in_array('gallery', $p->hidden_sections ?? [], true)) {
+            return [];
+        }
+
+        return \App\Models\GalleryImage::where('user_id', $p->user_id)->orderBy('position')->orderBy('id')->get()->map(fn ($g) => [
+            'url' => route('profile.gallery', [$p->username, $g->id, 'full']), 'thumb_url' => route('profile.gallery', [$p->username, $g->id, 'thumb']),
+            'caption' => $g->caption, 'width' => $g->width, 'height' => $g->height,
+        ])->all();
+    }
+
+    /** @return list<array{title:string,body:string}> */
+    public function sections(Profile $p): array
+    {
+        return collect($p->custom_sections ?? [])->filter(fn ($s) => ! empty($s['title']) && ! empty($s['body']))
+            ->map(fn ($s) => ['title' => (string) $s['title'], 'body' => (string) $s['body']])->values()->all();
+    }
+
     public function avatarUrl(Profile $p, int $size = 512): ?string
     {
         return ($p->show_avatar && $p->avatar_path)
@@ -85,6 +105,8 @@ class ProfileExport
             'socials' => (object) $this->socials($p),
             'links' => $this->links($p),
             'verified_accounts' => $this->verifiedAccounts($p),
+            'gallery' => $this->gallery($p),
+            'sections' => $this->sections($p),
             'created_at' => $p->created_at?->toIso8601String(),
             'updated_at' => $p->updated_at?->toIso8601String(),
         ];
@@ -125,6 +147,21 @@ class ProfileExport
             $lines[] = '';
             foreach ($links as $l) {
                 $lines[] = '- ['.$esc($l['label']).']('.$l['url'].')'.(isset($l['description']) ? ' — '.str_replace(["\r", "\n"], ' ', $l['description']) : '');
+            }
+        }
+
+        foreach ($this->sections($p) as $sec) {
+            $lines[] = '';
+            $lines[] = '## '.str_replace(["\r", "\n", '#'], ' ', $sec['title']);
+            $lines[] = '';
+            $lines[] = $sec['body'];
+        }
+        if ($gallery = $this->gallery($p)) {
+            $lines[] = '';
+            $lines[] = '## Gallery';
+            $lines[] = '';
+            foreach ($gallery as $g) {
+                $lines[] = '!['.$esc(str_replace(["\r", "\n"], ' ', (string) $g['caption'])).']('.$g['url'].')';
             }
         }
 

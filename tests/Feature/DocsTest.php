@@ -308,7 +308,7 @@ class DocsTest extends TestCase
         $this->avatarUser();
         $r = $this->get('/javid.json')->assertOk()->assertHeader('Access-Control-Allow-Origin', '*');
         $this->assertSame('max-age=300, public', $this->cc($r));
-        $this->assertSame(['username', 'url', 'display_name', 'name_fa', 'name_en', 'headline', 'location', 'bio', 'website', 'avatar_url', 'verified', 'socials', 'links', 'verified_accounts', 'created_at', 'updated_at'], array_keys($r->json()));
+        $this->assertSame(['username', 'url', 'display_name', 'name_fa', 'name_en', 'headline', 'location', 'bio', 'website', 'avatar_url', 'verified', 'socials', 'links', 'verified_accounts', 'gallery', 'sections', 'created_at', 'updated_at'], array_keys($r->json()));
         $this->assertSame('https://github.com/javid', $r->json('socials.github'));      // full URL here, handle in the REST API
         $this->get('/javid.vcf')->assertHeader('Content-Disposition', 'attachment; filename="javid.vcf"');
         $this->get('/javid.md')->assertHeader('Content-Type', 'text/markdown; charset=utf-8');

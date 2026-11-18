@@ -227,3 +227,31 @@ document.querySelectorAll('[data-select]').forEach((root) => {
         send.textContent = label;
     });
 })();
+
+/* ---------- gallery lightbox ---------- */
+(() => {
+    const box = document.getElementById('lightbox');
+    const items = [...document.querySelectorAll('[data-gallery-item]')];
+    if (!box || !items.length) return;
+    const img = box.querySelector('[data-lb-img]');
+    const cap = box.querySelector('[data-lb-cap]');
+    let i = 0;
+    const show = (n) => {
+        i = (n + items.length) % items.length;
+        img.src = items[i].dataset.full;
+        img.alt = cap.textContent = items[i].dataset.caption || '';
+    };
+    const open = (n) => { show(n); box.hidden = false; box.classList.remove('hidden'); box.classList.add('flex'); document.body.style.overflow = 'hidden'; box.querySelector('[data-lb-close]').focus(); };
+    const close = () => { box.hidden = true; box.classList.add('hidden'); box.classList.remove('flex'); img.src = ''; document.body.style.overflow = ''; items[i].focus(); };
+    items.forEach((b, n) => b.addEventListener('click', () => open(n)));
+    box.querySelector('[data-lb-close]').addEventListener('click', close);
+    box.querySelector('[data-lb-prev]').addEventListener('click', () => show(i - 1));
+    box.querySelector('[data-lb-next]').addEventListener('click', () => show(i + 1));
+    box.addEventListener('click', (e) => { if (e.target === box) close(); });
+    document.addEventListener('keydown', (e) => {
+        if (box.hidden) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(i + (document.dir === 'rtl' ? 1 : -1));
+        else if (e.key === 'ArrowRight') show(i + (document.dir === 'rtl' ? -1 : 1));
+    });
+})();

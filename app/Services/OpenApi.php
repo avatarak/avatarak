@@ -114,6 +114,8 @@ class OpenApi
                         'headline' => ['type' => ['string', 'null']], 'location' => ['type' => ['string', 'null']], 'bio' => ['type' => ['string', 'null']], 'website' => ['type' => ['string', 'null']],
                         'avatar_url' => ['type' => ['string', 'null']], 'verified' => ['type' => 'boolean'], 'socials' => ['type' => 'object', 'additionalProperties' => ['type' => 'string', 'format' => 'uri']],
                         'links' => ['type' => 'array', 'items' => ['$ref' => '#/components/schemas/Link']], 'verified_accounts' => ['type' => 'array', 'items' => ['$ref' => '#/components/schemas/VerifiedAccount']],
+                        'gallery' => ['type' => 'array', 'items' => ['type' => 'object', 'properties' => ['url' => ['type' => 'string', 'format' => 'uri'], 'thumb_url' => ['type' => 'string', 'format' => 'uri'], 'caption' => ['type' => ['string', 'null']], 'width' => ['type' => 'integer'], 'height' => ['type' => 'integer']]]],
+                        'sections' => ['type' => 'array', 'items' => ['type' => 'object', 'properties' => ['title' => ['type' => 'string'], 'body' => ['type' => 'string']]]],
                         'created_at' => ['type' => 'string', 'format' => 'date-time'], 'updated_at' => ['type' => 'string', 'format' => 'date-time'],
                     ]],
                 ],

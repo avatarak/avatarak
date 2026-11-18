@@ -99,6 +99,8 @@ return [
     'webhook_plan' => 'Webhooks come with the Pro plan and above.',
     'webhook_limit' => 'You have reached the webhook limit of your plan.',
     'webhook_url' => 'The address must be a public https:// URL.',
+    'gallery_limit' => 'You have reached the photo limit of your plan.',
+    'sections_limit' => 'You have reached the limit of custom sections for your plan.',
     'plan_limit_sites' => 'You have reached the site limit of your plan. Upgrade to add more.',
     'domain_invalid' => 'Invalid domain. Enter only your own domain (like example.com).',
     'domain_plan' => 'Your plan does not include custom domains. Upgrade to use one.',

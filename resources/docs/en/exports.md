@@ -44,6 +44,12 @@ curl {{origin}}/javid.json
     { "network": "website", "identifier": "javid.example.ir", "url": "https://javid.example.ir" },
     { "network": "telegram", "identifier": "javid_t", "url": "https://t.me/javid_t" }
   ],
+  "gallery": [
+    { "url": "{{origin}}/javid/gallery/7/full", "thumb_url": "{{origin}}/javid/gallery/7/thumb", "caption": "Our office", "width": 1600, "height": 1067 }
+  ],
+  "sections": [
+    { "title": "Opening hours", "body": "Sat–Wed, 9 to 17" }
+  ],
   "created_at": "2026-11-01T10:12:00+00:00",
   "updated_at": "2026-11-17T20:41:00+00:00"
 }
@@ -56,6 +62,8 @@ curl {{origin}}/javid.json
 | `socials` | network → **full URL** (unlike the REST API, which returns handles) |
 | `links[].image` | present only when the user shows link images |
 | `verified_accounts` | accounts the user *proved* they own: see [Verified accounts](/docs/verified-accounts) |
+| `gallery` | the photos the owner added, in order; empty when hidden. Full size is at most 1600 px |
+| `sections` | free-text sections the owner wrote (`title`, `body`; plain text) |
 
 Fields the user left empty are `null`, an empty object or an empty list.
 

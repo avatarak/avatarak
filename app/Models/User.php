@@ -83,6 +83,11 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class);
     }
 
+    public function galleryImages(): HasMany
+    {
+        return $this->hasMany(GalleryImage::class)->orderBy('position')->orderBy('id');
+    }
+
     public function webhooks(): HasMany
     {
         return $this->hasMany(Webhook::class);

@@ -1,14 +1,19 @@
 @php
     $accent = ($p->accent_color && preg_match('/^#[0-9A-Fa-f]{6}$/', $p->accent_color)) ? $p->accent_color : null;
+    // on the dark look, lift the accent towards white so links and buttons stay readable
+    if ($accent && ($theme ?? 'gradient') === 'dark') {
+        [$r, $g, $b] = array_map('hexdec', str_split(ltrim($accent, '#'), 2));
+        $accent = sprintf('#%02X%02X%02X', $r + (255 - $r) * .5, $g + (255 - $g) * .5, $b + (255 - $b) * .5);
+    }
     $rtl = app()->getLocale() !== 'en';
     $brand = $rtl ? config('brand.name') : (config('brand.name_en') ?: config('brand.name'));
     $t = $rtl ? [
-        'links' => 'لینک‌ها', 'verifiedAccounts' => 'حساب‌های تأییدشده', 'connections' => 'حساب‌های تأییدشده', 'web' => 'وب‌سایت', 'share' => 'اشتراک‌گذاری', 'site' => 'وب‌سایت', 'copied' => 'کپی شد', 'more' => 'نمایش بیشتر', 'less' => 'نمایش کمتر', 'edit' => 'ویرایش پروفایل',
+        'gallery' => 'گالری', 'links' => 'لینک‌ها', 'verifiedAccounts' => 'حساب‌های تأییدشده', 'connections' => 'حساب‌های تأییدشده', 'web' => 'وب‌سایت', 'share' => 'اشتراک‌گذاری', 'site' => 'وب‌سایت', 'copied' => 'کپی شد', 'more' => 'نمایش بیشتر', 'less' => 'نمایش کمتر', 'edit' => 'ویرایش پروفایل',
         'adv' => 'جزئیات بیشتر', 'advFor' => 'برای توسعه‌دهنده‌ها', 'advTitle' => 'تجربه‌های شخصی‌سازی‌شده بسازید', 'advText' => 'از داده‌ی عمومی این پروفایل در برنامه یا سایت خودتان استفاده کنید و کارت پروفایل را جاسازی کنید.',
         'created' => 'ساخته‌شده', 'updated' => 'به‌روزرسانی', 'linksN' => 'لینک‌ها', 'socialsN' => 'شبکه‌ها', 'verified' => 'تأییدشده', 'yes' => 'بله', 'no' => 'خیر',
         'embed' => 'کد جاسازی', 'formats' => 'خروجی‌ها', 'qr' => 'کد QR', 'plain' => 'ساده', 'withAvatar' => 'با عکس', 'download' => 'دانلود SVG', 'copy' => 'کپی', 'close' => 'بستن', 'view' => 'مشاهده‌ی پروفایل', 'qrOpen' => 'کد QR',
     ] : [
-        'links' => 'Links', 'verifiedAccounts' => 'Verified Accounts', 'connections' => 'Verified connections', 'web' => 'Website', 'share' => 'Share', 'site' => 'Website', 'copied' => 'Copied', 'more' => 'Show more', 'less' => 'Show less', 'edit' => 'Edit profile',
+        'gallery' => 'Gallery', 'links' => 'Links', 'verifiedAccounts' => 'Verified Accounts', 'connections' => 'Verified connections', 'web' => 'Website', 'share' => 'Share', 'site' => 'Website', 'copied' => 'Copied', 'more' => 'Show more', 'less' => 'Show less', 'edit' => 'Edit profile',
         'adv' => 'Advanced details', 'advFor' => 'For developers', 'advTitle' => 'Craft personalized experiences', 'advText' => 'Use this profile\'s public data in your app or site, and embed the profile card.',
         'created' => 'Created', 'updated' => 'Updated', 'linksN' => 'Links', 'socialsN' => 'Socials', 'verified' => 'Verified', 'yes' => 'Yes', 'no' => 'No',
         'embed' => 'Embed code', 'formats' => 'Formats', 'qr' => 'QR code', 'plain' => 'Plain', 'withAvatar' => 'With avatar', 'download' => 'Download SVG', 'copy' => 'Copy', 'close' => 'Close', 'view' => 'View profile', 'qrOpen' => 'QR code',
@@ -40,7 +45,7 @@
     </a>
 @endif
 
-<div class="profile-canvas min-h-screen px-4 py-12" @if($accent) style="--accent: {{ $accent }}" @endif>
+<div class="profile-canvas min-h-screen px-4 py-12" data-theme="{{ $theme }}" @if($accent) style="--accent: {{ $accent }}" @endif>
     <div class="mx-auto max-w-[640px] space-y-6">
 
         <article class="card relative overflow-hidden !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
@@ -145,12 +150,34 @@
             </section>
         @endif
 
+        @if(count($gallery) && $showGallery)
+            <section class="card !rounded-[4px] px-6 pb-8 pt-8 sm:px-10" data-gallery>
+                <h2 class="text-lg font-bold leading-[1.5]">{{ $t['gallery'] }}</h2>
+                <ul class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    @foreach($gallery as $g)
+                        <li>
+                            <button type="button" data-gallery-item data-full="{{ $g['url'] }}" data-caption="{{ $g['caption'] }}" class="block aspect-square w-full overflow-hidden rounded-[4px] bg-line" aria-label="{{ $g['caption'] ?: $t['gallery'] }}">
+                                <img src="{{ $g['thumb_url'] }}" alt="{{ $g['caption'] }}" loading="lazy" width="240" height="240" class="size-full object-cover transition-transform duration-200 hover:scale-105">
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
+            </section>
+        @endif
+
+        @foreach($sections as $sec)
+            <section class="card !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
+                <h2 class="text-lg font-bold leading-[1.5]">{{ $sec['title'] }}</h2>
+                <p class="mt-3 whitespace-pre-line break-words text-base leading-[1.6]">{{ $sec['body'] }}</p>
+            </section>
+        @endforeach
+
         <div class="flex justify-center pt-2">
-            <button type="button" data-adv-open class="inline-flex min-h-[42px] items-center gap-2 rounded-full bg-white/60 px-4 py-2 text-sm text-ink backdrop-blur transition-colors hover:bg-white/80">
+            <button type="button" data-adv-open class="adv-chip inline-flex min-h-[42px] items-center gap-2 rounded-full px-4 py-2 text-sm backdrop-blur transition-colors">
                 <x-icon name="code" :size="18" /> {{ $t['adv'] }}
             </button>
         </div>
-        <p class="pb-2 text-center text-sm text-white/90">@unless($whiteLabel)<a href="/" class="hover:underline">{{ $brand }}</a>@endunless
+        <p class="pf-foot pb-2 text-center text-sm">@unless($whiteLabel)<a href="/" class="hover:underline">{{ $brand }}</a>@endunless
             @unless($isOwner)@unless($whiteLabel) · @endunless<button type="button" data-report-open class="underline-offset-2 hover:underline">{{ $rt['report'] }}</button>@endunless</p>
     </div>
 </div>
@@ -262,5 +289,11 @@
 
 {{-- one toast for the whole page --}}
 <div id="toast" class="toast" role="status" aria-live="polite" hidden><span data-toast-icon></span><span data-toast-text></span></div>
+<div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 p-4" role="dialog" aria-modal="true" aria-label="{{ $t['gallery'] }}" hidden>
+    <button type="button" data-lb-close class="absolute end-4 top-4 grid size-11 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25" aria-label="{{ $t['close'] }}"><x-icon name="close" :size="22" /></button>
+    <button type="button" data-lb-prev class="absolute start-3 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25" aria-label="‹"><x-icon name="chevron" :size="22" class="ltr:rotate-180" /></button>
+    <button type="button" data-lb-next class="absolute end-3 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25" aria-label="›"><x-icon name="chevron" :size="22" class="rtl:rotate-180" /></button>
+    <figure class="flex max-h-full max-w-full flex-col items-center gap-3"><img data-lb-img src="" alt="" class="max-h-[80vh] max-w-full rounded-[4px] object-contain"><figcaption data-lb-cap class="max-w-xl text-center text-sm text-white/90"></figcaption></figure>
+</div>
 </body>
 </html>

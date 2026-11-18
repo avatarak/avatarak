@@ -13,7 +13,7 @@ class DataExport
     /** @return string path of a temporary zip file (the caller deletes it) */
     public function build(User $user): string
     {
-        $user->loadMissing('profile', 'emails', 'verifiedAccounts', 'sites', 'avatars');
+        $user->loadMissing('profile', 'emails', 'verifiedAccounts', 'sites', 'avatars', 'galleryImages');
         $p = $user->profile;
         $disk = Storage::disk(config('avatar.disk'));
 
@@ -24,6 +24,15 @@ class DataExport
                 $name = 'avatars/photo-'.($i + 1).'.jpg';
                 $files[$name] = $a->path;
                 $avatars[] = ['file' => $name, 'uploaded_at' => $a->created_at?->toIso8601String(), 'active' => $p?->avatar_id === $a->id];
+            }
+        }
+
+        $gallery = [];
+        foreach ($user->galleryImages as $i => $g) {
+            if ($disk->exists($g->path)) {
+                $name = 'gallery/photo-'.($i + 1).'.jpg';
+                $files[$name] = $g->path;
+                $gallery[] = ['file' => $name, 'caption' => $g->caption];
             }
         }
 
@@ -38,7 +47,7 @@ class DataExport
             'profile' => $p ? [
                 'username' => $p->username, 'name_fa' => $p->name_fa, 'name_en' => $p->name_en, 'headline' => $p->headline, 'location' => $p->location,
                 'bio' => $p->bio, 'website' => $p->website, 'socials' => $p->socials, 'links' => collect($p->links ?? [])->map(fn ($l) => collect($l)->only(['label', 'url', 'description'])->all())->all(),
-                'accent_color' => $p->accent_color, 'show_avatar' => (bool) $p->show_avatar, 'show_profile' => (bool) $p->show_profile, 'allow_indexing' => (bool) $p->allow_indexing,
+                'accent_color' => $p->accent_color, 'theme' => $p->theme, 'custom_sections' => $p->custom_sections ?? [], 'show_avatar' => (bool) $p->show_avatar, 'show_profile' => (bool) $p->show_profile, 'allow_indexing' => (bool) $p->allow_indexing,
             ] : null,
             'emails' => $user->emails->map(fn ($e) => [
                 'email' => $e->email, 'verified' => $e->isVerified(), 'primary' => (bool) $e->is_primary, 'public' => (bool) $e->is_public, 'added_at' => $e->created_at?->toIso8601String(),
@@ -51,6 +60,7 @@ class DataExport
                 'created_at' => $s->created_at?->toIso8601String(), 'last_used_at' => $s->last_used_at?->toIso8601String(),
             ])->values()->all(),
             'avatars' => $avatars,
+            'gallery' => $gallery,
             'statistics' => [
                 'daily' => DB::table('daily_stats')->where('user_id', $user->id)->orderBy('date')->get(['date', 'metric', 'count'])->all(),
                 'referrers' => DB::table('stat_referrers')->where('user_id', $user->id)->orderBy('date')->get(['date', 'metric', 'host', 'count'])->all(),

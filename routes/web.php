@@ -91,6 +91,13 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::post('domains', [\App\Http\Controllers\DomainController::class, 'store'])->middleware('throttle:10,1');
     Route::post('domains/{id}/check', [\App\Http\Controllers\DomainController::class, 'check'])->middleware('throttle:20,1');
     Route::delete('domains/{id}', [\App\Http\Controllers\DomainController::class, 'destroy']);
+    Route::get('gallery', [\App\Http\Controllers\GalleryController::class, 'index']);
+    Route::post('gallery', [\App\Http\Controllers\GalleryController::class, 'store'])->middleware('throttle:30,1');
+    Route::post('gallery/order', [\App\Http\Controllers\GalleryController::class, 'reorder']);
+    Route::patch('gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'update'])->whereNumber('id');
+    Route::delete('gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'destroy'])->whereNumber('id');
+    Route::get('gallery/{id}/{size?}', [\App\Http\Controllers\GalleryController::class, 'mine'])->whereNumber('id')->where('size', 'thumb|full');
+    Route::put('sections', [AccountController::class, 'updateSections']);
     Route::get('webhooks', [\App\Http\Controllers\WebhookController::class, 'index']);
     Route::post('webhooks', [\App\Http\Controllers\WebhookController::class, 'store'])->middleware('throttle:10,1');
     Route::patch('webhooks/{id}', [\App\Http\Controllers\WebhookController::class, 'update']);
@@ -181,5 +188,7 @@ Route::get('/{username}/print', [\App\Http\Controllers\ProfileExportController::
     ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:60,1')->name('profile.print');
 Route::get('/{username}/share.svg', [\App\Http\Controllers\ProfileExportController::class, 'shareImage'])
     ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:60,1')->name('profile.share');
+Route::get('/{username}/gallery/{id}/{size?}', [\App\Http\Controllers\GalleryController::class, 'show'])
+    ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->whereNumber('id')->where('size', 'thumb|full')->middleware('throttle:avatar')->name('profile.gallery');
 Route::get('/{username}/avatar', [AvatarController::class, 'profile'])
     ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:avatar')->name('profile.avatar');
