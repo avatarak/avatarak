@@ -28,7 +28,7 @@ class SecurityNotice extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(view: 'mail.security-notice', with: [
-            'kind' => $this->kind, 'context' => $this->context, 'securityUrl' => url('/'),
+            'kind' => $this->kind, 'context' => $this->context, 'securityUrl' => rtrim((string) config('app.url'), '/').'/panel',
         ]);
     }
 }

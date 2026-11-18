@@ -76,7 +76,7 @@
     @include('partials.brand')
     <x-brand-head />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script>window.__BRAND__ = @json($brandJs);</script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">window.__BRAND__ = @json($brandJs);</script>
 </head>
 <body>
     {{-- What a crawler (or a browser without JavaScript) reads. Vue replaces it the moment the app starts. --}}

@@ -129,4 +129,7 @@ return [
 
     // New sign-ups allowed? An administrator can switch this from the panel (see App\Services\Settings).
     'registration_open' => (bool) env('REGISTRATION_OPEN', true),
+
+    // Content-Security-Policy on pages (see App\Http\Middleware\SecurityHeaders). Switch off only to debug.
+    'csp' => (bool) env('APP_CSP', true),
 ];

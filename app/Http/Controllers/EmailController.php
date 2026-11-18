@@ -104,13 +104,19 @@ class EmailController extends Controller
         $email = UserEmail::where('verification_token', $token)->first();
         abort_unless($email, 404);
 
-        $result = DB::transaction(function () use ($email) {
+        // a click that is not from the account's own signed-in browser, on the sign-up address: see AccountRecovery
+        $reclaim = $email->user && auth()->id() !== $email->user_id && \App\Services\AccountRecovery::isSignupAddressFirstProof($email->user, $email);
+
+        $result = DB::transaction(function () use ($email, $reclaim) {
             $taken = UserEmail::where('email_hash', $email->email_hash)
                 ->whereNotNull('verified_at')->where('id', '!=', $email->id)->exists();
             if ($taken) {
                 return 'taken';
             }
 
+            if ($reclaim) {
+                app(\App\Services\AccountRecovery::class)->reclaim($email->user, $email);
+            }
             $email->forceFill(['verified_at' => now(), 'verification_token' => null])->save();
             // other users' unverified claims on this address lose
             UserEmail::where('email_hash', $email->email_hash)->whereNull('verified_at')->delete();

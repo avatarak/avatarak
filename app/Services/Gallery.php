@@ -28,7 +28,9 @@ class Gallery
     {
         abort_if($user->galleryImages()->count() >= $this->limit($user), 422, __('app.gallery_limit'));
 
-        $src = @imagecreatefromstring((string) file_get_contents($file->getRealPath()));
+        $raw = (string) file_get_contents($file->getRealPath());
+        abort_unless(\App\Support\ImageGuard::decodable($raw), 422, __('app.invalid_image'));
+        $src = @imagecreatefromstring($raw);
         abort_unless($src, 422, __('app.invalid_image'));
 
         $full = $this->scaled($src, self::FULL);

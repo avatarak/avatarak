@@ -19,7 +19,7 @@ class GalleryController extends Controller
     public function store(Request $request, Gallery $gallery): JsonResponse
     {
         $request->validate([
-            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:10240', 'dimensions:min_width=100,min_height=100,max_width=8000,max_height=8000'],
+            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:10240', 'dimensions:min_width=100,min_height=100,max_width=7000,max_height=7000'],
             'caption' => ['nullable', 'string', 'max:140'],
         ]);
         $image = $gallery->add($request->user(), $request->file('image'), $request->input('caption'));

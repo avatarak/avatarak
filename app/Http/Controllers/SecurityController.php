@@ -28,6 +28,11 @@ class SecurityController extends Controller
         }
 
         $request->user()->update(['password' => $data['password']]);
+        // whoever had the old password (or an old session) is signed out; this browser stays signed in
+        if (config('session.driver') === 'database') {
+            \Illuminate\Support\Facades\DB::table(config('session.table', 'sessions'))->where('user_id', $request->user()->id)->where('id', '!=', $request->session()->getId())->delete();
+        }
+        $request->user()->forceFill(['remember_token' => null])->saveQuietly();
         \App\Services\SecurityNotices::send($request->user(), 'password_changed', ['ip' => $request->ip()]);
 
         return response()->json(['message' => 'ok']);

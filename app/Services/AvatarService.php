@@ -115,7 +115,9 @@ class AvatarService
     {
         abort_if(Avatar::where('user_id', $profile->user_id)->count() >= Avatar::MAX_PER_USER, 422, __('app.max_avatars'));
 
-        $src = @imagecreatefromstring((string) file_get_contents($file->getRealPath()));
+        $raw = (string) file_get_contents($file->getRealPath());
+        abort_unless(\App\Support\ImageGuard::decodable($raw), 422, __('app.invalid_image'));
+        $src = @imagecreatefromstring($raw);
         abort_unless($src, 422, __('app.invalid_image'));
 
         $w = imagesx($src);

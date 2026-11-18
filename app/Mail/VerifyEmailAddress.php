@@ -28,7 +28,7 @@ class VerifyEmailAddress extends Mailable implements ShouldQueue
     {
         return new Content(
             view: 'mail.verify',
-            with: ['url' => route('email.verify', $this->email->verification_token)],
+            with: ['url' => rtrim((string) config('app.url'), '/').route('email.verify', $this->email->verification_token, false)],
         );
     }
 }

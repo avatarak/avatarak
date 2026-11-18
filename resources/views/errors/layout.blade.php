@@ -53,11 +53,12 @@
                 @yield('actions')
             @else
                 <a class="btn btn-primary" href="/">{{ $t('بازگشت به خانه', 'Back to home') }}</a>
-                <button class="btn btn-ghost" type="button" onclick="history.length > 1 ? history.back() : location.assign('/')">{{ $t('صفحه‌ی قبل', 'Go back') }}</button>
+                <button class="btn btn-ghost" type="button" data-back>{{ $t('صفحه‌ی قبل', 'Go back') }}</button>
             @endif
         </div>
     </section>
     <p class="foot">@yield('foot')</p>
 </main>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">document.querySelectorAll('[data-back]').forEach(function (b) { b.addEventListener('click', function () { history.length > 1 ? history.back() : location.assign('/'); }); });</script>
 </body>
 </html>

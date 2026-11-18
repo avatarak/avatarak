@@ -22,6 +22,13 @@ class AuthenticateSite
 
         // a key that an administrator disabled (or whose owner is suspended) looks like any other bad key
         if (! $site || $site->isDisabled()) {
+            // guessing keys: a visitor gets a generous number of misses per minute, then waits
+            $miss = 'api-miss:'.$request->ip();
+            if (RateLimiter::tooManyAttempts($miss, 120)) {
+                return response()->json(['message' => 'Too many failed attempts.'], 429, ['Retry-After' => RateLimiter::availableIn($miss)]);
+            }
+            RateLimiter::hit($miss, 60);
+
             return response()->json(['message' => 'Invalid or missing API key.'], 401, ['WWW-Authenticate' => 'Bearer']);
         }
 

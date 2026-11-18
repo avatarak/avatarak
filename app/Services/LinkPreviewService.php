@@ -100,6 +100,9 @@ class LinkPreviewService
     /** Decode, cover-crop to the thumbnail ratio, re-encode as JPEG and store. */
     public function store(string $url, string $bytes): bool
     {
+        if (! \App\Support\ImageGuard::decodable($bytes)) {
+            return false;                      // a decompression bomb (a small file that claims a huge picture)
+        }
         $src = @imagecreatefromstring($bytes);
         if (! $src) {
             return false;

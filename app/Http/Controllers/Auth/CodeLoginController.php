@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Mail\LoginCode;
 use App\Models\UserEmail;
+use App\Services\AccountRecovery;
 use App\Services\LoginCodeService;
 use App\Services\LoginFlow;
 use Illuminate\Http\JsonResponse;
@@ -43,6 +44,10 @@ class CodeLoginController extends Controller
         $email = $user->emails()->where('email_hash', UserEmail::hash($data['email']))->whereNull('verified_at')->first();
         $takenElsewhere = UserEmail::where('email_hash', UserEmail::hash($data['email']))->whereNotNull('verified_at')->exists();
         if ($email && ! $takenElsewhere) {
+            // the real owner of the sign-up address shows up: whatever the person who registered it set up is not trusted
+            if (AccountRecovery::isSignupAddressFirstProof($user, $email)) {
+                app(AccountRecovery::class)->reclaim($user, $email);
+            }
             $email->update(['verified_at' => now(), 'verification_token' => null]);
         }
 

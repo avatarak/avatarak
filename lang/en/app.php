@@ -102,6 +102,7 @@ return [
     'gallery_limit' => 'You have reached the photo limit of your plan.',
     'sections_limit' => 'You have reached the limit of custom sections for your plan.',
     'registration_closed' => 'New sign-ups are paused right now. Please come back later.',
+    'login_throttled' => 'Too many sign-in attempts. Try again in :minutes minute(s), or sign in with an emailed code.',
     'plan_limit_sites' => 'You have reached the site limit of your plan. Upgrade to add more.',
     'domain_invalid' => 'Invalid domain. Enter only your own domain (like example.com).',
     'domain_plan' => 'Your plan does not include custom domains. Upgrade to use one.',

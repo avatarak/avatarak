@@ -18,6 +18,9 @@ class LoginCodeService
 
     public const RESEND_SECONDS = 60;
 
+    /** Wrong guesses allowed per address per hour across ALL codes, so asking for fresh codes does not buy fresh guesses. */
+    public const HOURLY_GUESSES = 15;
+
     /** The account that owns this address: its sign-up email, or any email it has verified. */
     public function findUser(string $email): ?User
     {
@@ -59,9 +62,13 @@ class LoginCodeService
     public function consume(string $email, string $code): bool
     {
         $hash = UserEmail::hash($email);
+        $budget = 'otp-guesses:'.$hash;
+        if ((int) \Illuminate\Support\Facades\Cache::get($budget, 0) >= self::HOURLY_GUESSES) {
+            return false;
+        }
         $code = preg_replace('/\D/', '', strtr($code, ['۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4', '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9'])) ?? '';
 
-        return DB::transaction(function () use ($hash, $code) {
+        $ok = DB::transaction(function () use ($hash, $code) {
             $row = DB::table('login_codes')->where('email_hash', $hash)->whereNull('used_at')
                 ->where('expires_at', '>', now())->orderByDesc('id')->lockForUpdate()->first();
             if (! $row || $row->attempts >= self::MAX_ATTEMPTS) {
@@ -78,6 +85,12 @@ class LoginCodeService
 
             return true;
         });
+        if (! $ok) {
+            \Illuminate\Support\Facades\Cache::add($budget, 0, now()->addHour());
+            \Illuminate\Support\Facades\Cache::increment($budget);
+        }
+
+        return $ok;
     }
 
     public function prune(): int
