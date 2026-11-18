@@ -35,6 +35,7 @@ const fmt = (d) => (d ? new Date(d).toLocaleString() : t('never'));
 
 <template>
     <div>
+        <a href="/docs" target="_blank" rel="noopener" class="btn btn-ghost mb-5 w-full">{{ t('docsLink') }} <Icon name="external" :size="16" /></a>
         <form class="grid gap-2" @submit.prevent="create">
             <input v-model="form.name" class="field" :placeholder="t('siteName')" :aria-label="t('siteName')" required>
             <input v-model="form.domain" dir="ltr" class="field" :placeholder="t('siteDomain')" :aria-label="t('siteDomain')" required>
@@ -62,7 +63,7 @@ const fmt = (d) => (d ? new Date(d).toLocaleString() : t('never'));
         </ul>
 
         <h3 class="mt-9 text-lg font-bold">{{ t('example') }}</h3>
-        <pre dir="ltr" class="mt-2 overflow-x-auto rounded-[8px] bg-soft p-4 text-start text-xs leading-6">curl -H "Authorization: Bearer ira_…" \
+        <pre dir="ltr" class="mt-2 overflow-x-auto rounded-[8px] bg-soft p-4 text-start text-xs leading-6">curl -H "Authorization: Bearer avk_…" \
   {{ origin }}/api/v1/profiles/&lt;sha256-of-email&gt;</pre>
     </div>
 </template>

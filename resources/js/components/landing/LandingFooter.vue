@@ -24,6 +24,7 @@ const year = new Date().getFullYear();
                 <h3 class="text-xl font-bold">{{ lt('footDevelopers') }}</h3>
                 <ul class="mt-5 space-y-4">
                     <li><a href="#developers" class="hover:underline">{{ lt('fApi') }}</a></li>
+                    <li><a href="/docs" class="hover:underline">{{ lt('fDocs') }}</a></li>
                     <li><a href="https://github.com/avatarak/avatarak" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm hover:bg-white/20">GitHub <Icon name="external" :size="14" /></a></li>
                 </ul>
             </div>

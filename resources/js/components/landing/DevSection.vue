@@ -60,7 +60,10 @@ const lines = computed(() => SAMPLES[tab.value].code.split('\n').map(highlight))
                 <p class="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.06em] text-[#6f95ff]"><Icon name="code" :size="18" /> {{ lt('devEyebrow') }}</p>
                 <h2 class="mt-3 text-balance text-[2.5rem] font-bold leading-[1.15] tracking-tight sm:text-[3.5rem]">{{ lt('devTitle') }}</h2>
                 <p class="mt-6 max-w-[28rem] text-lg leading-[1.55] text-white/90">{{ lt('devText') }}</p>
-                <button type="button" class="mt-8 inline-flex min-h-[56px] items-center gap-2 rounded-[4px] border border-white/80 px-6 font-semibold transition-colors hover:bg-white hover:text-black" @click="$emit('cta')">{{ lt('devCta') }} <Icon name="chevron" :size="16" flip /></button>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <a href="/docs" class="inline-flex min-h-[56px] items-center gap-2 rounded-[4px] bg-white px-6 font-semibold text-black transition-colors hover:bg-white/90">{{ lt('devDocs') }} <Icon name="chevron" :size="16" flip /></a>
+                    <button type="button" class="inline-flex min-h-[56px] items-center gap-2 rounded-[4px] border border-white/80 px-6 font-semibold transition-colors hover:bg-white hover:text-black" @click="$emit('cta')">{{ lt('devCta') }}</button>
+                </div>
             </div>
         </div>
     </section>

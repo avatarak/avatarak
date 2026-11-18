@@ -23,7 +23,7 @@ class Site extends Model
     /** Create a site; returns [Site, plainKey]. Plain key is never stored. */
     public static function createWithKey(array $attrs): array
     {
-        $plain = 'ira_' . Str::random(40);
+        $plain = 'avk_'.Str::random(40);
         $site = static::create($attrs + [
             'api_key_hash' => hash('sha256', $plain),
             'api_key_prefix' => substr($plain, 0, 8),

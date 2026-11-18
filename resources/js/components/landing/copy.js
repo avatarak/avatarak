@@ -6,7 +6,7 @@ import { i18n } from '../../i18n';
  */
 const COPY = {
     fa: {
-        navFeatures: 'ویژگی‌ها', navDevelopers: 'توسعه‌دهنده‌ها', navFaq: 'سؤالات متداول',
+        navFeatures: 'ویژگی‌ها', navDevelopers: 'توسعه‌دهنده‌ها', navDocs: 'مستندات', navFaq: 'سؤالات متداول',
         heroTitle: 'یک عکس، یک هویت، همه‌جا',
         heroSub: 'ایمیل شما، گذرنامه‌ی دیجیتال شما: یک عکس، یک بیوگرافی، شبکه‌های اجتماعی و لینک‌های تأییدشده.',
         emailPh: 'ایمیل خود را وارد کنید', claim: 'ساخت پروفایل رایگان',
@@ -44,7 +44,7 @@ const COPY = {
 
         devEyebrow: 'پروفایل به‌عنوان سرویس', devTitle: 'برای توسعه‌دهنده‌ها',
         devText: 'تجربه‌ی کاربرانتان را شخصی‌سازی کنید و جامعه‌تان را با پروفایل‌های تأییدشده، شامل عکس و لینک‌های اجتماعی، بسازید. اتصال ساده است: یک آدرس برای عکس و یک REST API برای اطلاعات پروفایل.',
-        devCta: 'ساخت کلید API',
+        devCta: 'ساخت کلید API', devDocs: 'خواندن مستندات',
 
         faqTitle: 'پرسیدید، پاسخ دادیم',
         faq: [
@@ -57,11 +57,11 @@ const COPY = {
 
         ctaTitle: 'پروفایل رایگان خود را بسازید!', ctaBtn: 'همین حالا شروع کنید',
         footFeatures: 'ویژگی‌ها', footDevelopers: 'توسعه‌دهنده‌ها', footSupport: 'پشتیبانی', footAccount: 'حساب',
-        fProfile: 'پروفایل عمومی', fVerified: 'حساب‌های تأییدشده', fPrivacy: 'حریم خصوصی', fApi: 'API', fFaq: 'سؤالات متداول', fLogin: 'ورود', fRegister: 'ثبت‌نام',
+        fProfile: 'پروفایل عمومی', fVerified: 'حساب‌های تأییدشده', fPrivacy: 'حریم خصوصی', fApi: 'API', fDocs: 'مستندات', fFaq: 'سؤالات متداول', fLogin: 'ورود', fRegister: 'ثبت‌نام',
         langLabel: 'زبان', rights: 'همه‌ی حقوق محفوظ است.',
     },
     en: {
-        navFeatures: 'Features', navDevelopers: 'Developers', navFaq: 'FAQ',
+        navFeatures: 'Features', navDevelopers: 'Developers', navDocs: 'Docs', navFaq: 'FAQ',
         heroTitle: 'One photo, one identity, everywhere',
         heroSub: 'Your email is your digital passport: one avatar, one bio, social connections and verified links.',
         emailPh: 'Enter email address', claim: 'Claim your free profile',
@@ -99,7 +99,7 @@ const COPY = {
 
         devEyebrow: 'Profiles as a service', devTitle: 'For developers',
         devText: 'Customize your users\' experience and bootstrap your community with verified profiles, including avatars and social links. Integration is simple: one URL for the image and a REST API for profile data.',
-        devCta: 'Create an API key',
+        devCta: 'Create an API key', devDocs: 'Read the docs',
 
         faqTitle: 'You asked, we answered',
         faq: [
@@ -112,7 +112,7 @@ const COPY = {
 
         ctaTitle: 'Claim your free profile today!', ctaBtn: 'Get started now',
         footFeatures: 'Features', footDevelopers: 'Developers', footSupport: 'Support', footAccount: 'Account',
-        fProfile: 'Public profile', fVerified: 'Verified accounts', fPrivacy: 'Privacy', fApi: 'API', fFaq: 'FAQ', fLogin: 'Log in', fRegister: 'Sign up',
+        fProfile: 'Public profile', fVerified: 'Verified accounts', fPrivacy: 'Privacy', fApi: 'API', fDocs: 'Documentation', fFaq: 'FAQ', fLogin: 'Log in', fRegister: 'Sign up',
         langLabel: 'Language', rights: 'All rights reserved.',
     },
 };

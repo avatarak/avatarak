@@ -117,3 +117,36 @@
 .pm.is-open .pm-panel { opacity: 1; transform: none; }
 .pm.is-closing .pm-backdrop { transition-duration: .16s; }
 .pm.is-closing .pm-panel { transition-duration: .16s; }
+
+/* ---- Documentation pages (resources/views/docs) ---- */
+.docs-hero { background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 14%, #fff), color-mix(in srgb, var(--brand) 4%, #fff)); }
+.docs-prose { max-width: 46rem; font-size: 1.0625rem; line-height: 1.75; }
+.docs-prose h1 { font-size: 2.5rem; font-weight: 700; line-height: 1.2; margin: .25rem 0 .75rem; }
+.docs-prose h2 { font-size: 1.625rem; font-weight: 700; line-height: 1.3; margin: 2.75rem 0 .75rem; padding-top: .5rem; scroll-margin-top: 5rem; }
+.docs-prose h3 { font-size: 1.25rem; font-weight: 700; margin: 2rem 0 .5rem; scroll-margin-top: 5rem; }
+.docs-prose p { margin: .9rem 0; }
+.docs-prose .docs-lead { font-size: 1.25rem; color: var(--muted); }
+.docs-prose .docs-note { border-inline-start: 3px solid #f0b429; background: #fff8e6; padding: .6rem .9rem; border-radius: 4px; font-size: .95rem; }
+.docs-prose a:not(.doc-anchor) { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+.docs-prose ul, .docs-prose ol { margin: .9rem 0; padding-inline-start: 1.5rem; }
+.docs-prose ul { list-style: disc; } .docs-prose ol { list-style: decimal; }
+.docs-prose li { margin: .3rem 0; }
+.docs-prose :not(pre) > code { background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: .1rem .35rem; font-size: .88em; direction: ltr; unicode-bidi: isolate; }
+.docs-prose pre { direction: ltr; text-align: left; background: #2b343b; color: #e8ecef; border-radius: 4px; padding: 1rem 1.25rem; overflow-x: auto; font-size: 13.5px; line-height: 1.7; margin: 1.1rem 0; }
+.docs-prose pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+.docs-prose table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .95rem; display: block; overflow-x: auto; }
+.docs-prose th, .docs-prose td { border: 1px solid var(--line); padding: .5rem .75rem; text-align: start; vertical-align: top; }
+.docs-prose th { background: var(--soft); font-weight: 600; }
+.docs-prose blockquote { border-inline-start: 3px solid var(--brand); padding: .1rem 1rem; color: var(--ink-2); margin: 1.2rem 0; background: color-mix(in srgb, var(--brand) 5%, #fff); border-radius: 4px; }
+.docs-prose hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+.docs-prose .doc-anchor { margin-inline-start: .4rem; color: var(--muted); text-decoration: none; opacity: 0; font-weight: 400; }
+.docs-prose :is(h2, h3):hover .doc-anchor, .doc-anchor:focus { opacity: 1; }
+.doc-tabs { margin: 1.1rem 0; border-radius: 4px; overflow: hidden; background: #2b343b; direction: ltr; }
+.doc-tabs [role=tablist] { display: flex; background: #1f262b; overflow-x: auto; }
+.doc-tabs [role=tab] { padding: .6rem 1.1rem; font-size: .85rem; color: rgb(255 255 255 / .6); border-top: 2px solid transparent; white-space: nowrap; }
+.doc-tabs [role=tab][aria-selected=true] { color: #fff; background: #2b343b; border-top-color: var(--brand); }
+.doc-tabs pre { margin: 0; border-radius: 0; }
+.doc-copy { position: absolute; top: .5rem; right: .5rem; font-size: .75rem; padding: .25rem .6rem; border-radius: 4px; background: rgb(255 255 255 / .12); color: #fff; opacity: 0; transition: opacity .15s; }
+.doc-block { position: relative; } .doc-block:hover .doc-copy, .doc-copy:focus { opacity: 1; }
+.tok-c { color: #7f8a95; } .tok-s { color: #e6db74; } .tok-k { color: #82aaff; } .tok-n { color: #f78c6c; }
+[data-docs-toc] a[aria-current=true] { color: var(--brand); font-weight: 600; }

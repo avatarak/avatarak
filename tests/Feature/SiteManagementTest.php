@@ -16,7 +16,7 @@ class SiteManagementTest extends TestCase
         $u = User::factory()->create();
         $res = $this->actingAs($u)->postJson('/account/sites', ['name' => 'وبلاگ', 'domain' => 'Blog.Example.ir'])->assertCreated();
         $key = $res->json('api_key');
-        $this->assertStringStartsWith('ira_', $key);
+        $this->assertStringStartsWith('avk_', $key);
         $this->assertSame('blog.example.ir', $res->json('domain'));
 
         // listing never exposes the key or its hash

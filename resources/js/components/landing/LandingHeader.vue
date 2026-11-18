@@ -14,6 +14,7 @@ defineEmits(['login', 'register']);
             <nav class="hidden items-center gap-8 text-base font-semibold md:flex" aria-label="main">
                 <a href="#profile" class="hover:text-brand">{{ lt('navFeatures') }}</a>
                 <a href="#developers" class="hover:text-brand">{{ lt('navDevelopers') }}</a>
+                <a href="/docs" class="hover:text-brand">{{ lt('navDocs') }}</a>
                 <a href="#faq" class="hover:text-brand">{{ lt('navFaq') }}</a>
             </nav>
         </div>
