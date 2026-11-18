@@ -33,6 +33,10 @@
     <title>{{ $display }} — {{ $brand }}</title>
     @unless($indexable)<meta name="robots" content="noindex, nofollow">@endunless
     @if($p->bio)<meta name="description" content="{{ \Illuminate\Support\Str::limit($p->bio, 160) }}">@endif
+    @if($bilingual)
+        <link rel="alternate" hreflang="fa" href="{{ route('profile.show', [$p->username, 'lang' => 'fa']) }}">
+        <link rel="alternate" hreflang="en" href="{{ route('profile.show', [$p->username, 'lang' => 'en']) }}">
+    @endif
     @include('partials.brand')
     <x-brand-head />
     @vite(['resources/css/app.css', 'resources/js/profile.js'])
@@ -43,6 +47,13 @@
         @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" class="size-7 rounded-full object-cover">@else<img src="{{ route('profile.avatar', ['username' => $p->username, 's' => 64, 'd' => 'initials']) }}" alt="" class="size-7 rounded-full object-cover">@endif
         {{ $t['edit'] }}
     </a>
+@endif
+
+@if($bilingual)
+    <nav class="fixed start-4 top-4 z-10 flex overflow-hidden rounded-full bg-white text-sm font-semibold shadow-card" aria-label="Language">
+        <a href="?lang=fa" hreflang="fa" lang="fa" class="px-3 py-1.5 {{ $rtl ? 'bg-ink text-white' : 'text-ink hover:bg-soft' }}" @if($rtl) aria-current="true" @endif>فارسی</a>
+        <a href="?lang=en" hreflang="en" lang="en" class="px-3 py-1.5 {{ ! $rtl ? 'bg-ink text-white' : 'text-ink hover:bg-soft' }}" @if(! $rtl) aria-current="true" @endif>English</a>
+    </nav>
 @endif
 
 <div class="profile-canvas min-h-screen px-4 py-12" data-theme="{{ $theme }}" @if($accent) style="--accent: {{ $accent }}" @endif>
@@ -66,7 +77,7 @@
             </div>
 
             <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.1] tracking-[-0.01em]">{{ $display }}</h1>
-            @if($p->name_fa && $p->name_en)<p class="text-base leading-6 text-ink/75"><bdi dir="ltr">{{ $p->name_en }}</bdi></p>@endif
+            @if($otherName)<p class="text-base leading-6 text-ink/75"><bdi>{{ $otherName }}</bdi></p>@endif
             @if($p->headline)<p class="text-base leading-6 text-ink/75">{{ $p->headline }}</p>@endif
             @if($p->location)<p class="text-base leading-6 text-ink/75">{{ $p->location }}</p>@endif
 

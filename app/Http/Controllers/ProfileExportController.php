@@ -21,6 +21,13 @@ class ProfileExportController extends Controller
             StatsRecorder::record($profile->user_id, 'export', $request);
         }
 
+        // a bilingual profile can be asked for either language: /name.json?lang=en
+        $lang = $profile->chooseLang($request->query('lang') ?: ($format === 'card' ? app()->getLocale() : null));
+        $profile = $profile->localized($lang);
+        if ($format === 'card') {
+            app()->setLocale($lang);
+        }
+
         $res = match ($format) {
             'json' => response(json_encode($export->data($profile), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json; charset=utf-8']),
             'md' => response($export->markdown($profile), 200, ['Content-Type' => 'text/markdown; charset=utf-8']),

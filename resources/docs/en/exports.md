@@ -64,6 +64,17 @@ curl {{origin}}/javid.json
 | `verified_accounts` | accounts the user *proved* they own: see [Verified accounts](/docs/verified-accounts) |
 | `gallery` | the photos the owner added, in order; empty when hidden. Full size is at most 1600 px |
 | `sections` | free-text sections the owner wrote (`title`, `body`; plain text) |
+| `language` | `fa` or `en`: the language of the texts in this response |
+| `languages` | the languages the page is available in; a bilingual profile also has `translations` |
+
+## Languages
+
+A profile can speak **Persian only**, **English only** or **both** (set in the panel under *Design → Language of your public page*).
+
+- **Single language:** the whole page, labels and text direction included, is always in that language, whatever language the visitor uses. Texts never mix.
+- **Bilingual:** every text exists in two versions. A visitor sees the one that matches their language (`?lang=fa` or `?lang=en` picks it explicitly), the page shows a language switch, and `hreflang` links are added for search engines. If one version is empty the other is shown.
+
+`language` tells you which language the texts in the response are in, and `languages` lists what the page offers. On a bilingual profile `/{username}.json` also carries a `translations` object with both versions, and `.json`, `.md` and `.vcf` accept `?lang=`. The REST API accepts `?lang=` too.
 
 Fields the user left empty are `null`, an empty object or an empty list.
 

@@ -8,6 +8,8 @@ import { SOCIAL_NAMES } from '../../icons';
 import Icon from '../Icon.vue';
 import SocialIcon from '../SocialIcon.vue';
 import SaveBar from '../SaveBar.vue';
+import LangTabs from '../LangTabs.vue';
+import { k, dirOf } from '../../lang';
 
 state.draft.socials = { ...(state.draft.socials || {}) };
 state.draft.links = [...(state.draft.links || [])].map((l) => ({ description: '', ...l }));
@@ -17,7 +19,7 @@ const remove = (i) => state.draft.links.splice(i, 1);
 
 const { busy, message, run: save, err } = useSubmit('PATCH', '/account/profile', () => ({
     socials: state.draft.socials,
-    links: state.draft.links.filter((l) => l.label || l.url),
+    links: state.draft.links.filter((l) => l.label || l.label_alt || l.url),
     show_link_images: state.draft.show_link_images !== false,
 }));
 
@@ -61,14 +63,15 @@ onBeforeUnmount(() => clearTimeout(timer));
         </div>
 
         <h3 class="mt-7 text-lg font-bold">{{ t('yourLinks') }}</h3>
+        <LangTabs class="mt-3" />
         <ul class="mt-3 space-y-3">
             <li v-for="(l, i) in state.draft.links" :key="i" class="rounded-[8px] border border-line p-3">
                 <div class="flex items-center gap-2">
-                    <input v-model="l.label" class="field" :placeholder="t('linkLabel')" :aria-label="t('linkLabel')" maxlength="60">
+                    <input v-model="l[k('label')]" :dir="dirOf()" class="field text-start" :placeholder="t('linkLabel')" :aria-label="t('linkLabel')" maxlength="60">
                     <button type="button" class="icon-btn shrink-0 text-muted hover:text-red-700" :aria-label="t('delete')" @click="remove(i)"><Icon name="trash" :size="16" /></button>
                 </div>
                 <input v-model="l.url" dir="ltr" class="field mt-2 text-start" :placeholder="t('linkUrl')" :aria-label="t('linkUrl')" inputmode="url">
-                <textarea v-model="l.description" class="field mt-2" rows="2" maxlength="160" :placeholder="t('linkDesc')" :aria-label="t('linkDesc')"></textarea>
+                <textarea v-model="l[k('description')]" :dir="dirOf()" class="field mt-2 text-start" rows="2" maxlength="160" :placeholder="t('linkDesc')" :aria-label="t('linkDesc')"></textarea>
                 <p v-if="err('links.' + i + '.url') || err('links.' + i + '.label')" class="mt-1 text-sm text-red-600">{{ err('links.' + i + '.url') || err('links.' + i + '.label') }}</p>
             </li>
         </ul>

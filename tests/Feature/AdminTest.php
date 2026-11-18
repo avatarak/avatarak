@@ -34,7 +34,7 @@ class AdminTest extends TestCase
         if ($force) {
             $u->forceFill($force)->save();
         }
-        Profile::create($profile + ['user_id' => $u->id, 'username' => $username, 'name_en' => ucfirst($username)]);
+        Profile::create($profile + ['user_id' => $u->id, 'username' => $username, 'name_en' => ucfirst($username), 'languages' => 'both']);
         $u->emails()->create(['email' => $email, 'is_primary' => true, 'verified_at' => now()]);
 
         return $u;

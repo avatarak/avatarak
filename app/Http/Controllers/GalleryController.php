@@ -31,8 +31,8 @@ class GalleryController extends Controller
     public function update(Request $request, Gallery $gallery, int $id): JsonResponse
     {
         $image = $request->user()->galleryImages()->findOrFail($id);
-        $data = $request->validate(['caption' => ['nullable', 'string', 'max:140']]);
-        $image->update(['caption' => $data['caption'] ?: null]);
+        $data = $request->validate(['caption' => ['sometimes', 'nullable', 'string', 'max:140'], 'caption_alt' => ['sometimes', 'nullable', 'string', 'max:140']]);
+        $image->update(array_map(fn ($v) => $v ?: null, $data));
         $this->touch($request);
 
         return response()->json($this->state($request, $gallery));
@@ -94,7 +94,7 @@ class GalleryController extends Controller
     {
         return [
             'limit' => $gallery->limit($request->user()),
-            'images' => $request->user()->galleryImages()->get()->map(fn (GalleryImage $g) => ['id' => $g->id, 'caption' => $g->caption, 'width' => $g->width, 'height' => $g->height])->values(),
+            'images' => $request->user()->galleryImages()->get()->map(fn (GalleryImage $g) => ['id' => $g->id, 'caption' => $g->caption, 'caption_alt' => $g->caption_alt, 'width' => $g->width, 'height' => $g->height])->values(),
         ];
     }
 

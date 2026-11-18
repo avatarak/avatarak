@@ -10,6 +10,7 @@ const THEMES = [
     ['classic', '#1D4FC4'], ['mocha', '#A8561A'], ['mint', '#0A8F6E'], ['mustard', '#F2A900'],
     ['midnight', '#6D4AE8'], ['molten', '#E0360B'], ['earth', '#2E6B30'], ['cyber', '#D63AF2'],
 ];
+const MODES = [['fa', 'lgFa'], ['en', 'lgEn'], ['both', 'lgBoth']];
 const LOOKS = ['gradient', 'dark', 'paper', 'plain'];
 const current = computed(() => (state.draft.accent_color || '#1D4FC4').toUpperCase());
 const isCustom = computed(() => !THEMES.some(([, c]) => c === current.value));
@@ -22,13 +23,27 @@ function toggle(s) {
 }
 
 const { busy, message, run, err } = useSubmit('PATCH', '/account/appearance', () => ({
-    accent_color: state.draft.accent_color || null, theme: state.draft.theme || 'gradient', hidden_sections: state.draft.hidden_sections,
+    accent_color: state.draft.accent_color || null, theme: state.draft.theme || 'gradient', languages: state.draft.languages || 'fa', primary_lang: state.draft.primary_lang || 'fa', hidden_sections: state.draft.hidden_sections,
 }));
 </script>
 
 <template>
     <form @submit.prevent="run">
-        <h3 class="text-lg font-bold">{{ t('colors') }}</h3>
+        <h3 class="text-lg font-bold">{{ t('lgTitle') }}</h3>
+        <p class="hint mt-1">{{ t('lgHelp') }}</p>
+        <div class="mt-3 grid grid-cols-3 gap-3" role="radiogroup" :aria-label="t('lgTitle')">
+            <button v-for="[m, label] in MODES" :key="m" type="button" role="radio" :aria-checked="(state.draft.languages || 'fa') === m"
+                    class="rounded-[6px] border bg-white p-3 text-sm font-medium transition-colors"
+                    :class="(state.draft.languages || 'fa') === m ? 'border-ink ring-1 ring-ink' : 'border-line hover:border-muted'" @click="state.draft.languages = m">{{ t(label) }}</button>
+        </div>
+        <p class="hint mt-2">{{ t('lgD_' + (state.draft.languages || 'fa')) }}</p>
+        <div v-if="state.draft.languages === 'both'" class="mt-3 flex items-center gap-3 text-sm">
+            <label for="lg-primary" class="font-medium">{{ t('lgPrimary') }}</label>
+            <select id="lg-primary" v-model="state.draft.primary_lang" class="field !w-auto"><option value="fa">فارسی</option><option value="en">English</option></select>
+        </div>
+        <p v-if="state.draft.languages !== 'both'" class="hint mt-2">{{ t('lgEditHint') }}</p>
+
+        <h3 class="mt-9 text-lg font-bold">{{ t('colors') }}</h3>
         <div class="mt-3 grid grid-cols-3 gap-3">
             <button v-for="[name, color] in THEMES" :key="name" type="button"
                     class="flex h-[106px] flex-col items-center justify-center gap-3 rounded-[6px] border bg-white transition-colors"

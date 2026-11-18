@@ -32,7 +32,7 @@ class DataExport
             if ($disk->exists($g->path)) {
                 $name = 'gallery/photo-'.($i + 1).'.jpg';
                 $files[$name] = $g->path;
-                $gallery[] = ['file' => $name, 'caption' => $g->caption];
+                $gallery[] = ['file' => $name, 'caption' => $g->caption, 'caption_alt' => $g->caption_alt];
             }
         }
 
@@ -46,8 +46,8 @@ class DataExport
             ],
             'profile' => $p ? [
                 'username' => $p->username, 'name_fa' => $p->name_fa, 'name_en' => $p->name_en, 'headline' => $p->headline, 'location' => $p->location,
-                'bio' => $p->bio, 'website' => $p->website, 'socials' => $p->socials, 'links' => collect($p->links ?? [])->map(fn ($l) => collect($l)->only(['label', 'url', 'description'])->all())->all(),
-                'accent_color' => $p->accent_color, 'theme' => $p->theme, 'custom_sections' => $p->custom_sections ?? [], 'show_avatar' => (bool) $p->show_avatar, 'show_profile' => (bool) $p->show_profile, 'allow_indexing' => (bool) $p->allow_indexing,
+                'bio' => $p->bio, 'website' => $p->website, 'socials' => $p->socials, 'links' => collect($p->links ?? [])->map(fn ($l) => collect($l)->only(['label', 'url', 'description', 'label_alt', 'description_alt'])->all())->all(),
+                'languages' => $p->languages, 'primary_lang' => $p->primary_lang, 'headline_alt' => $p->headline_alt, 'location_alt' => $p->location_alt, 'bio_alt' => $p->bio_alt, 'accent_color' => $p->accent_color, 'theme' => $p->theme, 'custom_sections' => $p->custom_sections ?? [], 'show_avatar' => (bool) $p->show_avatar, 'show_profile' => (bool) $p->show_profile, 'allow_indexing' => (bool) $p->allow_indexing,
             ] : null,
             'emails' => $user->emails->map(fn ($e) => [
                 'email' => $e->email, 'verified' => $e->isVerified(), 'primary' => (bool) $e->is_primary, 'public' => (bool) $e->is_public, 'added_at' => $e->created_at?->toIso8601String(),

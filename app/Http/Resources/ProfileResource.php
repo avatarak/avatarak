@@ -21,7 +21,7 @@ class ProfileResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $p = $this->resource;
+        $p = $this->resource->localized($this->resource->chooseLang($request->query('lang')));
         $export = app(ProfileExport::class);
 
         return [
@@ -37,6 +37,7 @@ class ProfileResource extends JsonResource
             'socials' => $p->socials ?: (object) [],
             'links' => $export->links($p),
             'verified_accounts' => $export->verifiedAccounts($p),
+            'language' => $p->lang,
             'avatar_url' => ($p->show_avatar && $p->avatar_path) ? route('avatar', $this->hash) : null,
         ];
     }

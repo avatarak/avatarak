@@ -27,8 +27,8 @@ class AccountController extends Controller
             'recent_code_login' => now()->timestamp - (int) $request->session()->get('reauth_at', 0) < 900,
             'profile' => $p->only(['username', 'name_fa', 'name_en', 'bio', 'website', 'socials',
                 'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order',
-                'headline', 'location', 'links', 'hidden_sections', 'show_link_images', 'theme', 'custom_sections']) + ['section_limit' => app(\App\Services\PlanService::class)->limit($user, 'sections'), 'has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
-            'gallery' => $user->galleryImages()->get()->map(fn ($g) => ['id' => $g->id, 'caption' => $g->caption])->values(),
+                'headline', 'location', 'links', 'hidden_sections', 'show_link_images', 'theme', 'custom_sections', 'languages', 'primary_lang', 'headline_alt', 'location_alt', 'bio_alt']) + ['section_limit' => app(\App\Services\PlanService::class)->limit($user, 'sections'), 'has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
+            'gallery' => $user->galleryImages()->get()->map(fn ($g) => ['id' => $g->id, 'caption' => $g->caption, 'caption_alt' => $g->caption_alt])->values(),
             'avatars' => $user->avatars()->latest('id')->get()->map(fn ($a) => [
                 'id' => $a->id, 'active' => $a->id === $p->avatar_id, 'created_at' => $a->created_at,
             ])->values(),
@@ -51,8 +51,13 @@ class AccountController extends Controller
             'headline' => ['nullable', 'string', 'max:120'],
             'location' => ['nullable', 'string', 'max:100'],
             'bio' => ['nullable', 'string', 'max:500'],
+            'headline_alt' => ['nullable', 'string', 'max:120'],
+            'location_alt' => ['nullable', 'string', 'max:100'],
+            'bio_alt' => ['nullable', 'string', 'max:500'],
             'links' => ['nullable', 'array', 'max:10'],
-            'links.*.label' => ['required', 'string', 'max:60'],
+            'links.*.label' => ['required_without:links.*.label_alt', 'nullable', 'string', 'max:60'],
+            'links.*.label_alt' => ['nullable', 'string', 'max:60'],
+            'links.*.description_alt' => ['nullable', 'string', 'max:160'],
             'links.*.url' => ['required', 'url:http,https', 'max:300'],
             'links.*.description' => ['nullable', 'string', 'max:160'],
             'show_link_images' => ['sometimes', 'boolean'],
@@ -71,7 +76,7 @@ class AccountController extends Controller
         if (array_key_exists('links', $data)) {
             // keep the preview result for URLs that did not change; new/changed URLs are fetched after the response
             $known = collect($profile->links ?? [])->filter(fn ($l) => array_key_exists('thumb', $l))->pluck('thumb', 'url');
-            $data['links'] = collect($data['links'] ?? [])->map(fn ($l) => array_filter(['label' => trim($l['label']), 'url' => $l['url'], 'description' => trim($l['description'] ?? '')], fn ($v) => $v !== ''))
+            $data['links'] = collect($data['links'] ?? [])->map(fn ($l) => array_filter(['label' => trim($l['label'] ?? ''), 'url' => $l['url'], 'description' => trim($l['description'] ?? ''), 'label_alt' => trim($l['label_alt'] ?? ''), 'description_alt' => trim($l['description_alt'] ?? '')], fn ($v) => $v !== ''))
                 ->map(fn ($l) => $known->has($l['url']) ? $l + ['thumb' => $known[$l['url']]] : $l)
                 ->values()->all();
             $needsThumbs = config('linkpreview.enabled') && collect($data['links'])->contains(fn ($l) => ! array_key_exists('thumb', $l));
@@ -92,12 +97,18 @@ class AccountController extends Controller
         $data = $request->validate([
             'accent_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'theme' => ['sometimes', 'string', Rule::in(\App\Models\Profile::THEMES)],
+            'languages' => ['sometimes', 'string', Rule::in(\App\Models\Profile::MODES)],
+            'primary_lang' => ['sometimes', 'string', Rule::in(\App\Models\Profile::LANGS)],
             'section_order' => ['nullable', 'array', 'max:4'],
             'section_order.*' => ['string', 'distinct', Rule::in(self::SECTIONS)],
             'hidden_sections' => ['nullable', 'array', 'max:4'],
             'hidden_sections.*' => ['string', 'distinct', Rule::in(self::SECTIONS)],
         ]);
-        $request->user()->profile->update($data);
+        $profile = $request->user()->profile;
+        if (isset($data['primary_lang']) && $data['primary_lang'] !== $profile->primary_lang) {
+            $profile->swapPrimary($data['primary_lang']);
+        }
+        $profile->fill($data)->save();
 
         return $this->show($request);
     }
@@ -107,14 +118,16 @@ class AccountController extends Controller
     {
         $data = $request->validate([
             'sections' => ['present', 'array', 'max:50'],
-            'sections.*.title' => ['required', 'string', 'max:60'],
-            'sections.*.body' => ['required', 'string', 'max:1500'],
+            'sections.*.title' => ['required_without:sections.*.title_alt', 'nullable', 'string', 'max:60'],
+            'sections.*.body' => ['required_without:sections.*.body_alt', 'nullable', 'string', 'max:1500'],
+            'sections.*.title_alt' => ['nullable', 'string', 'max:60'],
+            'sections.*.body_alt' => ['nullable', 'string', 'max:1500'],
         ]);
         $limit = app(\App\Services\PlanService::class)->limit($request->user(), 'sections');
         abort_if(count($data['sections']) > $limit, 422, __('app.sections_limit'));
         $request->user()->profile->update(['custom_sections' => collect($data['sections'])->map(fn ($s) => [
-            'title' => trim($s['title']), 'body' => trim($s['body']),
-        ])->values()->all()]);
+            'title' => trim($s['title'] ?? ''), 'body' => trim($s['body'] ?? ''), 'title_alt' => trim($s['title_alt'] ?? ''), 'body_alt' => trim($s['body_alt'] ?? ''),
+        ])->map(fn ($s) => array_filter($s, fn ($v) => $v !== ''))->values()->all()]);
 
         return $this->show($request);
     }

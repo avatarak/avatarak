@@ -35,6 +35,9 @@ export default {
         plRedirect: 'در حال رفتن به درگاه پرداخت…', plOk: 'پرداخت موفق بود؛ پلن شما فعال شد ✓', plFail: 'پرداخت انجام نشد. اگر مبلغی کم شده، تا چند دقیقه به حسابتان برمی‌گردد.', plManual: 'فعال‌سازی توسط پشتیبانی', plPayment: 'پرداخت آنلاین', plSource: 'نوع',
         prTitle: 'قیمت‌ها', prSub: 'رایگان شروع کنید. وقتی بزرگ شدید، ارتقا دهید.',
         // gallery, sections, themes
+        lgTitle: 'زبان صفحه‌ی عمومی', lgHelp: 'صفحه‌تان فقط یک زبان داشته باشد یا دو زبان؟', lgFa: 'فقط فارسی', lgEn: 'فقط English', lgBoth: 'دوزبانه',
+        lgD_fa: 'کل صفحه همیشه فارسی و راست‌به‌چپ است، حتی اگر بازدیدکننده سایت را انگلیسی دیده باشد.', lgD_en: 'کل صفحه همیشه انگلیسی و چپ‌به‌راست است، حتی اگر بازدیدکننده سایت را فارسی دیده باشد.',
+        lgD_both: 'هر متن دو نسخه دارد (تب فارسی | English بالای فرم‌ها). بازدیدکننده نسخه‌ی زبان خودش را می‌بیند و یک سوییچ زبان هم بالای صفحه می‌آید.', lgPrimary: 'زبان اصلی', lgEditHint: 'متن‌ها را به همین زبان بنویسید. با تغییر زبان، متن زبان دیگر که قبلاً نوشته‌اید پنهان می‌ماند و پاک نمی‌شود.',
         myPanel: 'پنل من', regClosed: 'ثبت‌نام جدید فعلاً متوقف است. اگر حساب دارید وارد شوید.', nav_gallery: 'گالری و بخش‌ها', d_gallery: 'عکس‌ها و بخش‌های متنی دلخواه برای صفحه‌ی عمومی‌تان.', gaPhotos: 'گالری عکس', gaPhotosHelp: 'تا {n} عکس. عکس‌ها فشرده می‌شوند و اطلاعات مکانی (EXIF) آن‌ها پاک می‌شود.', gaCaption: 'توضیح کوتاه (اختیاری)', gaUp: 'بالاتر', gaDown: 'پایین‌تر', gaEmpty: 'هنوز عکسی ندارید.', gaAdd: 'افزودن عکس', gaFull: 'به سقف عکس‌های پلنتان رسیده‌اید.',
         csTitle: 'بخش‌های دلخواه', csHelp: 'تا {n} بخش متنی (مثلاً «ساعت کاری» یا «خدمات»). فقط متن ساده.', csName: 'عنوان بخش', csBody: 'متن', csAdd: 'افزودن بخش', csFull: 'به سقف بخش‌های پلنتان رسیده‌اید.',
         themeTitle: 'ظاهر صفحه', tm_gradient: 'گرادیان', tm_dark: 'تیره', tm_paper: 'کاغذی', tm_plain: 'ساده', sec_gallery: 'گالری',
@@ -79,6 +82,9 @@ export default {
         plRedirect: 'Taking you to the payment page…', plOk: 'Payment received; your plan is active ✓', plFail: 'The payment did not go through. If money was taken it returns to your account within minutes.', plManual: 'Activated by support', plPayment: 'Online payment', plSource: 'Type',
         prTitle: 'Pricing', prSub: 'Start free. Upgrade when you grow.',
         // gallery, sections, themes
+        lgTitle: 'Language of your public page', lgHelp: 'Should your page speak one language or two?', lgFa: 'Persian only', lgEn: 'English only', lgBoth: 'Bilingual',
+        lgD_fa: 'The whole page is always Persian and right-to-left, even if the visitor uses the site in English.', lgD_en: 'The whole page is always English and left-to-right, even if the visitor uses the site in Persian.',
+        lgD_both: 'Every text has two versions (a Persian | English tab above the forms). Visitors see their own language, and a language switch appears at the top of the page.', lgPrimary: 'Primary language', lgEditHint: 'Write your texts in this language. If you switch language, texts you wrote in the other one stay hidden, not deleted.',
         myPanel: 'My dashboard', regClosed: 'New sign-ups are paused right now. If you already have an account, sign in.', nav_gallery: 'Gallery & sections', d_gallery: 'Photos and free-text sections for your public page.', gaPhotos: 'Photo gallery', gaPhotosHelp: 'Up to {n} photos. They are compressed and location data (EXIF) is removed.', gaCaption: 'Short caption (optional)', gaUp: 'Move up', gaDown: 'Move down', gaEmpty: 'No photos yet.', gaAdd: 'Add a photo', gaFull: 'You have reached the photo limit of your plan.',
         csTitle: 'Custom sections', csHelp: 'Up to {n} text sections (for example “Opening hours” or “Services”). Plain text only.', csName: 'Section title', csBody: 'Text', csAdd: 'Add a section', csFull: 'You have reached the section limit of your plan.',
         themeTitle: 'Page look', tm_gradient: 'Gradient', tm_dark: 'Dark', tm_paper: 'Paper', tm_plain: 'Plain', sec_gallery: 'Gallery',

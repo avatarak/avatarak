@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GalleryImage extends Model
 {
-    protected $fillable = ['user_id', 'path', 'caption', 'position', 'width', 'height'];
+    protected $fillable = ['user_id', 'path', 'caption', 'caption_alt', 'position', 'width', 'height'];
 
     public function user(): BelongsTo
     {

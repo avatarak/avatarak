@@ -70,7 +70,7 @@ class LocaleTest extends TestCase
     private function profile(): User
     {
         $u = User::factory()->create();
-        \App\Models\Profile::create(['user_id' => $u->id, 'username' => 'sara', 'name_fa' => 'سارا', 'bio' => 'x', 'website' => 'https://s.ir']);
+        \App\Models\Profile::create(['user_id' => $u->id, 'username' => 'sara', 'languages' => 'both', 'name_fa' => 'سارا', 'bio' => 'x', 'website' => 'https://s.ir']);
 
         return $u;
     }

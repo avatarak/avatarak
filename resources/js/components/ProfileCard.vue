@@ -4,10 +4,11 @@ import Icon from './Icon.vue';
 import InitialsAvatar from './InitialsAvatar.vue';
 import SocialIcon from './SocialIcon.vue';
 import { SOCIAL_URLS } from '../icons';
-import { t } from '../i18n';
+import { tl } from '../i18n';
+import { localize, previewLang } from '../lang';
 
 /**
- * The public profile, rendered live. resources/views/profile.blade.php mirrors this markup and these
+ * The public profile, rendered live. resources/views/p.blade.php mirrors this markup and these
  * measurements (taken from gravatar.com): 640px cards with 4px radius and 24px gaps, 148px avatar,
  * 34px name, 16px text, 42px buttons, 18px social icons, 192x108 link thumbnails. Keep them in sync.
  */
@@ -19,11 +20,16 @@ const accent = computed(() => {
     const [r, g, b] = [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
     return '#' + [r, g, b].map((v) => Math.round(v + (255 - v) * 0.5).toString(16).padStart(2, '0')).join('');
 });
+// the preview speaks the language the public page will speak (the tab being edited, on a bilingual profile)
+const pl = computed(() => previewLang(props.profile));
+const p = computed(() => localize(props.profile, pl.value));
+const t = (key) => tl(key, pl.value);
 const hidden = (s) => (props.profile.hidden_sections || []).includes(s);
 const socials = computed(() => Object.entries(props.profile.socials || {}).filter(([n, v]) => v && SOCIAL_URLS[n]));
-const links = computed(() => (props.profile.links || []).filter((l) => l.label && l.url));
+const links = computed(() => (p.value.links || []).filter((l) => l.label && l.url));
 const showImages = computed(() => props.profile.show_link_images !== false);
-const display = computed(() => props.profile.name_fa || props.profile.name_en || props.profile.username || t('yourName'));
+const display = computed(() => (pl.value === 'en' ? p.value.name_en || p.value.name_fa : p.value.name_fa || p.value.name_en) || p.value.username || t('yourName'));
+const otherName = computed(() => { const o = pl.value === 'en' ? p.value.name_fa : p.value.name_en; return o && o !== display.value ? o : ''; });
 const host = (u) => { try { return new URL(u).host; } catch { return u; } };
 
 // Bio: 3 lines + "Show more" only when it really overflows.
@@ -38,13 +44,13 @@ function measure() {
     overflows.value = el.scrollHeight > el.clientHeight + 1;
     if (was) el.classList.remove('line-clamp-3');
 }
-watch(() => [props.profile.bio, hidden('bio')], () => nextTick(measure));
+watch(() => [p.value.bio, hidden('bio')], () => nextTick(measure));
 onMounted(() => { nextTick(measure); window.addEventListener('resize', measure); });
 onBeforeUnmount(() => window.removeEventListener('resize', measure));
 </script>
 
 <template>
-    <div class="profile-canvas min-h-full px-4 py-12" :data-theme="profile.theme || 'gradient'" :style="accent ? { '--accent': accent } : null">
+    <div class="profile-canvas min-h-full px-4 py-12" :dir="pl === 'en' ? 'ltr' : 'rtl'" :data-theme="p.theme || 'gradient'" :style="accent ? { '--accent': accent } : null">
         <div class="mx-auto max-w-[640px] space-y-6">
             <article class="card relative overflow-hidden !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
                 <div class="absolute inset-x-0 top-0 h-36 overflow-hidden bg-[color-mix(in_srgb,var(--accent)_22%,#fff)]" aria-hidden="true">
@@ -53,14 +59,14 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
 
                 <div class="relative w-fit">
                     <img v-if="avatarSrc" :src="avatarSrc" alt="" class="size-[9.25rem] rounded-full bg-line object-cover">
-                    <div v-else class="size-[9.25rem] overflow-hidden rounded-full bg-line"><InitialsAvatar :name="display" :seed="profile.username" /></div>
+                    <div v-else class="size-[9.25rem] overflow-hidden rounded-full bg-line"><InitialsAvatar :name="display" :seed="p.username" /></div>
                     <span class="absolute end-0 top-0 grid size-[38px] place-items-center rounded-full bg-ink text-white"><Icon name="qr" :size="20" /></span>
                 </div>
 
                 <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.1] tracking-[-0.01em]">{{ display }}</h1>
-                <p v-if="profile.name_fa && profile.name_en" class="text-base leading-6 text-ink/75"><bdi dir="ltr">{{ profile.name_en }}</bdi></p>
-                <p v-if="profile.headline" class="text-base leading-6 text-ink/75">{{ profile.headline }}</p>
-                <p v-if="profile.location" class="text-base leading-6 text-ink/75">{{ profile.location }}</p>
+                <p v-if="otherName" class="text-base leading-6 text-ink/75"><bdi>{{ otherName }}</bdi></p>
+                <p v-if="p.headline" class="text-base leading-6 text-ink/75">{{ p.headline }}</p>
+                <p v-if="p.location" class="text-base leading-6 text-ink/75">{{ p.location }}</p>
 
                 <div v-if="verified || socials.length" class="mt-7 flex flex-wrap items-center gap-3 text-ink">
                     <svg v-if="verified" width="22" height="22" viewBox="0 0 24 24" aria-label="verified" class="text-[#3B6BF0]">
@@ -71,16 +77,16 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
                     <span v-for="[n] in socials" :key="n" :title="n"><SocialIcon :name="n" :size="18" /></span>
                 </div>
 
-                <div v-if="profile.bio && !hidden('bio')" class="mt-7">
-                    <p ref="bioEl" class="whitespace-pre-line text-base leading-[1.45]" :class="expanded ? '' : 'line-clamp-3'">{{ profile.bio }}</p>
+                <div v-if="p.bio && !hidden('bio')" class="mt-7">
+                    <p ref="bioEl" class="whitespace-pre-line text-base leading-[1.45]" :class="expanded ? '' : 'line-clamp-3'">{{ p.bio }}</p>
                     <button v-if="overflows" type="button" class="mt-1 text-base text-[var(--accent)] hover:underline" @click="expanded = !expanded; nextTick(measure)">
                         {{ expanded ? t('showLess') : t('showMore') }}
                     </button>
                 </div>
 
-                <div class="mt-6 grid gap-4" :class="profile.website ? 'grid-cols-2' : ''">
+                <div class="mt-6 grid gap-4" :class="p.website ? 'grid-cols-2' : ''">
                     <span class="accent-btn">{{ t('share') }}</span>
-                    <span v-if="profile.website" class="accent-btn">{{ t('website') }}</span>
+                    <span v-if="p.website" class="accent-btn">{{ t('website') }}</span>
                 </div>
             </article>
 
@@ -107,7 +113,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
                 </ul>
             </section>
 
-            <section v-for="(s, i) in (profile.custom_sections || [])" :key="'cs' + i" class="card !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
+            <section v-for="(s, i) in (p.custom_sections || [])" :key="'cs' + i" class="card !rounded-[4px] px-6 pb-8 pt-8 sm:px-10">
                 <h2 class="text-lg font-bold leading-[1.5]">{{ s.title }}</h2>
                 <p class="mt-3 whitespace-pre-line break-words text-base leading-[1.6]">{{ s.body }}</p>
             </section>

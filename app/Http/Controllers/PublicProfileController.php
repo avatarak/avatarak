@@ -32,12 +32,20 @@ class PublicProfileController extends Controller
             StatsRecorder::record($profile->user_id, 'profile', $request);
         }
 
+        // single-language pages always speak their language; bilingual ones follow ?lang=, else the visitor's UI language
+        $original = $profile;
+        $lang = $profile->languages === 'both' ? ($request->query('lang') ?: app()->getLocale()) : null;
+        $lang = $profile->chooseLang($lang);
+        app()->setLocale($lang);
+        $profile = $profile->localized($lang);
         $hidden = $profile->hidden_sections ?? [];
         $links = $export->links($profile);
         $name = $profile->username;
 
         $res = response()->view('profile', [
             'p' => $profile,
+            'bilingual' => $original->languages === 'both',
+            'otherName' => $export->otherName($profile),
             'socials' => $export->socials($profile),
             'links' => $links,
             'showImages' => (bool) $profile->show_link_images,

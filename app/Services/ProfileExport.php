@@ -18,9 +18,26 @@ class ProfileExport
         'whatsapp' => 'https://wa.me/%s', 'facebook' => 'https://facebook.com/%s', 'eitaa' => 'https://eitaa.com/%s', 'rubika' => 'https://rubika.ir/%s',
     ];
 
+    /** Every renderer works on a copy that already speaks one language. */
+    public function loc(Profile $p, ?string $lang = null): Profile
+    {
+        return $p->lang !== null && ($lang === null || $lang === $p->lang) ? $p : $p->localized($lang);
+    }
+
     public function display(Profile $p): string
     {
-        return $p->name_fa ?: ($p->name_en ?: $p->username);
+        $lang = $p->lang ?? $p->defaultLang();
+
+        return ($lang === 'en' ? ($p->name_en ?: $p->name_fa) : ($p->name_fa ?: $p->name_en)) ?: $p->username;
+    }
+
+    /** The name in the other language, shown under the main one when both exist and differ. */
+    public function otherName(Profile $p): ?string
+    {
+        $lang = $p->lang ?? $p->defaultLang();
+        $other = $lang === 'en' ? $p->name_fa : $p->name_en;
+
+        return $other && $other !== $this->display($p) ? $other : null;
     }
 
     /** @return array<string, string> network => absolute url */
@@ -39,6 +56,7 @@ class ProfileExport
     /** @return list<array{label:string,url:string,description?:string,image?:string}> */
     public function links(Profile $p): array
     {
+        $p = $this->loc($p);
         $images = $p->show_link_images;
 
         return collect($p->links ?? [])
@@ -60,19 +78,21 @@ class ProfileExport
     /** @return list<array{url:string,thumb_url:string,caption:?string,width:int,height:int}> */
     public function gallery(Profile $p): array
     {
+        $p = $this->loc($p);
         if (in_array('gallery', $p->hidden_sections ?? [], true)) {
             return [];
         }
 
         return \App\Models\GalleryImage::where('user_id', $p->user_id)->orderBy('position')->orderBy('id')->get()->map(fn ($g) => [
             'url' => route('profile.gallery', [$p->username, $g->id, 'full']), 'thumb_url' => route('profile.gallery', [$p->username, $g->id, 'thumb']),
-            'caption' => $g->caption, 'width' => $g->width, 'height' => $g->height,
+            'caption' => $p->pick($g->caption, $g->caption_alt, $p->lang), 'width' => $g->width, 'height' => $g->height,
         ])->all();
     }
 
     /** @return list<array{title:string,body:string}> */
     public function sections(Profile $p): array
     {
+        $p = $this->loc($p);
         return collect($p->custom_sections ?? [])->filter(fn ($s) => ! empty($s['title']) && ! empty($s['body']))
             ->map(fn ($s) => ['title' => (string) $s['title'], 'body' => (string) $s['body']])->values()->all();
     }
@@ -88,8 +108,10 @@ class ProfileExport
         return UserEmail::where('user_id', $p->user_id)->whereNotNull('verified_at')->exists();
     }
 
-    public function data(Profile $p): array
+    public function data(Profile $p, ?string $lang = null): array
     {
+        $p = $this->loc($p, $lang);
+
         return [
             'username' => $p->username,
             'url' => route('profile.show', $p->username),
@@ -107,13 +129,24 @@ class ProfileExport
             'verified_accounts' => $this->verifiedAccounts($p),
             'gallery' => $this->gallery($p),
             'sections' => $this->sections($p),
+            'language' => $p->lang,
+            'languages' => $p->servedLanguages(),
+        ] + ($p->languages === 'both' ? ['translations' => collect(Profile::LANGS)->mapWithKeys(function ($l) use ($p) {
+            $c = $p->localized($l);
+
+            return [$l => [
+                'display_name' => $this->display($c), 'headline' => $c->headline, 'location' => $c->location, 'bio' => $c->bio,
+                'links' => $this->links($c), 'sections' => $this->sections($c), 'gallery' => collect($this->gallery($c))->pluck('caption')->all(),
+            ]];
+        })->all()] : []) + [
             'created_at' => $p->created_at?->toIso8601String(),
             'updated_at' => $p->updated_at?->toIso8601String(),
         ];
     }
 
-    public function markdown(Profile $p): string
+    public function markdown(Profile $p, ?string $lang = null): string
     {
+        $p = $this->loc($p, $lang);
         $esc = fn (string $s) => str_replace(['\\', '[', ']'], ['\\\\', '\\[', '\\]'], $s);
         $lines = ['# '.str_replace(["\r", "\n"], ' ', $this->display($p)), ''];
 
@@ -168,8 +201,9 @@ class ProfileExport
         return implode("\n", $lines)."\n";
     }
 
-    public function vcard(Profile $p): string
+    public function vcard(Profile $p, ?string $lang = null): string
     {
+        $p = $this->loc($p, $lang);
         $esc = fn (string $s) => str_replace(['\\', ';', ',', "\r\n", "\n", "\r"], ['\\\\', '\;', '\\,', '\\n', '\\n', '\\n'], $s);
         $name = $this->display($p);
 

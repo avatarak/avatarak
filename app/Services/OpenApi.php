@@ -8,7 +8,7 @@ namespace App\Services;
  */
 class OpenApi
 {
-    public const PROFILE_FIELDS = ['hash', 'username', 'profile_url', 'name_fa', 'name_en', 'headline', 'location', 'bio', 'website', 'socials', 'links', 'verified_accounts', 'avatar_url'];
+    public const PROFILE_FIELDS = ['hash', 'username', 'profile_url', 'name_fa', 'name_en', 'headline', 'location', 'bio', 'website', 'socials', 'links', 'verified_accounts', 'language', 'avatar_url'];
 
     public function build(): array
     {
@@ -107,6 +107,7 @@ class OpenApi
                         'socials' => ['type' => 'object', 'additionalProperties' => ['type' => 'string'], 'description' => 'network → handle, e.g. {"github": "javid"}'],
                         'links' => ['type' => 'array', 'items' => ['$ref' => '#/components/schemas/Link']],
                         'verified_accounts' => ['type' => 'array', 'items' => ['$ref' => '#/components/schemas/VerifiedAccount']],
+                        'language' => ['type' => 'string', 'enum' => ['fa', 'en'], 'description' => 'The language of headline, location, bio and links. Bilingual profiles accept ?lang=fa|en.'],
                         'avatar_url' => ['type' => ['string', 'null'], 'format' => 'uri'],
                     ]],
                     'PublicProfile' => ['type' => 'object', 'description' => 'The public export; see the docs for every field.', 'properties' => [
@@ -114,6 +115,8 @@ class OpenApi
                         'headline' => ['type' => ['string', 'null']], 'location' => ['type' => ['string', 'null']], 'bio' => ['type' => ['string', 'null']], 'website' => ['type' => ['string', 'null']],
                         'avatar_url' => ['type' => ['string', 'null']], 'verified' => ['type' => 'boolean'], 'socials' => ['type' => 'object', 'additionalProperties' => ['type' => 'string', 'format' => 'uri']],
                         'links' => ['type' => 'array', 'items' => ['$ref' => '#/components/schemas/Link']], 'verified_accounts' => ['type' => 'array', 'items' => ['$ref' => '#/components/schemas/VerifiedAccount']],
+                        'language' => ['type' => 'string', 'enum' => ['fa', 'en']], 'languages' => ['type' => 'array', 'items' => ['type' => 'string', 'enum' => ['fa', 'en']], 'description' => 'Languages this page is available in. Bilingual profiles also carry a "translations" object and accept ?lang=fa|en.'],
+                        'translations' => ['type' => 'object', 'description' => 'Only on bilingual profiles: the texts of each language, keyed fa / en.'],
                         'gallery' => ['type' => 'array', 'items' => ['type' => 'object', 'properties' => ['url' => ['type' => 'string', 'format' => 'uri'], 'thumb_url' => ['type' => 'string', 'format' => 'uri'], 'caption' => ['type' => ['string', 'null']], 'width' => ['type' => 'integer'], 'height' => ['type' => 'integer']]]],
                         'sections' => ['type' => 'array', 'items' => ['type' => 'object', 'properties' => ['title' => ['type' => 'string'], 'body' => ['type' => 'string']]]],
                         'created_at' => ['type' => 'string', 'format' => 'date-time'], 'updated_at' => ['type' => 'string', 'format' => 'date-time'],
