@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use App\Services\DocsRepository;
+use App\Services\Seo;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
@@ -61,11 +62,33 @@ class SeoFilesController extends Controller
     public function pages(DocsRepository $docs): Response
     {
         $xml = Cache::remember('sitemap:pages', 600, function () use ($docs) {
-            $paths = array_merge(['/', '/docs', '/docs/api-explorer', '/terms', '/privacy'], array_map(fn ($s) => "/docs/{$s}", $docs->slugs()));
+            $entries = [];
+            // every page that exists in both languages is listed once per language, each pointing at the other (hreflang)
+            $add = function (string $path, array $langs, ?callable $urlOf = null) use (&$entries) {
+                $alts = Seo::alternates($path, $langs);
+                foreach ($langs as $l) {
+                    $entries[] = ['loc' => $urlOf ? $urlOf($l) : Seo::langUrl($path, $l), 'alts' => $alts];
+                }
+            };
+            $add('/', Profile::LANGS, fn ($l) => $l === Seo::defaultLang() ? url('/') : url('/'.$l));
+            $add('/docs', Profile::LANGS);
+            $add('/docs/api-explorer', Profile::LANGS);
+            $add('/terms', Profile::LANGS);
+            $add('/privacy', Profile::LANGS);
+            foreach ($docs->slugs() as $slug) {
+                $add("/docs/{$slug}", array_values(array_filter(Profile::LANGS, fn ($l) => ($docs->page($slug, $l)['locale'] ?? null) === $l)));
+            }
 
-            return self::HEAD.'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-                .collect($paths)->map(fn ($p) => '<url><loc>'.e(url($p)).'</loc></url>')->implode('')
-                .'</urlset>'."\n";
+            $out = self::HEAD.'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
+            foreach ($entries as $e) {
+                $out .= '<url><loc>'.e($e['loc']).'</loc>';
+                foreach ($e['alts'] as $hl => $href) {
+                    $out .= '<xhtml:link rel="alternate" hreflang="'.$hl.'" href="'.e($href).'"/>';
+                }
+                $out .= '</url>';
+            }
+
+            return $out.'</urlset>'."\n";
         });
 
         return $this->xml($xml);

@@ -6,10 +6,14 @@
         'tagline' => config('brand.tagline'),
         'tagline_en' => config('brand.tagline_en'),
         'locale' => config('brand.default_locale'),
+        'pageLocale' => request()->attributes->get('landing'),       // the home page's address decides its language
     ];
     // Only the home page is for search engines; the dashboard and the admin panel share this shell but are not.
-    $home = request()->path() === '/';
-    $seoLoc = app()->getLocale() === 'en' ? 'en' : 'fa';
+    $landingLang = request()->attributes->get('landing');
+    $home = $landingLang !== null;
+    $seoLoc = $home ? $landingLang : (app()->getLocale() === 'en' ? 'en' : 'fa');
+    $homeUrl = \App\Services\Seo::langUrl('/', $seoLoc);
+    $homeUrl = $seoLoc === \App\Services\Seo::defaultLang() ? url('/') : url('/'.$seoLoc);
     $seoBrand = $seoLoc === 'en' ? (config('brand.name_en') ?: config('brand.name')) : config('brand.name');
     $landing = $home ? (json_decode(@file_get_contents(resource_path('data/landing-seo.json')), true)[$seoLoc] ?? null) : null;
     $tagline = $seoLoc === 'en' ? (config('brand.tagline_en') ?: config('brand.tagline')) : config('brand.tagline');
@@ -18,7 +22,7 @@
     $ld = null;
     if ($landing) {
         $ld = ['@context' => 'https://schema.org', '@graph' => array_values(array_filter([
-            ['@type' => 'WebSite', '@id' => url('/').'#website', 'url' => url('/'), 'name' => $seoBrand, 'description' => $desc, 'inLanguage' => $seoLoc],
+            ['@type' => 'WebSite', '@id' => url('/').'#website', 'url' => $homeUrl, 'name' => $seoBrand, 'description' => $desc, 'inLanguage' => $seoLoc],
             ['@type' => 'Organization', '@id' => url('/').'#org', 'name' => $seoBrand, 'url' => url('/'),
                 'logo' => config('brand.logo_url') ?: url('/brand/icon-512.png'), 'sameAs' => ['https://github.com/avatarak/avatarak']],
             ['@type' => 'SoftwareApplication', 'name' => $seoBrand, 'url' => url('/'), 'applicationCategory' => 'WebApplication', 'operatingSystem' => 'Web',
@@ -29,7 +33,7 @@
     }
 @endphp
 <!doctype html>
-<html lang="{{ config('brand.default_locale') }}" dir="{{ config('brand.default_locale') === 'en' ? 'ltr' : 'rtl' }}">
+<html lang="{{ $seoLoc }}" dir="{{ $seoLoc === 'en' ? 'ltr' : 'rtl' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,13 +42,18 @@
         <meta name="robots" content="noindex, nofollow">
     @else
         <meta name="description" content="{{ $desc }}">
-        <link rel="canonical" href="{{ url('/') }}">
+        <link rel="canonical" href="{{ $homeUrl }}">
+        @foreach(['fa', 'en'] as $hl)
+            <link rel="alternate" hreflang="{{ $hl }}" href="{{ $hl === \App\Services\Seo::defaultLang() ? url('/') : url('/'.$hl) }}">
+        @endforeach
+        <link rel="alternate" hreflang="x-default" href="{{ url('/') }}">
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="{{ $seoBrand }}">
         <meta property="og:title" content="{{ $seoBrand }} — {{ $tagline }}">
         <meta property="og:description" content="{{ $desc }}">
-        <meta property="og:url" content="{{ url('/') }}">
+        <meta property="og:url" content="{{ $homeUrl }}">
         <meta property="og:locale" content="{{ $seoLoc === 'en' ? 'en_US' : 'fa_IR' }}">
+        <meta property="og:locale:alternate" content="{{ $seoLoc === 'en' ? 'fa_IR' : 'en_US' }}">
         <meta property="og:image" content="{{ $ogImage }}">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">

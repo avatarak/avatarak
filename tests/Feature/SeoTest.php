@@ -137,10 +137,10 @@ class SeoTest extends TestCase
 
     public function test_home_page_is_readable_without_javascript_and_has_site_schemas(): void
     {
-        foreach (['fa', 'en'] as $l) {
-            $r = $this->withUnencryptedCookie('locale', $l)->get('/')->assertOk();
-            $h = $r->getContent();
-            $this->assertStringContainsString('<link rel="canonical" href="'.url('/').'">', $h);
+        foreach (['/' => 'fa', '/en' => 'en'] as $path => $l) {
+            $h = $this->get($path)->assertOk()->getContent();
+            $this->assertStringContainsString('<html lang="'.$l.'"', $h);
+            $this->assertStringContainsString('<link rel="canonical" href="'.($l === 'en' ? url('/en') : url('/')).'">', $h);
             $this->assertStringContainsString('property="og:image" content="'.url('/brand/og-default.jpg').'"', $h);
             $this->assertStringContainsString('summary_large_image', $h);
             $this->assertStringNotContainsString('noindex', $h);
@@ -149,10 +149,75 @@ class SeoTest extends TestCase
             $this->assertSame(['WebSite', 'Organization', 'SoftwareApplication', 'FAQPage'], $types);
         }
         // the structured FAQ is exactly the FAQ the page shows
-        $faq = collect($this->ld($this->withUnencryptedCookie('locale', 'en')->get('/')->getContent())['@graph'])->firstWhere('@type', 'FAQPage');
+        $faq = collect($this->ld($this->get('/en')->getContent())['@graph'])->firstWhere('@type', 'FAQPage');
         $this->assertCount(5, $faq['mainEntity']);
         $this->assertSame('Is it really free?', $faq['mainEntity'][0]['name']);
-        $this->withUnencryptedCookie('locale', 'fa')->get('/')->assertSee('lang="fa"', false)->assertSee('مستندات');
+        $this->get('/')->assertSee('مستندات');
+    }
+
+    public function test_each_language_of_the_home_page_has_its_own_address_and_points_at_the_other(): void
+    {
+        foreach (['/', '/en'] as $p) {
+            $this->get($p)->assertSee('hreflang="fa" href="'.url('/').'"', false)->assertSee('hreflang="en" href="'.url('/en').'"', false)->assertSee('hreflang="x-default" href="'.url('/').'"', false);
+        }
+        $this->get('/en')->assertSee('dir="ltr"', false)->assertSee('og:locale" content="en_US"', false)->assertSee('og:locale:alternate" content="fa_IR"', false)->assertSee('One photo, one identity');
+        $this->get('/')->assertSee('dir="rtl"', false)->assertSee('og:locale" content="fa_IR"', false)->assertSee('یک عکس');
+        // the address decides: a saved language choice never changes what a crawler (or anyone) gets at an address
+        $this->withUnencryptedCookie('locale', 'en')->get('/')->assertSee('<html lang="fa"', false)->assertSee('یک عکس');
+        $this->withUnencryptedCookie('locale', 'fa')->get('/en')->assertSee('<html lang="en"', false);
+        // the default language has no second address
+        $this->get('/fa')->assertRedirect('/')->assertStatus(301);
+    }
+
+    public function test_default_language_can_be_english_and_then_persian_lives_at_slash_fa(): void
+    {
+        config(['brand.default_locale' => 'en']);
+        $this->get('/')->assertSee('<html lang="en"', false)->assertSee('<link rel="canonical" href="'.url('/').'">', false);
+        $this->get('/fa')->assertOk()->assertSee('<html lang="fa"', false)->assertSee('<link rel="canonical" href="'.url('/fa').'">', false);
+        $this->get('/en')->assertRedirect('/')->assertStatus(301);
+        $this->assertStringContainsString('hreflang="x-default" href="'.url('/').'"', $this->get('/fa')->getContent());
+    }
+
+    public function test_pages_sitemap_pairs_the_languages_of_every_page(): void
+    {
+        $xml = $this->get('/sitemap-pages.xml')->getContent();
+        $this->assertNotFalse(simplexml_load_string($xml));
+        $this->assertStringContainsString('<loc>'.url('/en').'</loc>', $xml);
+        $this->assertStringContainsString('<loc>'.url('/docs').'?lang=en</loc>', $xml);
+        $this->assertStringContainsString('hreflang="en" href="'.url('/terms').'?lang=en"', $xml);
+        $this->assertStringContainsString('hreflang="x-default" href="'.url('/docs/getting-started').'"', $xml);
+    }
+
+    public function test_docs_pages_have_canonical_article_schema_breadcrumbs_and_hreflang(): void
+    {
+        $h = $this->get('/docs/getting-started')->assertOk()->getContent();
+        $this->assertStringContainsString('<link rel="canonical" href="'.url('/docs/getting-started').'">', $h);
+        $this->assertStringContainsString('hreflang="en" href="'.url('/docs/getting-started').'?lang=en"', $h);
+        $this->assertStringContainsString('hreflang="x-default"', $h);
+        $this->assertStringContainsString('property="og:type" content="article"', $h);
+        $types = collect($this->ld($h)['@graph'])->pluck('@type')->all();
+        $this->assertSame(['TechArticle', 'BreadcrumbList'], $types);
+        $g = collect($this->ld($h)['@graph']);
+        $this->assertSame(3, count($g->firstWhere('@type', 'BreadcrumbList')['itemListElement']));
+        $this->assertSame('fa', $g->firstWhere('@type', 'TechArticle')['inLanguage']);
+
+        $en = $this->get('/docs/getting-started?lang=en')->getContent();
+        $this->assertStringContainsString('<link rel="canonical" href="'.url('/docs/getting-started').'?lang=en">', $en);
+        $this->assertSame('en', collect($this->ld($en)['@graph'])->firstWhere('@type', 'TechArticle')['inLanguage']);
+
+        $idx = $this->get('/docs')->getContent();
+        $this->assertSame(['CollectionPage', 'BreadcrumbList'], collect($this->ld($idx)['@graph'])->pluck('@type')->all());
+        $this->get('/docs/api-explorer')->assertSee('<link rel="canonical" href="'.url('/docs/api-explorer').'">', false);
+    }
+
+    public function test_legal_pages_have_canonical_webpage_schema_and_hreflang(): void
+    {
+        foreach (['terms', 'privacy'] as $p) {
+            $h = $this->get("/$p")->assertOk()->getContent();
+            $this->assertStringContainsString('<link rel="canonical" href="'.url("/$p").'">', $h);
+            $this->assertStringContainsString('hreflang="en" href="'.url("/$p").'?lang=en"', $h);
+            $this->assertSame(['WebPage', 'BreadcrumbList'], collect($this->ld($h)['@graph'])->pluck('@type')->all());
+        }
     }
 
     public function test_dashboard_and_admin_shells_are_not_indexable(): void

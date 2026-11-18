@@ -6,8 +6,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @php $seo = app(\App\Services\Seo::class)->docs($current ?? null, $page ?? null, $locale, $brand); @endphp
     <title>{{ isset($page) ? $page['title'].' · ' : '' }}{{ $t['docs'] }} · {{ $brand }}</title>
-    <meta name="description" content="{{ $page['description'] ?? ($rtl ? 'مستندات توسعه‌دهنده‌ها: آواتار، REST API و داده‌ی عمومی پروفایل.' : 'Developer documentation: avatars, the REST API and public profile data.') }}">
+    @include('partials.seo-page')
     <x-brand-head />
     <link rel="alternate" type="text/plain" href="{{ route('docs.llms') }}" title="llms.txt">
     @include('partials.brand')

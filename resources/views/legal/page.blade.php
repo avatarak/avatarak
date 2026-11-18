@@ -11,7 +11,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title }} · {{ $brand }}</title>
-    <meta name="description" content="{{ $description }}">
+    @php $seo = app(\App\Services\Seo::class)->legal($page, $title, $description, $locale, $brand); @endphp
+    @include('partials.seo-page')
     <x-brand-head />
     @include('partials.brand')
     @vite(['resources/css/app.css'])

@@ -5,7 +5,8 @@ import adminMessages from './admin/messages';
 const brand = window.__BRAND__ || {};
 const saved = (() => { try { return localStorage.getItem('locale'); } catch { return null; } })();
 
-export const i18n = reactive({ locale: saved || brand.locale || 'fa' });
+// On the home page the address decides the language (so "/en" is English for everybody); elsewhere the saved choice does.
+export const i18n = reactive({ locale: brand.pageLocale || saved || brand.locale || 'fa' });
 export const dir = computed(() => (i18n.locale === 'fa' ? 'rtl' : 'ltr'));
 
 export function setLocale(l) {
@@ -17,6 +18,8 @@ export function applyDir() {
     document.documentElement.lang = i18n.locale;
     document.documentElement.dir = dir.value;
     // Server-rendered pages (the public profile) read this cookie so they match the UI language.
+    // keep the home page's address in step with the language the visitor picked
+    if (brand.pageLocale) history.replaceState(null, '', (i18n.locale === brand.locale ? '/' : `/${i18n.locale}`) + location.search + location.hash);
     document.cookie = `locale=${i18n.locale}; path=/; max-age=31536000; SameSite=Lax`;
 }
 

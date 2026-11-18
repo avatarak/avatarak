@@ -14,8 +14,12 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
         return app(\App\Http\Controllers\PublicProfileController::class)->show($request, app(\App\Services\ProfileExport::class), $p->username);
     }
 
-    return view('app');
+    return \App\Http\Controllers\LandingController::render(\App\Services\Seo::defaultLang());
 });
+// The home page has one address per language, so each can be found and indexed: "/" is the site's default language, "/en" (or "/fa") the other.
+foreach (['en', 'fa'] as $l) {
+    Route::get("/$l", fn () => $l === \App\Services\Seo::defaultLang() ? redirect('/', 301) : \App\Http\Controllers\LandingController::render($l));
+}
 // the signed-in dashboard lives at /panel so that "/" can always show the home page, signed in or not
 Route::view('/panel', 'app');
 Route::get('/avatar', function (\Illuminate\Http\Request $request) {
