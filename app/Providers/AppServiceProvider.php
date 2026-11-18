@@ -37,6 +37,9 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(Login::class, fn (Login $e) => $e->user->forceFill(['last_login_at' => now()])->saveQuietly());
 
+        // switches an administrator changed in the panel win over .env
+        app(\App\Services\Settings::class)->apply();
+
         // Tell the owner's webhooks about changes, whichever code path made them.
         $hooks = fn () => app(\App\Services\Webhooks::class);
         \App\Models\Profile::updated(function (\App\Models\Profile $p) use ($hooks) {

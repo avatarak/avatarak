@@ -7,7 +7,7 @@ import Badge from './Badge.vue';
 import Pager from './Pager.vue';
 
 const list = useList('/audit', { action: '' });
-const GROUPS = [['', 'a_all'], ['user.', 'a_nav_users'], ['report.', 'a_nav_reports'], ['site.', 'a_nav_sites'], ['verified.', 'a_nav_verified']];
+const GROUPS = [['', 'a_all'], ['user.', 'a_nav_users'], ['report.', 'a_nav_reports'], ['site.', 'a_nav_sites'], ['verified.', 'a_nav_verified'], ['settings.', 'a_nav_settings'], ['announcement.', 'a_ann_title'], ['export.', 'a_export_csv']];
 const openRow = ref(null);
 const TONE = (a) => (/delete|suspend$|disable|revoke|demote/.test(a) ? 'red' : /promote|unsuspend|enable/.test(a) ? 'green' : 'blue');
 const label = (a) => t('act_' + a.replace('.', '_'));

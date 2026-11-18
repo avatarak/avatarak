@@ -126,4 +126,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    // New sign-ups allowed? An administrator can switch this from the panel (see App\Services\Settings).
+    'registration_open' => (bool) env('REGISTRATION_OPEN', true),
 ];

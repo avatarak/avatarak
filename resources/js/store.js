@@ -1,4 +1,5 @@
 import { reactive } from 'vue';
+import { i18n } from './i18n';
 import { api, ApiError } from './api';
 
 export const state = reactive({ ready: false, account: null, draft: null, toast: '' });
@@ -30,8 +31,16 @@ export async function refresh() {
     const a = await api('GET', '/account');
     state.account = a;
     if (state.draft) {
-        for (const k of ['has_avatar', 'avatar_version', 'avatar_id']) state.draft[k] = a.profile[k];
+        for (const k of ['has_avatar', 'avatar_version', 'avatar_id', 'custom_sections', 'section_limit']) state.draft[k] = a.profile[k];
     } else {
         state.draft = JSON.parse(JSON.stringify(a.profile));
     }
+}
+
+/** What every visitor may know: are sign-ups open, and which notices are live. */
+export const siteStatus = reactive({ loaded: false, registration_open: true, announcements: [] });
+export async function loadStatus() {
+    try {
+        Object.assign(siteStatus, await api('GET', '/site/status'), { loaded: true });
+    } catch { siteStatus.loaded = true; }        // a notice must never break the page
 }

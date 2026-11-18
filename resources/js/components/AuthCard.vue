@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, watch, onBeforeUnmount } from 'vue';
 import { api, ApiError } from '../api';
-import { load } from '../store';
+import { load, siteStatus, loadStatus } from '../store';
 import { t } from '../i18n';
 import Modal from './Modal.vue';
 import Icon from './Icon.vue';
@@ -83,6 +83,7 @@ async function submit() {
         busy.value = false;
     }
 }
+loadStatus();
 const err = (k) => errors.value[k]?.[0];
 </script>
 
@@ -94,6 +95,7 @@ const err = (k) => errors.value[k]?.[0];
                 <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('close')"><Icon name="close" :size="20" /></button>
             </div>
 
+            <p v-if="mode === 'register' && !siteStatus.registration_open" class="mb-4 rounded-[6px] bg-amber-50 p-3 text-sm leading-6 text-amber-900" role="alert">{{ t('regClosed') }}</p>
             <div class="space-y-4">
                 <template v-if="mode === 'register'">
                     <div>
@@ -145,7 +147,7 @@ const err = (k) => errors.value[k]?.[0];
                 <p v-if="message" class="text-sm text-red-600" role="alert">{{ message }}</p>
             </div>
 
-            <button class="btn btn-primary mt-7 w-full !min-h-[48px]" :disabled="busy">
+            <button class="btn btn-primary mt-7 w-full !min-h-[48px]" :disabled="busy || (mode === 'register' && !siteStatus.registration_open)">
                 {{ busy ? t('saving') : (mode === 'login' && step === 'email') ? t('sendCode') : (mode === 'login' && step === 'code') ? t('codeEnter') : (mode === 'login' && step === 'twofa') ? t('tfVerify') : t(mode) }}
             </button>
             <p v-if="mode === 'login' && step !== 'twofa'" class="mt-4 text-center text-sm">

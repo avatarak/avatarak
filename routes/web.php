@@ -118,6 +118,8 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::delete('emails/{id}', [EmailController::class, 'destroy']);
 });
 
+Route::get('/site/status', [\App\Http\Controllers\SiteStatusController::class, 'show'])->middleware('throttle:120,1');
+
 // Administration: the UI is part of the same single-page app, the data comes from /admin/api (admins only).
 Route::view('/admin', 'app');
 Route::prefix('admin/api')->middleware(['auth', 'admin'])->group(function () {
@@ -148,6 +150,15 @@ Route::prefix('admin/api')->middleware(['auth', 'admin'])->group(function () {
     Route::delete('verified/{id}', [\App\Http\Controllers\Admin\VerifiedController::class, 'destroy'])->whereNumber('id');
 
     Route::get('audit', [\App\Http\Controllers\Admin\AuditController::class, 'index']);
+
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index']);
+    Route::put('settings/{key}', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->where('key', '[a-z_]+');
+    Route::delete('settings/{key}', [\App\Http\Controllers\Admin\SettingsController::class, 'reset'])->where('key', '[a-z_]+');
+    Route::get('announcements', [\App\Http\Controllers\Admin\AnnouncementController::class, 'index']);
+    Route::post('announcements', [\App\Http\Controllers\Admin\AnnouncementController::class, 'store']);
+    Route::put('announcements/{id}', [\App\Http\Controllers\Admin\AnnouncementController::class, 'update'])->whereNumber('id');
+    Route::delete('announcements/{id}', [\App\Http\Controllers\Admin\AnnouncementController::class, 'destroy'])->whereNumber('id');
+    Route::get('export/{kind}.csv', [\App\Http\Controllers\Admin\ExportController::class, 'download'])->where('kind', 'users|reports|audit|payments')->middleware('throttle:10,1');
 });
 
 // Legal pages (Markdown in resources/legal); /terms and /privacy are reserved usernames.

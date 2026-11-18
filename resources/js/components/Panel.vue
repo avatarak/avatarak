@@ -56,7 +56,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
 </script>
 
 <template>
-    <div class="flex h-dvh flex-col bg-white">
+    <div class="flex h-full flex-col bg-white">
         <header class="flex h-[70px] shrink-0 items-center justify-between px-5">
             <Logo />
             <div class="flex items-center gap-1">

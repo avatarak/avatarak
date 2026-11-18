@@ -1,6 +1,17 @@
 // Admin panel messages (merged into the main i18n table by i18n.js).
 export default {
     fa: {
+        // settings, announcements, export
+        a_nav_settings: 'تنظیمات و اعلان‌ها', a_export_csv: 'خروجی CSV', a_export_note: 'هر خروجی در گزارش ممیزی ثبت می‌شود.',
+        a_set_title: 'تنظیمات سایت', a_set_help: 'این کلیدها بدون تغییر فایل .env و بدون استقرار دوباره عمل می‌کنند. «بازنشانی» مقدار فایل .env را برمی‌گرداند.', a_set_default: 'پیش‌فرض (.env)', a_set_panel: 'تغییرداده‌شده از پنل', a_set_reset: 'بازنشانی',
+        a_set_registration_open: 'ثبت‌نام کاربر جدید', a_set_registration_open_d: 'اگر خاموش شود هیچ‌کس نمی‌تواند حساب جدید بسازد (ورود کاربران فعلی ادامه دارد).',
+        a_set_stats_enabled: 'شمارش آمار بازدید', a_set_stats_enabled_d: 'شمارنده‌های روزانه‌ی تجمیعی؛ بدون هیچ داده‌ی فردی.',
+        a_set_webhooks_enabled: 'وب‌هوک‌ها', a_set_webhooks_enabled_d: 'ارسال رویدادها به آدرس‌های کاربران. با خاموش شدن، هیچ درخواستی ارسال نمی‌شود.',
+        a_set_billing_gateway: 'درگاه پرداخت', a_set_billing_gateway_d: 'none یعنی همه چیز رایگان. «zarinpal» نیاز به merchant id در .env دارد.', a_on: 'روشن', a_off: 'خاموش',
+        a_ann_title: 'اعلان‌ها', a_ann_help: 'پیامی که بالای صفحه‌ی ورود و پنل کاربران نشان داده می‌شود.', a_ann_new: 'اعلان جدید', a_ann_fa: 'متن فارسی', a_ann_en: 'متن انگلیسی (اختیاری)', a_ann_level: 'نوع', a_ann_info: 'اطلاع‌رسانی', a_ann_success: 'خبر خوب', a_ann_warning: 'هشدار',
+        a_ann_active: 'فعال', a_ann_dismissible: 'کاربر بتواند ببندد', a_ann_starts: 'شروع (اختیاری)', a_ann_ends: 'پایان (اختیاری)', a_ann_live: 'در حال نمایش', a_ann_idle: 'نمایش داده نمی‌شود', a_ann_save: 'ذخیره‌ی اعلان', a_ann_none: 'اعلانی ثبت نشده.', a_ann_edit: 'ویرایش', a_ann_delete: 'حذف',
+        act_settings_update: 'تغییر تنظیمات', act_settings_reset: 'بازنشانی تنظیمات', act_announcement_create: 'ساخت اعلان', act_announcement_update: 'ویرایش اعلان', act_announcement_delete: 'حذف اعلان',
+        act_export_users: 'خروجی CSV کاربران', act_export_reports: 'خروجی CSV گزارش‌ها', act_export_audit: 'خروجی CSV ممیزی', act_export_payments: 'خروجی CSV پرداخت‌ها',
         a_title: 'پنل مدیریت', a_back: 'بازگشت به برنامه', a_menu: 'منو', a_search: 'جست‌وجو…', a_loading: 'در حال بارگذاری…', a_empty: 'موردی پیدا نشد.', a_error: 'خطا در دریافت اطلاعات.', a_retry: 'تلاش دوباره',
         a_forbidden: 'صفحه‌ای پیدا نشد.', a_login_required: 'برای ورود به پنل مدیریت وارد شوید.', a_open: 'باز کردن', a_close: 'بستن', a_cancel: 'انصراف', a_confirm: 'تأیید', a_save: 'ذخیره', a_actions: 'عملیات', a_view_profile: 'مشاهده‌ی پروفایل', a_copy: 'کپی',
         a_total: 'مجموع', a_page_of: 'صفحه', a_of: 'از', a_prev: 'قبلی', a_next: 'بعدی', a_results: 'نتیجه', a_never: 'هرگز', a_yes: 'بله', a_no: 'خیر', a_done: 'انجام شد',
@@ -48,6 +59,17 @@ export default {
         act_report_actioned: 'رسیدگی به گزارش', act_report_dismissed: 'ردِ گزارش', act_report_reopen: 'بازگشایی گزارش', act_site_disable: 'غیرفعال کردن سایت', act_site_enable: 'فعال کردن سایت', act_site_update: 'ویرایش سایت', act_site_delete: 'حذف سایت', act_verified_revoke: 'لغو تأیید حساب',
     },
     en: {
+        // settings, announcements, export
+        a_nav_settings: 'Settings & notices', a_export_csv: 'Export CSV', a_export_note: 'Every export is written to the audit log.',
+        a_set_title: 'Site settings', a_set_help: 'These switches work without editing .env or redeploying. “Reset” goes back to the .env value.', a_set_default: 'Default (.env)', a_set_panel: 'Changed from the panel', a_set_reset: 'Reset',
+        a_set_registration_open: 'New sign-ups', a_set_registration_open_d: 'When off, nobody can create an account (existing users can still sign in).',
+        a_set_stats_enabled: 'View statistics', a_set_stats_enabled_d: 'Aggregated daily counters, never anything per visitor.',
+        a_set_webhooks_enabled: 'Webhooks', a_set_webhooks_enabled_d: 'Sending events to users’ addresses. When off, no request is sent.',
+        a_set_billing_gateway: 'Payment gateway', a_set_billing_gateway_d: '“none” keeps everything free. “zarinpal” needs the merchant id in .env.', a_on: 'On', a_off: 'Off',
+        a_ann_title: 'Announcements', a_ann_help: 'A message shown at the top of the sign-in page and of every user’s panel.', a_ann_new: 'New announcement', a_ann_fa: 'Persian text', a_ann_en: 'English text (optional)', a_ann_level: 'Type', a_ann_info: 'Info', a_ann_success: 'Good news', a_ann_warning: 'Warning',
+        a_ann_active: 'Active', a_ann_dismissible: 'Users can close it', a_ann_starts: 'Starts (optional)', a_ann_ends: 'Ends (optional)', a_ann_live: 'Showing now', a_ann_idle: 'Not showing', a_ann_save: 'Save announcement', a_ann_none: 'No announcements yet.', a_ann_edit: 'Edit', a_ann_delete: 'Delete',
+        act_settings_update: 'Changed a setting', act_settings_reset: 'Reset a setting', act_announcement_create: 'Created an announcement', act_announcement_update: 'Edited an announcement', act_announcement_delete: 'Deleted an announcement',
+        act_export_users: 'Exported users (CSV)', act_export_reports: 'Exported reports (CSV)', act_export_audit: 'Exported the audit log (CSV)', act_export_payments: 'Exported payments (CSV)',
         a_title: 'Admin', a_back: 'Back to the app', a_menu: 'Menu', a_search: 'Search…', a_loading: 'Loading…', a_empty: 'Nothing found.', a_error: 'Could not load the data.', a_retry: 'Try again',
         a_forbidden: 'Page not found.', a_login_required: 'Sign in to open the admin area.', a_open: 'Open', a_close: 'Close', a_cancel: 'Cancel', a_confirm: 'Confirm', a_save: 'Save', a_actions: 'Actions', a_view_profile: 'View profile', a_copy: 'Copy',
         a_total: 'Total', a_page_of: 'Page', a_of: 'of', a_prev: 'Previous', a_next: 'Next', a_results: 'results', a_never: 'Never', a_yes: 'Yes', a_no: 'No', a_done: 'Done',

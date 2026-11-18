@@ -39,6 +39,14 @@ Then open `/admin` (or **Admin** in the account menu).
 
 You can never suspend or delete yourself or another administrator, and nobody can remove their own administrator access. Remove another administrator's access first, then act on the account.
 
+## Settings, announcements and exports
+
+Open **Settings & notices** in the admin panel.
+
+- **Switches**: new sign-ups (`REGISTRATION_OPEN`), view statistics (`STATS_ENABLED`), webhooks (`WEBHOOKS_ENABLED`) and the payment gateway (`BILLING_GATEWAY`). A switch changed here wins over `.env` without a redeploy; **Reset** hands control back to `.env`. Secrets such as the ZarinPal merchant id stay in `.env` only.
+- **Announcements**: a notice shown at the top of the sign-in page and of every user's panel, in Persian and (optionally) English, with a type (info, good news, warning), an optional start and end time, and whether users may close it.
+- **CSV exports**: users, reports, payments and the audit log, from the **Export CSV** button on each page. Cells that would run as a formula in a spreadsheet are neutralised, passwords and card numbers are never included, and every export is itself written to the audit log.
+
 ## The audit log
 
 Each change above is recorded with who did it, when, on what, and the details (for example the suspension reason). Entries keep the administrator's email even if that account is later deleted, and the panel offers no way to edit or remove them.

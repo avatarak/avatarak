@@ -16,9 +16,11 @@ import Sites from './Sites.vue';
 import Verified from './Verified.vue';
 import Audit from './Audit.vue';
 import Payments from './Payments.vue';
+import Settings from './Settings.vue';
 
-const PAGES = { dashboard: Dashboard, users: Users, reports: Reports, sites: Sites, verified: Verified, payments: Payments, audit: Audit };
-const NAV = [['dashboard', 'dashboard'], ['users', 'users'], ['reports', 'flag'], ['sites', 'key'], ['verified', 'verified'], ['payments', 'gift'], ['audit', 'history']];
+const PAGES = { dashboard: Dashboard, users: Users, reports: Reports, sites: Sites, verified: Verified, payments: Payments, audit: Audit, settings: Settings };
+const NAV = [['dashboard', 'dashboard'], ['users', 'users'], ['reports', 'flag'], ['sites', 'key'], ['verified', 'verified'], ['payments', 'gift'], ['audit', 'history'], ['settings', 'settings']];
+const EXPORTABLE = ['users', 'reports', 'payments', 'audit'];
 
 const menu = ref(false);
 const page = computed(() => (PAGES[route.page] ? route.page : 'dashboard'));
@@ -66,6 +68,7 @@ const reportsBadge = computed(() => adm.counts?.reports_open || 0);
                 <button type="button" class="icon-btn lg:hidden" :aria-label="t('a_menu')" :aria-expanded="menu" @click="menu = !menu"><Icon name="menu" :size="22" /></button>
                 <h1 class="text-lg font-bold">{{ t('a_nav_' + page) }}</h1>
                 <div class="ms-auto flex items-center gap-2">
+                    <a v-if="EXPORTABLE.includes(page)" :href="`/admin/api/export/${page}.csv`" class="btn btn-ghost !min-h-0 !px-3 !py-1.5 text-sm" :title="t('a_export_note')" download><Icon name="download" :size="16" /> {{ t('a_export_csv') }}</a>
                     <LangSwitch />
                     <div class="hidden items-center gap-2 sm:flex">
                         <span class="size-8 overflow-hidden rounded-full"><InitialsAvatar :name="state.account.email" :seed="state.account.profile.username" /></span>
