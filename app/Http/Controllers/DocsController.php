@@ -33,6 +33,20 @@ class DocsController extends Controller
         ]), $locale);
     }
 
+    /** The OpenAPI 3.1 description, for code generators, Postman, Swagger UI… */
+    public function openapi(\App\Services\OpenApi $spec): \Illuminate\Http\JsonResponse
+    {
+        return response()->json($spec->build(), 200, ['Access-Control-Allow-Origin' => '*', 'Cache-Control' => 'public, max-age=300'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
+    /** Try the API from the browser: choose an operation, fill the fields, send, see the real answer. */
+    public function explorer(Request $request): Response
+    {
+        $locale = $this->locale($request);
+
+        return $this->respond($request, response()->view('docs.explorer', $this->shared($locale) + ['current' => 'api-explorer', 'withExplorer' => true]), $locale);
+    }
+
     public function llms(): Response
     {
         return response($this->docs->llms(), 200, [
@@ -62,11 +76,11 @@ class DocsController extends Controller
             't' => $locale === 'fa' ? [
         'docs' => 'مستندات', 'search' => 'جست‌وجو در مستندات…', 'getKey' => 'دریافت کلید API', 'menu' => 'منو', 'onThisPage' => 'در این صفحه',
         'prev' => 'قبلی', 'next' => 'بعدی', 'edit' => 'ویرایش این صفحه در GitHub', 'notTranslated' => 'این صفحه هنوز به فارسی ترجمه نشده است و نسخه‌ی انگلیسی نمایش داده می‌شود.',
-        'copy' => 'کپی', 'copied' => 'کپی شد', 'noResults' => 'نتیجه‌ای پیدا نشد.', 'home' => 'صفحه‌ی اصلی سایت', 'llms' => 'برای دستیارهای هوش مصنوعی',
+        'tools' => 'ابزارها', 'explorer' => 'آزمایش API', 'copy' => 'کپی', 'copied' => 'کپی شد', 'noResults' => 'نتیجه‌ای پیدا نشد.', 'home' => 'صفحه‌ی اصلی سایت', 'llms' => 'برای دستیارهای هوش مصنوعی',
     ] : [
         'docs' => 'Docs', 'search' => 'Search the docs…', 'getKey' => 'Get an API key', 'menu' => 'Menu', 'onThisPage' => 'On this page',
         'prev' => 'Previous', 'next' => 'Next', 'edit' => 'Edit this page on GitHub', 'notTranslated' => 'This page is not translated yet; showing the Persian version.',
-        'copy' => 'Copy', 'copied' => 'Copied', 'noResults' => 'No results.', 'home' => 'Back to the site', 'llms' => 'For AI assistants',
+        'tools' => 'Tools', 'explorer' => 'API explorer', 'copy' => 'Copy', 'copied' => 'Copied', 'noResults' => 'No results.', 'home' => 'Back to the site', 'llms' => 'For AI assistants',
     ],
             'locale' => $locale, 'rtl' => $locale === 'fa', 'tree' => $this->docs->tree($locale),
             'brand' => $locale === 'fa' ? config('brand.name') : (config('brand.name_en') ?: config('brand.name')),

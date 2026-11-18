@@ -142,6 +142,8 @@ Route::get('/{page}', [\App\Http\Controllers\LegalController::class, 'show'])->w
 
 // Documentation (Markdown in resources/docs); must come before the /{username} catch-all.
 Route::get('/docs', [\App\Http\Controllers\DocsController::class, 'index'])->name('docs.index');
+Route::get('/docs/openapi.json', [\App\Http\Controllers\DocsController::class, 'openapi'])->name('docs.openapi');
+Route::get('/docs/api-explorer', [\App\Http\Controllers\DocsController::class, 'explorer'])->name('docs.explorer');
 Route::get('/docs/llms.txt', [\App\Http\Controllers\DocsController::class, 'llms'])->name('docs.llms');
 Route::get('/docs/{slug}', [\App\Http\Controllers\DocsController::class, 'show'])->where('slug', '[a-z0-9-]+')->name('docs.show');
 

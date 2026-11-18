@@ -10,14 +10,14 @@ class Site extends Model
 {
     protected $fillable = [
         'user_id', 'name', 'domain', 'api_key_hash', 'api_key_prefix',
-        'plan', 'white_label', 'rate_limit_per_minute', 'last_used_at', 'disabled_at',
+        'plan', 'scopes', 'white_label', 'rate_limit_per_minute', 'last_used_at', 'disabled_at',
     ];
 
     protected $hidden = ['api_key_hash'];
 
     protected function casts(): array
     {
-        return ['white_label' => 'boolean', 'last_used_at' => 'datetime', 'disabled_at' => 'datetime'];
+        return ['scopes' => 'array', 'white_label' => 'boolean', 'last_used_at' => 'datetime', 'disabled_at' => 'datetime'];
     }
 
     /** Create a site; returns [Site, plainKey]. Plain key is never stored. */
@@ -35,6 +35,14 @@ class Site extends Model
     public static function findByKey(string $plain): ?self
     {
         return static::where('api_key_hash', hash('sha256', $plain))->first();
+    }
+
+    public const SCOPES = ['profiles:read', 'profiles:lookup'];
+
+    /** A key without a stored list (all keys made before scopes existed) may do everything. */
+    public function hasScope(string $scope): bool
+    {
+        return $this->scopes === null || in_array($scope, (array) $this->scopes, true);
     }
 
     /** Requests per minute: an administrator's override if there is one, else what the owner's plan allows. */

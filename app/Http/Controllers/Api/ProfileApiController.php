@@ -12,10 +12,11 @@ use Illuminate\Http\Request;
 
 class ProfileApiController extends Controller
 {
-    public const MAX_BATCH = 100;
+    public const MAX_BATCH = \App\Services\ApiLimits::MAX_BATCH;
 
     public function show(Request $request, string $hash): JsonResponse
     {
+        $this->requireScope($request, 'profiles:read');
         $hash = strtolower($hash);
         $profile = $this->resolve([$hash])[$hash] ?? null;
 
@@ -28,8 +29,15 @@ class ProfileApiController extends Controller
             ->header('Cache-Control', 'private, max-age=60');
     }
 
+    private function requireScope(Request $request, string $scope): void
+    {
+        abort_unless($request->attributes->get('site')?->hasScope($scope), 403, "This key does not have the \"{$scope}\" scope.");
+    }
+
     public function lookup(Request $request): JsonResponse
     {
+        $this->requireScope($request, 'profiles:lookup');
+
         $data = $request->validate([
             'hashes' => ['required', 'array', 'min:1', 'max:'.self::MAX_BATCH],
             'hashes.*' => ['required', 'string', 'regex:/^[A-Fa-f0-9]{64}$/'],

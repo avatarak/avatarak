@@ -11,7 +11,8 @@
     <x-brand-head />
     <link rel="alternate" type="text/plain" href="{{ route('docs.llms') }}" title="llms.txt">
     @include('partials.brand')
-    @vite(['resources/css/app.css', 'resources/js/docs.js'])
+    @vite(array_merge(['resources/css/app.css', 'resources/js/docs.js'], ($withExplorer ?? false) ? ['resources/js/explorer.js'] : []))
+    @stack('head')
 </head>
 <body class="bg-white text-ink" data-copy="{{ $t['copy'] }}" data-copied="{{ $t['copied'] }}" data-no-results="{{ $t['noResults'] }}">
 <header class="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
@@ -52,6 +53,11 @@
                 </ul>
             </div>
         @endforeach
+        <div class="mb-6"><p class="mb-2 text-xs font-semibold uppercase tracking-[0.04em] text-muted">{{ $t['tools'] ?? 'Tools' }}</p>
+            <ul class="space-y-0.5">
+                <li><a href="{{ route('docs.explorer') }}" class="block rounded-[4px] px-3 py-1.5 text-[0.9375rem] {{ ($current ?? null) === 'api-explorer' ? 'bg-brand/10 font-semibold text-brand' : 'text-ink/80 hover:bg-soft hover:text-ink' }}">{{ $t['explorer'] ?? 'API explorer' }}</a></li>
+                <li><a href="{{ route('docs.openapi') }}" class="block rounded-[4px] px-3 py-1.5 text-[0.9375rem] text-ink/80 hover:bg-soft hover:text-ink">OpenAPI (JSON)</a></li>
+            </ul></div>
         <p class="hidden text-sm text-muted" data-docs-empty>{{ $t['noResults'] }}</p>
         <a href="{{ route('docs.llms') }}" class="mt-2 inline-flex items-center gap-2 text-sm text-muted hover:text-brand"><x-icon name="code" :size="16" /> llms.txt · {{ $t['llms'] }}</a>
     </aside>
