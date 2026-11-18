@@ -1,5 +1,11 @@
 .git
 .github
+.agents
+.claude
+.cursor
+.codex
+.mcp.json
+bootstrap/cache/*.php
 node_modules
 vendor
 public/build

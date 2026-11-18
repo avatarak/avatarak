@@ -29,6 +29,7 @@ Thumbs.db
 # Extra ignores
 .env.*
 !.env.example
+!.env.production.example
 *.sqlite
 *.sqlite-journal
 /storage/app/private/*
