@@ -1,7 +1,7 @@
 export const DEFAULT_BASE_URL: string;
 export const MAX_BATCH: number;
 
-export interface VerifiedAccount { network: 'website' | 'github' | 'telegram' | (string & {}); identifier: string; url: string }
+export interface VerifiedAccount { network: "website" | "github" | "telegram" | "linkedin" | (string & {}); identifier: string; url: string | null }
 export interface ProfileLink { label: string; url: string; description?: string; image?: string }
 
 export interface Profile {

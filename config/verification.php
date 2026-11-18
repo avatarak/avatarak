@@ -21,4 +21,11 @@ return [
         'client_id' => env('GITHUB_CLIENT_ID'),
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
     ],
+
+    'linkedin' => [
+        // "Sign In with LinkedIn using OpenID Connect": create an app at linkedin.com/developers, add that product, and set
+        // the redirect URL to <APP_URL>/account/verifications/linkedin/callback. Leave empty to turn LinkedIn off.
+        'client_id' => env('LINKEDIN_CLIENT_ID'),
+        'client_secret' => env('LINKEDIN_CLIENT_SECRET'),
+    ],
 ];

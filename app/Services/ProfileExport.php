@@ -50,11 +50,11 @@ class ProfileExport
             ->values()->all();
     }
 
-    /** @return list<array{network:string,identifier:string,url:string}> proven accounts only */
+    /** @return list<array{network:string,identifier:string,url:?string}> proven accounts only */
     public function verifiedAccounts(Profile $p): array
     {
         return VerifiedAccount::where('user_id', $p->user_id)->orderBy('id')->get()
-            ->map(fn (VerifiedAccount $a) => ['network' => $a->network, 'identifier' => $a->identifier, 'url' => $a->url()])->all();
+            ->map(fn (VerifiedAccount $a) => ['network' => $a->network, 'identifier' => $a->label ?: $a->identifier, 'url' => $a->url()])->all();
     }
 
     public function avatarUrl(Profile $p, int $size = 512): ?string
@@ -116,7 +116,7 @@ class ProfileExport
             $lines[] = '## Verified accounts';
             $lines[] = '';
             foreach ($verified as $v) {
-                $lines[] = '- '.ucfirst($v['network']).': <'.$v['url'].'>';
+                $lines[] = '- '.ucfirst($v['network']).': '.($v['url'] ? '<'.$v['url'].'>' : $v['identifier']);
             }
         }
         if ($links = $this->links($p)) {

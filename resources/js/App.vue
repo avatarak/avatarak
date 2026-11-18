@@ -13,6 +13,10 @@ onMounted(async () => {
     await load();
     // returning from "Sign in with GitHub": /?verify=github-ok | github-<error>
     const v = new URLSearchParams(location.search).get('verify');
+    if (v?.startsWith('linkedin-')) {
+        toast(v === 'linkedin-ok' ? t('vLiOk') : t('vLiFail'));
+        history.replaceState(null, '', location.pathname);
+    }
     if (v?.startsWith('github-')) {
         toast(v === 'github-ok' ? t('vGhOk') : t('vGhFail'));
         history.replaceState(null, '', location.pathname);

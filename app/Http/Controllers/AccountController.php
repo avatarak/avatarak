@@ -32,7 +32,7 @@ class AccountController extends Controller
                 'id' => $a->id, 'active' => $a->id === $p->avatar_id, 'created_at' => $a->created_at,
             ])->values(),
             'verified_accounts' => $user->verifiedAccounts()->orderBy('id')->get()->map(fn ($a) => [
-                'id' => $a->id, 'network' => $a->network, 'identifier' => $a->identifier, 'url' => $a->url(),
+                'id' => $a->id, 'network' => $a->network, 'identifier' => $a->identifier, 'label' => $a->label, 'url' => $a->url(),
             ])->values(),
             'emails' => $user->emails->map(fn ($e) => $e->only(['id', 'email', 'email_hash', 'is_primary', 'is_public'])
                 + ['verified' => $e->isVerified()])->values(),

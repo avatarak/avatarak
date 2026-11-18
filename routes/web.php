@@ -44,6 +44,8 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::post('verifications/github/check', [\App\Http\Controllers\VerificationController::class, 'githubCheck'])->middleware('throttle:10,1');
     Route::get('verifications/github/redirect', [\App\Http\Controllers\VerificationController::class, 'githubRedirect'])->middleware('throttle:20,1');
     Route::get('verifications/github/callback', [\App\Http\Controllers\VerificationController::class, 'githubCallback'])->middleware('throttle:20,1')->name('verify.github.callback');
+    Route::get('verifications/linkedin/redirect', [\App\Http\Controllers\VerificationController::class, 'linkedinRedirect'])->middleware('throttle:20,1');
+    Route::get('verifications/linkedin/callback', [\App\Http\Controllers\VerificationController::class, 'linkedinCallback'])->middleware('throttle:20,1')->name('verify.linkedin.callback');
     Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
 
     Route::post('export', [\App\Http\Controllers\SecurityController::class, 'export'])->middleware('throttle:3,60');

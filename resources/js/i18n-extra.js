@@ -27,6 +27,7 @@ export default {
         // legal + export
         acceptPre: 'با ثبت‌نام،', acceptTerms: 'شرایط استفاده', acceptAnd: 'و', acceptPrivacy: 'سیاست حریم خصوصی', acceptPost: ' را می‌پذیرم.',
         exTitle: 'دریافت داده‌هایم', exText: 'یک فایل ZIP از همه‌ی چیزهایی که از شما داریم (پروفایل، ایمیل‌ها، حساب‌های تأییدشده، سایت‌ها، آمار و عکس‌ها). کلیدها و گذرواژه هرگز داخلش نیست.', exBtn: 'دانلود داده‌هایم', exPass: 'برای تأیید، گذرواژه‌تان را وارد کنید', exMaking: 'در حال ساخت فایل…', exDone: 'فایل دانلود شد',
+        vLinkedin: 'لینکدین', vLiText: 'با ورود به لینکدین ثابت می‌کنید این حساب مال شماست. نام شما روی پروفایل نشان داده می‌شود (لینکدین آدرس پروفایل نمی‌دهد، پس لینکی گذاشته نمی‌شود).', vLiBtn: 'تأیید با لینکدین', vLiOk: 'لینکدین تأیید شد ✓', vLiFail: 'تأیید لینکدین ناموفق بود.',
         // security
         nav_security: 'امنیت', d_security: 'گذرواژه، ورود دومرحله‌ای و دستگاه‌های واردشده.', currentPassword: 'گذرواژه‌ی فعلی', newPassword: 'گذرواژه‌ی جدید', confirmPassword: 'تکرار گذرواژه‌ی جدید',
         changePassword: 'تغییر گذرواژه', passwordChanged: 'گذرواژه تغییر کرد', recentCodeNote: 'چون تازه با کد ایمیلی وارد شده‌اید، لازم نیست گذرواژه‌ی فعلی را وارد کنید.',
@@ -52,6 +53,7 @@ export default {
         ssTitle: 'Active sessions', ssIntro: 'Devices signed in to your account right now. If you do not recognise one, sign it out and change your password.', ssCurrent: 'This device', ssRevoke: 'Sign out', ssRevokeOthers: 'Sign out of all other devices', ssUnsupported: 'This server cannot list sessions.', ssNone: 'No other sessions.', ssRevoked: 'Signed out', ssUnknown: 'Unknown browser',
         acceptPre: 'By signing up you accept the', acceptTerms: 'Terms of Service', acceptAnd: 'and the', acceptPrivacy: 'Privacy Policy', acceptPost: '.',
         exTitle: 'Download my data', exText: 'A ZIP file of everything we hold about you (profile, emails, verified accounts, sites, statistics and photos). Passwords and keys are never included.', exBtn: 'Download my data', exPass: 'To confirm, enter your password', exMaking: 'Building the file…', exDone: 'File downloaded',
+        vLinkedin: 'LinkedIn', vLiText: 'Sign in with LinkedIn to prove this account is yours. Your name is shown on the profile (LinkedIn gives no profile address, so there is no link).', vLiBtn: 'Verify with LinkedIn', vLiOk: 'LinkedIn verified ✓', vLiFail: 'LinkedIn verification failed.',
         nav_security: 'Security', d_security: 'Password, two-step sign-in and signed-in devices.', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Repeat the new password',
         changePassword: 'Change password', passwordChanged: 'Password changed', recentCodeNote: 'You just signed in with an email code, so the current password is not needed.',
     },

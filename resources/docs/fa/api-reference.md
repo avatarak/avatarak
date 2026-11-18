@@ -80,7 +80,7 @@ curl -X POST -H "Authorization: Bearer avk_YOUR_API_KEY" -H "Content-Type: appli
 | `website` | string \| null | وب‌سایت شخصی |
 | `socials` | object | شبکه ← نام کاربری، مثل `{"github": "javid"}`؛ اگر خالی باشد `{}` |
 | `links` | array | `[{label, url, description?, image?}]`؛ در صورت نبود `[]` |
-| `verified_accounts` | array | `[{network, identifier, url}]`، فقط حساب‌هایی که کاربر مالکیتشان را ثابت کرده؛ در صورت نبود `[]` |
+| `verified_accounts` | array | `[{network, identifier, url}]`، فقط حساب‌هایی که کاربر مالکیتشان را ثابت کرده؛ برای لینکدین `url` برابر `null` است؛ در صورت نبود `[]` |
 | `avatar_url` | string \| null | [آدرس آواتار](/docs/avatars)، یا `null` وقتی کاربر عکس را مخفی کرده |
 
 در اینجا `socials` فقط شناسه (handle) است؛ [خروجی JSON عمومی](/docs/exports) آدرس کامل برمی‌گرداند و `display_name`، `verified`، `created_at` و `updated_at` را هم دارد.

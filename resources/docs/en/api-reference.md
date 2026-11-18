@@ -80,7 +80,7 @@ Use this to render a list of comments or members with one call instead of many.
 | `website` | string \| null | personal website |
 | `socials` | object | network → handle, e.g. `{"github": "javid"}`; `{}` when empty |
 | `links` | array | `[{label, url, description?, image?}]`; `[]` when empty |
-| `verified_accounts` | array | `[{network, identifier, url}]`, only accounts the user proved they own; `[]` when none |
+| `verified_accounts` | array | `[{network, identifier, url}]`, only accounts the user proved they own; `url` is `null` for LinkedIn; `[]` when none |
 | `avatar_url` | string \| null | the [avatar URL](/docs/avatars), or `null` when the user hides the photo |
 
 `socials` holds handles here; the public [JSON export](/docs/exports) returns full URLs instead and adds `display_name`, `verified`, `created_at` and `updated_at`.

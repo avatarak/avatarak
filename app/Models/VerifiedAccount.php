@@ -7,18 +7,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VerifiedAccount extends Model
 {
-    protected $fillable = ['user_id', 'network', 'identifier', 'external_id', 'method', 'verified_at'];
+    protected $fillable = ['user_id', 'network', 'identifier', 'label', 'external_id', 'method', 'verified_at'];
 
     protected function casts(): array
     {
         return ['verified_at' => 'datetime'];
     }
 
-    public function url(): string
+    /** Where the account lives, or null when we can only say who it is (LinkedIn gives no public profile address). */
+    public function url(): ?string
     {
         return match ($this->network) {
             'telegram' => 'https://t.me/'.$this->identifier,
             'github' => 'https://github.com/'.$this->identifier,
+            'linkedin' => null,
             default => 'https://'.$this->identifier,
         };
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\VerificationChallenge;
 use App\Models\VerifiedAccount;
 use App\Services\GitHubVerifier;
+use App\Services\LinkedInVerifier;
 use App\Services\TelegramVerifier;
 use App\Services\WebsiteVerifier;
 use Illuminate\Http\JsonResponse;
@@ -126,6 +127,26 @@ class VerificationController extends Controller
         return redirect('/?verify=github-'.($result['ok'] ? 'ok' : $result['error']));
     }
 
+    public function linkedinRedirect(Request $request, LinkedInVerifier $linkedin)
+    {
+        abort_unless(LinkedInVerifier::enabled(), 503, __('app.verify_li_off'));
+        $state = \Illuminate\Support\Str::random(40);
+        $request->session()->put('linkedin_oauth_state', $state);
+
+        return redirect()->away($linkedin->authorizeUrl($state, route('verify.linkedin.callback')));
+    }
+
+    public function linkedinCallback(Request $request, LinkedInVerifier $linkedin)
+    {
+        abort_unless(LinkedInVerifier::enabled(), 503, __('app.verify_li_off'));
+
+        $expected = (string) $request->session()->pull('linkedin_oauth_state', '');
+        $ok = $expected !== '' && hash_equals($expected, (string) $request->query('state')) && is_string($request->query('code'));
+        $result = $ok ? $linkedin->complete($request->user(), $request->query('code'), route('verify.linkedin.callback')) : ['ok' => false, 'error' => 'linkedin_failed'];
+
+        return redirect('/?verify=linkedin-'.($result['ok'] ? 'ok' : $result['error']));
+    }
+
     public function destroy(Request $request, int $id): JsonResponse
     {
         $request->user()->verifiedAccounts()->findOrFail($id)->delete();
@@ -137,11 +158,12 @@ class VerificationController extends Controller
     {
         return [
             'accounts' => $request->user()->verifiedAccounts()->orderBy('id')->get()->map(fn (VerifiedAccount $a) => [
-                'id' => $a->id, 'network' => $a->network, 'identifier' => $a->identifier, 'url' => $a->url(),
+                'id' => $a->id, 'network' => $a->network, 'identifier' => $a->identifier, 'label' => $a->label, 'url' => $a->url(),
                 'method' => $a->method, 'verified_at' => $a->verified_at?->toIso8601String(),
             ])->values(),
             'telegram' => ['enabled' => TelegramVerifier::enabled(), 'bot' => config('verification.telegram.bot_username')],
             'github' => ['oauth' => GitHubVerifier::oauthEnabled()],
+            'linkedin' => ['enabled' => LinkedInVerifier::enabled()],
         ];
     }
 }

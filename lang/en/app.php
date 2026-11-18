@@ -80,4 +80,6 @@ return [
     'notice_account_unsuspended_body' => 'Your account is active again, and your profile and avatar are shown.',
     'export_ready' => 'Your data export is ready.',
     'accept_terms_required' => 'You must accept the Terms and the Privacy Policy to sign up.',
+    'verify_li_off' => 'Sign in with LinkedIn is not configured on this server.',
+    'verify_err_linkedin_failed' => 'Sign in with LinkedIn failed.',
 ];

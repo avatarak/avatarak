@@ -3,7 +3,7 @@ title: Verified accounts
 description: How users prove they own a website, a GitHub or a Telegram account, and how to run the Telegram bot yourself.
 ---
 
-A **verified account** is one the user has *proved* they own. It appears on their profile with a blue check and is listed in the `verified_accounts` field of the [public JSON](/docs/exports). Three kinds exist today: **websites**, **GitHub** and **Telegram**. The `network` field of each entry is `website`, `github` or `telegram`.
+A **verified account** is one the user has *proved* they own. It appears on their profile with a blue check and is listed in the `verified_accounts` field of the [public JSON](/docs/exports). Four kinds exist today: **websites**, **GitHub**, **LinkedIn** and **Telegram**. The `network` field of each entry is `website`, `github`, `linkedin` or `telegram`.
 
 Verification is also what makes a link trustworthy: verified accounts are rendered with `rel="me"`, the standard way to say "this link is the same person".
 
@@ -29,6 +29,10 @@ Two ways, both stored by the **numeric GitHub id** (a login can be renamed and t
 | Sign in with GitHub | one click, available when the server has an OAuth app configured. We only read the public login and id. |
 
 Secret gists and gists from other accounts are ignored. The gist can be deleted once the account is verified.
+
+## LinkedIn
+
+Only when the server has a LinkedIn app configured (*Sign In with LinkedIn using OpenID Connect*). The user signs in with LinkedIn; we keep LinkedIn's stable id and the **name** on the account. LinkedIn does not give a public profile address, so a verified LinkedIn entry has **`url: null`** in the API and JSON: show the name, not a link.
 
 ## Telegram
 

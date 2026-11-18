@@ -10,6 +10,7 @@ import SocialIcon from '../SocialIcon.vue';
 const accounts = ref([]);
 const tg = reactive({ enabled: false, bot: '' });
 const gh = reactive({ oauth: false });
+const li = reactive({ enabled: false });
 const firstError = (e) => (e instanceof ApiError ? (Object.values(e.errors)[0]?.[0] || e.message) : t('error'));
 
 async function load() {
@@ -18,6 +19,7 @@ async function load() {
     tg.enabled = r.telegram.enabled;
     tg.bot = r.telegram.bot;
     gh.oauth = !!r.github?.oauth;
+    li.enabled = !!r.linkedin?.enabled;
 }
 async function changed() { await load(); await refresh(); }   // refresh() updates the live preview too
 
@@ -92,7 +94,8 @@ async function checkGithub() {
         if (r.verified) { ghInstr.value = null; toast(t('vDone')); await changed(); } else { ghMsg.value = r.message; }
     } catch (e) { ghErr.value = firstError(e); } finally { ghBusy.value = false; }
 }
-const netName = (n) => ({ website: t('vWebsite'), telegram: t('vTelegram'), github: t('vGithub') }[n] || n);
+const netName = (n) => ({ website: t('vWebsite'), telegram: t('vTelegram'), github: t('vGithub'), linkedin: t('vLinkedin') }[n] || n);
+const linkedinVerified = computed(() => accounts.value.find((a) => a.network === 'linkedin'));
 
 async function remove(a) {
     if (!confirm(t('confirmDelete'))) return;
@@ -117,7 +120,7 @@ onBeforeUnmount(stopPolling);
                             {{ netName(a.network) }}
                             <svg width="16" height="16" viewBox="0 0 24 24" aria-label="verified" class="text-[#3B6BF0]"><path fill="currentColor" d="M12 1.5l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.1L12 22.5l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3-1-3 2.6-1.9 1-3 3.2.1z"/><path fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.3l2.7 2.7L16 9.6"/></svg>
                         </span>
-                        <span dir="ltr" class="block truncate text-start text-sm text-muted">{{ a.network === 'telegram' || a.network === 'github' ? '@' : '' }}{{ a.identifier }}</span>
+                        <span dir="ltr" class="block truncate text-start text-sm text-muted">{{ a.network === 'linkedin' ? (a.label || '') : (a.network === 'telegram' || a.network === 'github' ? '@' : '') + a.identifier }}</span>
                     </span>
                     <button type="button" class="icon-btn text-muted hover:text-red-700" :title="t('vRemove')" :aria-label="t('vRemove')" @click="remove(a)"><Icon name="trash" :size="16" /></button>
                 </li>
@@ -198,6 +201,14 @@ onBeforeUnmount(stopPolling);
                 <p v-if="ghMsg" class="text-sm text-amber-800" role="status">{{ ghMsg }}</p>
                 <p class="hint">{{ t('vGhRemoveGist') }}</p>
             </div>
+        </section>
+
+        <!-- linkedin -->
+        <section v-if="li.enabled">
+            <h3 class="flex items-center gap-2 text-lg font-bold"><SocialIcon name="linkedin" :size="18" /> {{ t('vLinkedin') }}</h3>
+            <p class="hint mt-1">{{ t('vLiText') }}</p>
+            <a v-if="!linkedinVerified" href="/account/verifications/linkedin/redirect" class="btn btn-primary mt-3 w-full">{{ t('vLiBtn') }}</a>
+            <p v-else class="mt-3 text-sm font-semibold text-emerald-800">{{ t('vDone') }}</p>
         </section>
 
         <!-- telegram -->

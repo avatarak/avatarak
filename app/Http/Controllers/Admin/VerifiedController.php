@@ -13,7 +13,7 @@ class VerifiedController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = VerifiedAccount::with('user.profile')->orderByDesc('id');
-        if (in_array($n = (string) $request->query('network'), ['website', 'github', 'telegram'], true)) {
+        if (in_array($n = (string) $request->query('network'), ['website', 'github', 'telegram', 'linkedin'], true)) {
             $query->where('network', $n);
         }
         if ($q = trim((string) $request->query('q', ''))) {

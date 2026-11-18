@@ -135,10 +135,10 @@
                                 @else
                                     <x-icon name="globe" :size="18" />
                                 @endif
-                                {{ $v['network'] === 'website' ? $t['web'] : (['github' => 'GitHub', 'telegram' => 'Telegram'][$v['network']] ?? ucfirst($v['network'])) }}
+                                {{ $v['network'] === 'website' ? $t['web'] : (['github' => 'GitHub', 'telegram' => 'Telegram', 'linkedin' => 'LinkedIn'][$v['network']] ?? ucfirst($v['network'])) }}
                                 <svg width="18" height="18" viewBox="0 0 24 24" role="img" aria-label="verified" class="text-[#3B6BF0]"><path fill="currentColor" d="M12 1.5l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.1L12 22.5l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3-1-3 2.6-1.9 1-3 3.2.1z"/><path fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.3l2.7 2.7L16 9.6"/></svg>
                             </div>
-                            <a href="{{ $v['url'] }}" target="_blank" rel="me noopener" class="mt-0.5 block truncate text-base text-[var(--accent)] hover:underline"><bdi dir="ltr">{{ preg_replace('#^https?://#', '', $v['url']) }}</bdi></a>
+                            @if($v['url'])<a href="{{ $v['url'] }}" target="_blank" rel="me noopener" class="mt-0.5 block truncate text-base text-[var(--accent)] hover:underline"><bdi dir="ltr">{{ preg_replace('#^https?://#', '', $v['url']) }}</bdi></a>@else<span class="mt-0.5 block truncate text-base text-[var(--accent)]"><bdi>{{ $v['identifier'] }}</bdi></span>@endif
                         </li>
                     @endforeach
                 </ul>
