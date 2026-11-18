@@ -158,59 +158,66 @@
 {{-- Advanced details --}}
 <div id="adv" class="pm" hidden>
     <div class="pm-backdrop">
-        <div class="pm-panel card !rounded-[4px]" role="dialog" aria-modal="true" aria-label="{{ $t['adv'] }}" tabindex="-1">
-            <div class="grid md:grid-cols-[minmax(0,.85fr)_minmax(0,1.4fr)]">
-                <aside class="hidden rounded-s-[4px] bg-[#101517] p-8 text-white md:block">
-                    <p class="text-sm font-bold">{{ $t['advFor'] }}</p>
-                    <h3 class="mt-8 text-[1.375rem] font-medium leading-snug">{{ $t['advTitle'] }}</h3>
-                    <p class="mt-4 text-sm leading-6 text-white/75">{{ $t['advText'] }}</p>
-                    <pre dir="ltr" class="mt-6 overflow-x-auto rounded-[4px] bg-white/10 p-3 text-start text-xs leading-5 text-white/90">curl {{ $formats['json'] }}</pre>
+        <div class="pm-panel adv-panel" role="dialog" aria-modal="true" aria-label="{{ $t['adv'] }}" tabindex="-1">
+            <div class="grid md:grid-cols-[minmax(0,.8fr)_minmax(0,1.45fr)]">
+                <aside class="adv-aside relative hidden overflow-hidden p-8 text-white md:flex md:flex-col">
+                    <span class="grid size-11 place-items-center rounded-xl bg-white/12 ring-1 ring-white/20"><x-icon name="code" :size="22" /></span>
+                    <p class="mt-6 text-xs font-semibold uppercase tracking-[0.08em] text-white/60">{{ $t['advFor'] }}</p>
+                    <h3 class="mt-2 text-[1.5rem] font-semibold leading-snug">{{ $t['advTitle'] }}</h3>
+                    <p class="mt-3 text-sm leading-6 text-white/75">{{ $t['advText'] }}</p>
+                    <div class="mt-auto pt-8">
+                        <div class="flex items-center justify-between rounded-t-xl bg-black/35 px-3 py-1.5 text-[11px] font-medium text-white/55"><span>cURL</span>
+                            <button type="button" class="rounded px-1.5 py-0.5 hover:bg-white/10 hover:text-white" data-copy="curl {{ $formats['json'] }}" data-copied="{{ $t['copied'] }}"><span>{{ $t['copy'] }}</span></button></div>
+                        <pre dir="ltr" class="overflow-x-auto rounded-b-xl bg-black/25 p-3 text-start text-xs leading-5 text-white/90">curl {{ $formats['json'] }}</pre>
+                        <a href="{{ url('/docs') }}" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">{{ $rtl ? 'مستندات توسعه‌دهندگان' : 'Developer docs' }} <x-icon name="external" :size="15" /></a>
+                    </div>
                 </aside>
 
-                <div class="relative p-6 sm:p-8">
+                <div class="relative bg-white p-6 sm:p-8">
                     <button type="button" data-adv-close class="icon-btn absolute end-3 top-3" aria-label="{{ $t['close'] }}"><x-icon name="close" :size="20" /></button>
 
-                    <a href="{{ route('profile.show', $p->username) }}" class="mt-6 flex items-center gap-4 rounded-[4px] border border-line p-4 md:mt-0">
-                        @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" width="52" height="52" class="size-[52px] shrink-0 rounded-full bg-line object-cover">@else<img src="{{ route('profile.avatar', ['username' => $p->username, 's' => 104, 'd' => 'initials']) }}" alt="" width="52" height="52" class="size-[52px] shrink-0 rounded-full bg-line object-cover">@endif
-                        <span class="min-w-0">
-                            <span class="block truncate text-base font-bold">{{ $display }}</span>
-                            @if($p->headline)<span class="block truncate text-sm text-ink/75">{{ $p->headline }}</span>@endif
-                            <span class="block text-sm text-[var(--accent)]">{{ $t['view'] }} →</span>
+                    <a href="{{ route('profile.show', $p->username) }}" class="adv-who mt-8 flex items-center gap-4 rounded-2xl p-4 md:mt-0">
+                        @if($avatarSmall)<img src="{{ $avatarSmall }}" alt="" width="56" height="56" class="size-14 shrink-0 rounded-full bg-line object-cover ring-2 ring-white">@else<img src="{{ route('profile.avatar', ['username' => $p->username, 's' => 112, 'd' => 'initials']) }}" alt="" width="56" height="56" class="size-14 shrink-0 rounded-full bg-line object-cover ring-2 ring-white">@endif
+                        <span class="min-w-0 flex-1">
+                            <span class="block truncate text-lg font-bold leading-tight">{{ $display }}</span>
+                            @if($p->headline)<span class="block truncate text-sm text-ink/70">{{ $p->headline }}</span>@endif
+                            <span dir="ltr" class="block truncate text-start text-xs text-ink/55">{{ preg_replace('#^https?://#', '', route('profile.show', $p->username)) }}</span>
                         </span>
+                        <x-icon name="chevron" :size="18" class="shrink-0 text-ink/40 rtl:rotate-180" />
                     </a>
 
-                    <dl class="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                        <div><dt class="text-ink/60">{{ $t['created'] }}</dt><dd class="font-medium">{{ $created }}</dd></div>
-                        <div><dt class="text-ink/60">{{ $t['updated'] }}</dt><dd class="font-medium">{{ $updated }}</dd></div>
-                        <div><dt class="text-ink/60">{{ $t['linksN'] }}</dt><dd class="font-medium">{{ count($links) }}</dd></div>
-                        <div><dt class="text-ink/60">{{ $t['socialsN'] }}</dt><dd class="font-medium">{{ $socialCount }}</dd></div>
-                        <div><dt class="text-ink/60">{{ $t['verified'] }}</dt><dd class="font-medium">{{ $verified ? $t['yes'] : $t['no'] }}</dd></div>
-                        <div><dt class="text-ink/60">{{ $t['connections'] }}</dt><dd class="font-medium">{{ count($verifiedAccounts) }}</dd></div>
+                    <dl class="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                        @foreach([[$t['linksN'], count($links)], [$t['socialsN'], $socialCount], [$t['connections'], count($verifiedAccounts)]] as [$lab, $val])
+                            <div class="rounded-xl bg-soft px-4 py-3"><dd class="text-2xl font-bold leading-none tabular-nums">{{ $val }}</dd><dt class="mt-1.5 text-xs text-ink/60">{{ $lab }}</dt></div>
+                        @endforeach
+                        <div class="rounded-xl bg-soft px-4 py-3"><dd class="flex items-center gap-1.5 text-base font-semibold leading-none">@if($verified)<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" class="text-[#3B6BF0]"><path fill="currentColor" d="M12 1.5l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.1L12 22.5l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3-1-3 2.6-1.9 1-3 3.2.1z"/><path fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.3l2.7 2.7L16 9.6"/></svg>@endif{{ $verified ? $t['yes'] : $t['no'] }}</dd><dt class="mt-1.5 text-xs text-ink/60">{{ $t['verified'] }}</dt></div>
+                        <div class="rounded-xl bg-soft px-4 py-3"><dd class="text-base font-semibold leading-none">{{ $created }}</dd><dt class="mt-1.5 text-xs text-ink/60">{{ $t['created'] }}</dt></div>
+                        <div class="rounded-xl bg-soft px-4 py-3"><dd class="text-base font-semibold leading-none">{{ $updated }}</dd><dt class="mt-1.5 text-xs text-ink/60">{{ $t['updated'] }}</dt></div>
                     </dl>
 
                     <p class="mt-6 text-sm font-semibold">{{ $t['embed'] }}</p>
-                    <div class="mt-2 flex items-start gap-2">
-                        <code dir="ltr" class="min-w-0 flex-1 break-all rounded-[4px] bg-soft p-2.5 text-start text-xs leading-5">{{ $embed }}</code>
-                        <button type="button" class="icon-btn shrink-0" data-copy="{{ $embed }}" data-copied="{{ $t['copied'] }}" title="{{ $t['copy'] }}" aria-label="{{ $t['copy'] }}"><x-icon name="copy" :size="18" /></button>
+                    <div class="mt-2 flex items-start gap-2 rounded-xl border border-line bg-soft/60 p-2.5">
+                        <code dir="ltr" class="min-w-0 flex-1 break-all p-1 text-start font-mono text-xs leading-5 text-ink-2">{{ $embed }}</code>
+                        <button type="button" class="icon-btn shrink-0 !bg-white shadow-sm" data-copy="{{ $embed }}" data-copied="{{ $t['copied'] }}" title="{{ $t['copy'] }}" aria-label="{{ $t['copy'] }}"><x-icon name="copy" :size="18" /></button>
                     </div>
 
                     <p class="mt-6 text-sm font-semibold">{{ $t['formats'] }}</p>
-                    <div class="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-                        <a class="underline underline-offset-2 hover:text-[var(--accent)]" href="{{ $formats['json'] }}" target="_blank" rel="noopener">JSON</a>
-                        <a class="underline underline-offset-2 hover:text-[var(--accent)]" href="{{ $formats['md'] }}" target="_blank" rel="noopener">Markdown</a>
-                        <a class="underline underline-offset-2 hover:text-[var(--accent)]" href="{{ $formats['vcf'] }}" download>vCard</a>
-                        <a class="underline underline-offset-2 hover:text-[var(--accent)]" href="{{ $formats['card'] }}" target="_blank" rel="noopener">Card</a>
-                        <button type="button" class="underline underline-offset-2 hover:text-[var(--accent)]" data-qr-toggle>{{ $t['qr'] }}</button>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <a class="fmt-pill" href="{{ $formats['json'] }}" target="_blank" rel="noopener"><x-icon name="code" :size="16" /> JSON</a>
+                        <a class="fmt-pill" href="{{ $formats['md'] }}" target="_blank" rel="noopener"><x-icon name="news" :size="16" /> Markdown</a>
+                        <a class="fmt-pill" href="{{ $formats['vcf'] }}" download><x-icon name="idCard" :size="16" /> vCard</a>
+                        <a class="fmt-pill" href="{{ $formats['card'] }}" target="_blank" rel="noopener"><x-icon name="globe" :size="16" /> Card</a>
+                        <button type="button" class="fmt-pill" data-qr-toggle><x-icon name="qr" :size="16" /> {{ $t['qr'] }}</button>
                     </div>
 
-                    <div data-qr hidden data-url="{{ route('profile.show', $p->username) }}" data-avatar="{{ $avatarSmall }}" data-name="{{ $p->username }}" class="mt-5 flex flex-wrap items-center gap-5">
-                        <div data-qr-box class="size-40 shrink-0 overflow-hidden rounded-[4px] border border-line [&>svg]:size-full" aria-label="{{ $t['qr'] }}"></div>
-                        <div class="flex flex-col items-start gap-2 text-sm">
-                            <div class="inline-flex overflow-hidden rounded-[4px] border border-line">
-                                <button type="button" data-qr-mode="plain" aria-pressed="true" class="px-3 py-1.5 aria-pressed:bg-ink aria-pressed:text-white">{{ $t['plain'] }}</button>
-                                @if($avatarSmall)<button type="button" data-qr-mode="avatar" aria-pressed="false" class="px-3 py-1.5 aria-pressed:bg-ink aria-pressed:text-white">{{ $t['withAvatar'] }}</button>@endif
+                    <div data-qr hidden data-url="{{ route('profile.show', $p->username) }}" data-avatar="{{ $avatarSmall }}" data-name="{{ $p->username }}" class="mt-4 flex flex-wrap items-center gap-5 rounded-2xl border border-line p-4">
+                        <div data-qr-box class="size-36 shrink-0 overflow-hidden rounded-xl border border-line [&>svg]:size-full" aria-label="{{ $t['qr'] }}"></div>
+                        <div class="flex flex-col items-start gap-3 text-sm">
+                            <div class="inline-flex overflow-hidden rounded-full border border-line">
+                                <button type="button" data-qr-mode="plain" aria-pressed="true" class="px-4 py-1.5 aria-pressed:bg-ink aria-pressed:text-white">{{ $t['plain'] }}</button>
+                                @if($avatarSmall)<button type="button" data-qr-mode="avatar" aria-pressed="false" class="px-4 py-1.5 aria-pressed:bg-ink aria-pressed:text-white">{{ $t['withAvatar'] }}</button>@endif
                             </div>
-                            <button type="button" data-qr-download class="underline underline-offset-2 hover:text-[var(--accent)]">{{ $t['download'] }}</button>
+                            <button type="button" data-qr-download class="fmt-pill"><x-icon name="download" :size="16" /> {{ $t['download'] }}</button>
                         </div>
                     </div>
                 </div>
@@ -220,23 +227,40 @@
 </div>
 
 @unless($isOwner)
-<dialog id="report-dialog" class="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-[8px] border-0 bg-white p-0 text-ink shadow-card backdrop:bg-ink/45" aria-labelledby="report-title">
-    <form method="dialog" data-report-form data-url="{{ route('profile.report', $p->username) }}" data-sending="{{ $rt['sending'] }}" data-fail="{{ $rt['fail'] }}" class="p-6" novalidate>
-        <h2 id="report-title" class="text-xl font-bold">{{ $rt['title'] }}</h2>
-        <label class="label mt-4" for="report-reason">{{ $rt['why'] }}</label>
-        <select id="report-reason" name="reason" class="field">
-            @foreach($rt['reasons'] as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
-        </select>
+<dialog id="report-dialog" class="report-dialog m-auto w-[min(27rem,calc(100vw-2rem))] overflow-visible rounded-2xl border-0 bg-white p-0 text-ink backdrop:bg-ink/50" aria-labelledby="report-title">
+    <form method="dialog" data-report-form data-url="{{ route('profile.report', $p->username) }}" data-sending="{{ $rt['sending'] }}" data-fail="{{ $rt['fail'] }}" class="p-7" novalidate>
+        <div class="flex items-start gap-3">
+            <span class="grid size-10 shrink-0 place-items-center rounded-full bg-amber-50 text-amber-700"><x-icon name="flag" :size="20" /></span>
+            <div><h2 id="report-title" class="text-xl font-bold leading-tight">{{ $rt['title'] }}</h2><p class="mt-1 text-sm leading-6 text-ink/65">{{ $rt['note'] }}</p></div>
+        </div>
+
+        <span class="label mt-5" id="report-reason-label">{{ $rt['why'] }}</span>
+        <div class="sel" data-select>
+            <input type="hidden" name="reason" value="spam">
+            <button type="button" class="sel-btn" data-select-btn aria-haspopup="listbox" aria-expanded="false" aria-labelledby="report-reason-label">
+                <span data-select-label>{{ $rt['reasons']['spam'] }}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="sel-caret"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <ul class="sel-list" data-select-list role="listbox" aria-labelledby="report-reason-label" hidden>
+                @foreach($rt['reasons'] as $k => $label)
+                    <li role="option" tabindex="-1" data-value="{{ $k }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}"><span>{{ $label }}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="sel-check"><path d="m5 12 5 5L20 7"/></svg></li>
+                @endforeach
+            </ul>
+        </div>
+
         <label class="label mt-4" for="report-details">{{ $rt['details'] }}</label>
         <textarea id="report-details" name="details" rows="3" maxlength="500" class="field"></textarea>
-        <p class="hint mt-2">{{ $rt['note'] }}</p>
-        <p data-report-msg class="mt-3 hidden text-sm" role="status"></p>
-        <div class="mt-5 flex justify-end gap-2">
+
+        <div class="mt-6 flex justify-end gap-2">
             <button type="button" data-report-close class="btn btn-ghost">{{ $rt['cancel'] }}</button>
-            <button type="submit" data-report-send class="btn btn-primary">{{ $rt['send'] }}</button>
+            <button type="submit" data-report-send class="btn btn-primary min-w-28">{{ $rt['send'] }}</button>
         </div>
     </form>
 </dialog>
 @endunless
+
+{{-- one toast for the whole page --}}
+<div id="toast" class="toast" role="status" aria-live="polite" hidden><span data-toast-icon></span><span data-toast-text></span></div>
 </body>
 </html>

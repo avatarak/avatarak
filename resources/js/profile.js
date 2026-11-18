@@ -140,15 +140,70 @@ if (root) {
 }
 
 
+/* ---------- toast ---------- */
+let toastTimer;
+function toast(text, tone = 'ok') {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.dataset.tone = tone;
+    el.querySelector('[data-toast-text]').textContent = text;
+    el.querySelector('[data-toast-icon]').innerHTML = tone === 'ok'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v5m0 3.5v.01M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>';
+    el.hidden = false;
+    requestAnimationFrame(() => el.classList.add('is-in'));
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.classList.remove('is-in'); setTimeout(() => (el.hidden = true), 250); }, 3800);
+}
+
+/* ---------- custom dropdown (replaces the browser's native <select>) ---------- */
+document.querySelectorAll('[data-select]').forEach((root) => {
+    const btn = root.querySelector('[data-select-btn]');
+    const list = root.querySelector('[data-select-list]');
+    const input = root.querySelector('input[type=hidden]');
+    const label = root.querySelector('[data-select-label]');
+    const opts = [...list.querySelectorAll('[role=option]')];
+    let cur = Math.max(0, opts.findIndex((o) => o.getAttribute('aria-selected') === 'true'));
+
+    const choose = (i) => {
+        cur = i;
+        opts.forEach((o, k) => o.setAttribute('aria-selected', String(k === i)));
+        input.value = opts[i].dataset.value;
+        label.textContent = opts[i].textContent.trim();
+    };
+    const isOpen = () => !list.hidden;
+    const close = (refocus) => { list.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (refocus) btn.focus(); };
+    const open = () => { list.hidden = false; btn.setAttribute('aria-expanded', 'true'); opts[cur].focus(); };
+    const move = (d) => { cur = (cur + d + opts.length) % opts.length; opts[cur].focus(); };
+
+    btn.addEventListener('click', () => (isOpen() ? close() : open()));
+    btn.addEventListener('keydown', (e) => { if (['ArrowDown', 'ArrowUp'].includes(e.key)) { e.preventDefault(); open(); } });
+    opts.forEach((o, i) => {
+        o.addEventListener('click', () => { choose(i); close(true); });
+        o.addEventListener('mousemove', () => o.focus({ preventScroll: true }));
+    });
+    list.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+        else if (e.key === 'Home') { e.preventDefault(); cur = 0; opts[0].focus(); }
+        else if (e.key === 'End') { e.preventDefault(); cur = opts.length - 1; opts[cur].focus(); }
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(opts.indexOf(document.activeElement)); close(true); }
+        else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(true); }
+        else if (e.key === 'Tab') close();
+    });
+    document.addEventListener('click', (e) => { if (isOpen() && !root.contains(e.target)) close(); });
+    root.closest('dialog')?.addEventListener('cancel', (e) => { if (isOpen()) { e.preventDefault(); close(true); } });
+    root.closest('dialog')?.addEventListener('close', () => close());
+});
+
 /* ---------- report this profile ---------- */
 (() => {
     const dlg = document.getElementById('report-dialog');
     if (!dlg) return;
     const form = dlg.querySelector('[data-report-form]');
-    const msg = dlg.querySelector('[data-report-msg]');
     const send = dlg.querySelector('[data-report-send]');
     const xsrf = () => decodeURIComponent((document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/) || [])[1] || '');
-    document.querySelectorAll('[data-report-open]').forEach((b) => b.addEventListener('click', () => { msg.classList.add('hidden'); send.disabled = false; dlg.showModal(); }));
+    document.querySelectorAll('[data-report-open]').forEach((b) => b.addEventListener('click', () => { send.disabled = false; dlg.showModal(); }));
     dlg.querySelector('[data-report-close]').addEventListener('click', () => dlg.close());
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
     form.addEventListener('submit', async (e) => {
@@ -162,11 +217,12 @@ if (root) {
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(data.message || 'fail');
-            msg.textContent = data.message; msg.className = 'mt-3 text-sm text-emerald-700';
             form.details.value = '';
-            setTimeout(() => dlg.close(), 1800);
+            dlg.close();
+            toast(data.message, 'ok');
         } catch {
-            msg.textContent = form.dataset.fail; msg.className = 'mt-3 text-sm text-red-600'; send.disabled = false;
+            toast(form.dataset.fail, 'error');
+            send.disabled = false;
         }
         send.textContent = label;
     });
