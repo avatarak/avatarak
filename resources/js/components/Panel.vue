@@ -68,6 +68,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
                     </button>
                     <div v-if="menu" class="card absolute end-0 top-full z-30 mt-2 w-56 overflow-hidden py-1">
                         <div dir="ltr" class="truncate border-b border-line px-4 py-2 text-start text-sm text-muted">@{{ profile.username }}</div>
+                        <a v-if="state.account.is_admin" href="/admin" class="flex w-full items-center gap-3 px-4 py-2.5 text-start hover:bg-soft"><Icon name="dashboard" :size="18" /> {{ t('a_title') }}</a>
                         <button type="button" class="flex w-full items-center gap-3 px-4 py-2.5 text-start hover:bg-soft" @click="logout">
                             <Icon name="logout" :size="18" /> {{ t('logout') }}
                         </button>

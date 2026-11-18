@@ -4,6 +4,9 @@ import { state, load, toast } from './store';
 import { applyDir, t } from './i18n';
 import Landing from './components/Landing.vue';
 import Panel from './components/Panel.vue';
+import AdminGate from './components/admin/AdminGate.vue';
+
+const isAdmin = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
 
 applyDir();
 onMounted(async () => {
@@ -19,6 +22,7 @@ onMounted(async () => {
 
 <template>
     <div v-if="!state.ready" class="grid min-h-screen place-items-center text-muted">{{ t('loading') }}</div>
+    <AdminGate v-else-if="isAdmin" />
     <Panel v-else-if="state.account" />
     <Landing v-else />
 

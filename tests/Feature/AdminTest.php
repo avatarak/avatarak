@@ -552,4 +552,12 @@ class AdminTest extends TestCase
         $this->artisan('admin:grant', ['email' => 'boss@example.com', '--revoke' => true])->assertFailed();
         $this->assertTrue($this->admin->fresh()->is_admin);
     }
+
+    public function test_the_public_page_offers_a_report_form_to_visitors_but_not_to_the_owner(): void
+    {
+        $u = $this->person('alice@example.com', 'alice');
+        $this->get('/alice')->assertOk()->assertSee('data-report-open', false)->assertSee(route('profile.report', 'alice'), false)->assertSee('گزارش این پروفایل');
+        $this->withUnencryptedCookie('locale', 'en')->get('/alice')->assertSee('Report this profile');
+        $this->actingAs($u)->get('/alice')->assertOk()->assertDontSee('data-report-open', false);
+    }
 }

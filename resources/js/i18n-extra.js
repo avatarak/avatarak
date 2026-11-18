@@ -16,6 +16,7 @@ export default {
         nav_stats: 'آمار', d_stats: 'ببینید آواتار و پروفایل شما چند بار و در کدام سایت‌ها دیده شده است.', stProfile: 'بازدید پروفایل', stAvatar: 'نمایش آواتار', stExport: 'خروجی‌ها (JSON، QR …)', stApi: 'درخواست API',
         stDays7: '۷ روز', stDays30: '۳۰ روز', stDays90: '۹۰ روز', stTop: 'سایت‌هایی که از شما استفاده کرده‌اند', stNoRef: 'هنوز سایتی ثبت نشده است. وقتی آواتارتان در سایتی نمایش داده شود، نام آن اینجا می‌آید.',
         stPrivacy: 'فقط شمارنده‌ی روزانه ذخیره می‌شود؛ نه IP، نه مرورگر و نه چیزی از بازدیدکننده. بازدید خودتان شمرده نمی‌شود.', stTotal: 'جمع', stPerDay: 'در روز',
+        delAccount: 'حذف حساب', delAccountText: 'حساب، پروفایل، عکس‌ها، ایمیل‌ها و کلیدهای API شما برای همیشه پاک می‌شود. این کار برگشت‌ناپذیر است.', delAccountPass: 'برای تأیید، گذرواژه‌تان را وارد کنید', delAccountBtn: 'حذف همیشگی حساب', dangerZone: 'منطقه‌ی خطر',
         // security
         nav_security: 'امنیت', d_security: 'گذرواژه‌ی حساب خود را تغییر دهید.', currentPassword: 'گذرواژه‌ی فعلی', newPassword: 'گذرواژه‌ی جدید', confirmPassword: 'تکرار گذرواژه‌ی جدید',
         changePassword: 'تغییر گذرواژه', passwordChanged: 'گذرواژه تغییر کرد', recentCodeNote: 'چون تازه با کد ایمیلی وارد شده‌اید، لازم نیست گذرواژه‌ی فعلی را وارد کنید.',
@@ -32,6 +33,7 @@ export default {
         nav_stats: 'Statistics', d_stats: 'See how often your avatar and profile are shown, and on which sites.', stProfile: 'Profile views', stAvatar: 'Avatar views', stExport: 'Exports (JSON, QR…)', stApi: 'API lookups',
         stDays7: '7 days', stDays30: '30 days', stDays90: '90 days', stTop: 'Sites that used your data', stNoRef: 'No sites yet. When your avatar is shown on a site, it will appear here.',
         stPrivacy: 'Only daily counters are stored: no IP address, no browser, nothing about the visitor. Your own visits are not counted.', stTotal: 'Total', stPerDay: 'per day',
+        delAccount: 'Delete account', delAccountText: 'Your account, profile, photos, emails and API keys are deleted for good. This cannot be undone.', delAccountPass: 'To confirm, enter your password', delAccountBtn: 'Delete my account for good', dangerZone: 'Danger zone',
         nav_security: 'Security', d_security: 'Change your account password.', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Repeat the new password',
         changePassword: 'Change password', passwordChanged: 'Password changed', recentCodeNote: 'You just signed in with an email code, so the current password is not needed.',
     },

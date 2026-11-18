@@ -21,6 +21,7 @@ class AccountController extends Controller
 
         return response()->json([
             'name' => $user->name,
+            'id' => $user->id, 'email' => $user->email,
             'is_admin' => (bool) $user->is_admin,
             'recent_code_login' => now()->timestamp - (int) $request->session()->get('reauth_at', 0) < 900,
             'profile' => $p->only(['username', 'name_fa', 'name_en', 'bio', 'website', 'socials',

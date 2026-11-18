@@ -15,5 +15,6 @@ return [
         ['title' => ['fa' => 'REST API', 'en' => 'REST API'], 'slugs' => ['authentication', 'api-reference', 'sdks']],
         ['title' => ['fa' => 'داده‌ی عمومی', 'en' => 'Public data'], 'slugs' => ['exports', 'verified-accounts']],
         ['title' => ['fa' => 'اصول', 'en' => 'Policies'], 'slugs' => ['privacy-and-limits']],
+        ['title' => ['fa' => 'میزبانی شخصی', 'en' => 'Self-hosting'], 'slugs' => ['administration']],
     ],
 ];

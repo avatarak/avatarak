@@ -138,3 +138,36 @@ if (root) {
         setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     });
 }
+
+
+/* ---------- report this profile ---------- */
+(() => {
+    const dlg = document.getElementById('report-dialog');
+    if (!dlg) return;
+    const form = dlg.querySelector('[data-report-form]');
+    const msg = dlg.querySelector('[data-report-msg]');
+    const send = dlg.querySelector('[data-report-send]');
+    const xsrf = () => decodeURIComponent((document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/) || [])[1] || '');
+    document.querySelectorAll('[data-report-open]').forEach((b) => b.addEventListener('click', () => { msg.classList.add('hidden'); send.disabled = false; dlg.showModal(); }));
+    dlg.querySelector('[data-report-close]').addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        send.disabled = true; const label = send.textContent; send.textContent = form.dataset.sending;
+        try {
+            const res = await fetch(form.dataset.url, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-XSRF-TOKEN': xsrf() },
+                body: JSON.stringify({ reason: form.reason.value, details: form.details.value.trim() || null }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.message || 'fail');
+            msg.textContent = data.message; msg.className = 'mt-3 text-sm text-emerald-700';
+            form.details.value = '';
+            setTimeout(() => dlg.close(), 1800);
+        } catch {
+            msg.textContent = form.dataset.fail; msg.className = 'mt-3 text-sm text-red-600'; send.disabled = false;
+        }
+        send.textContent = label;
+    });
+})();

@@ -14,6 +14,11 @@
         'embed' => 'Embed code', 'formats' => 'Formats', 'qr' => 'QR code', 'plain' => 'Plain', 'withAvatar' => 'With avatar', 'download' => 'Download SVG', 'copy' => 'Copy', 'close' => 'Close', 'view' => 'View profile', 'qrOpen' => 'QR code',
     ];
     $embed = '<iframe src="'.$formats['card'].'" width="380" height="104" style="border:0" loading="lazy"></iframe>';
+    $rt = $rtl
+        ? ['report' => 'گزارش این پروفایل', 'title' => 'گزارش پروفایل', 'why' => 'دلیل', 'details' => 'توضیح (اختیاری)', 'send' => 'ارسال گزارش', 'cancel' => 'انصراف', 'sending' => 'در حال ارسال…', 'fail' => 'ارسال نشد. دوباره تلاش کنید.', 'note' => 'گزارش‌ها توسط تیم ما بررسی می‌شود. هویت شما ثبت نمی‌شود.',
+            'reasons' => ['spam' => 'هرزنامه یا تبلیغ', 'impersonation' => 'جعل هویت', 'inappropriate' => 'محتوا یا عکس نامناسب', 'illegal' => 'محتوای غیرقانونی', 'other' => 'سایر']]
+        : ['report' => 'Report this profile', 'title' => 'Report profile', 'why' => 'Reason', 'details' => 'Details (optional)', 'send' => 'Send report', 'cancel' => 'Cancel', 'sending' => 'Sending…', 'fail' => 'Could not send. Please try again.', 'note' => 'Reports are reviewed by our team. Your identity is not recorded.',
+            'reasons' => ['spam' => 'Spam or advertising', 'impersonation' => 'Impersonation', 'inappropriate' => 'Inappropriate content or photo', 'illegal' => 'Illegal content', 'other' => 'Other']];
 @endphp
 <!doctype html>
 <html lang="{{ $rtl ? 'fa' : 'en' }}" dir="{{ $rtl ? 'rtl' : 'ltr' }}">
@@ -145,7 +150,8 @@
                 <x-icon name="code" :size="18" /> {{ $t['adv'] }}
             </button>
         </div>
-        <p class="pb-2 text-center text-sm text-white/90"><a href="/" class="hover:underline">{{ $brand }}</a></p>
+        <p class="pb-2 text-center text-sm text-white/90"><a href="/" class="hover:underline">{{ $brand }}</a>
+            @unless($isOwner) · <button type="button" data-report-open class="underline-offset-2 hover:underline">{{ $rt['report'] }}</button>@endunless</p>
     </div>
 </div>
 
@@ -212,5 +218,25 @@
         </div>
     </div>
 </div>
+
+@unless($isOwner)
+<dialog id="report-dialog" class="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-[8px] border-0 bg-white p-0 text-ink shadow-card backdrop:bg-ink/45" aria-labelledby="report-title">
+    <form method="dialog" data-report-form data-url="{{ route('profile.report', $p->username) }}" data-sending="{{ $rt['sending'] }}" data-fail="{{ $rt['fail'] }}" class="p-6" novalidate>
+        <h2 id="report-title" class="text-xl font-bold">{{ $rt['title'] }}</h2>
+        <label class="label mt-4" for="report-reason">{{ $rt['why'] }}</label>
+        <select id="report-reason" name="reason" class="field">
+            @foreach($rt['reasons'] as $k => $label)<option value="{{ $k }}">{{ $label }}</option>@endforeach
+        </select>
+        <label class="label mt-4" for="report-details">{{ $rt['details'] }}</label>
+        <textarea id="report-details" name="details" rows="3" maxlength="500" class="field"></textarea>
+        <p class="hint mt-2">{{ $rt['note'] }}</p>
+        <p data-report-msg class="mt-3 hidden text-sm" role="status"></p>
+        <div class="mt-5 flex justify-end gap-2">
+            <button type="button" data-report-close class="btn btn-ghost">{{ $rt['cancel'] }}</button>
+            <button type="submit" data-report-send class="btn btn-primary">{{ $rt['send'] }}</button>
+        </div>
+    </form>
+</dialog>
+@endunless
 </body>
 </html>
