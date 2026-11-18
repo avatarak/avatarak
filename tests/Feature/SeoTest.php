@@ -1,0 +1,137 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Profile;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class SeoTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function profile(array $a = []): Profile
+    {
+        return Profile::create($a + ['user_id' => User::factory()->create()->id, 'username' => 'seoguy', 'name_en' => 'Seo Guy', 'headline' => 'Engineer', 'location' => 'Tehran',
+            'bio' => "Builds things.\nLikes <b>tags</b>.", 'allow_indexing' => true, 'languages' => 'en', 'primary_lang' => 'en',
+            'socials' => ['github' => 'seoguy'], 'website' => 'https://seo.example']);
+    }
+
+    private function ld(string $html): array
+    {
+        preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $m);
+
+        return json_decode($m[1] ?? 'null', true) ?? [];
+    }
+
+    public function test_indexable_profile_has_canonical_og_twitter_and_a_person_schema(): void
+    {
+        $this->profile();
+        $r = $this->get('/seoguy')->assertOk();
+        $r->assertSee('<link rel="canonical" href="'.url('/seoguy').'">', false)
+            ->assertSee('property="og:type" content="profile"', false)->assertSee('property="og:title" content="Seo Guy — ', false)
+            ->assertSee('property="og:image" content="', false)->assertSee('name="twitter:card" content="summary"', false)
+            ->assertSee('property="og:locale" content="en_US"', false)->assertDontSee('noindex', false);
+        $ld = $this->ld($r->getContent());
+        $this->assertSame('ProfilePage', $ld['@type']);
+        $this->assertSame('Person', $ld['mainEntity']['@type']);
+        $this->assertSame('Seo Guy', $ld['mainEntity']['name']);
+        $this->assertSame('Engineer', $ld['mainEntity']['jobTitle']);
+        $this->assertSame('Tehran', $ld['mainEntity']['homeLocation']['name']);
+        $this->assertContains('https://github.com/seoguy', $ld['mainEntity']['sameAs']);
+        $this->assertContains('https://seo.example', $ld['mainEntity']['sameAs']);
+        $this->assertSame('en', $ld['inLanguage']);
+    }
+
+    public function test_structured_data_never_carries_private_data_and_cannot_break_out_of_the_script_tag(): void
+    {
+        $u = User::factory()->create(['email' => 'secret@example.com']);
+        $this->profile(['user_id' => $u->id, 'headline' => '</script><script>alert(1)</script>']);
+        $html = $this->get('/seoguy')->getContent();
+        $this->assertStringNotContainsString('secret@example.com', $html);
+        $this->assertStringNotContainsString('</script><script>alert(1)', $html);
+        $this->assertSame('</script><script>alert(1)</script>', $this->ld($html)['mainEntity']['jobTitle']);
+    }
+
+    public function test_noindex_profiles_have_no_schema_but_still_have_link_previews(): void
+    {
+        $this->profile(['allow_indexing' => false]);
+        $r = $this->get('/seoguy')->assertOk()->assertSee('noindex, nofollow', false)->assertSee('property="og:title"', false);
+        $this->assertSame([], $this->ld($r->getContent()));
+    }
+
+    public function test_description_comes_from_the_bio_then_headline_then_a_default(): void
+    {
+        $this->profile();
+        $this->get('/seoguy')->assertSee('<meta name="description" content="Builds things. Likes &lt;b&gt;tags&lt;/b&gt;.">', false);
+        Profile::where('username', 'seoguy')->update(['bio' => null]);
+        $this->get('/seoguy')->assertSee('content="Seo Guy — Engineer · Tehran"', false);
+        Profile::where('username', 'seoguy')->update(['headline' => null, 'location' => null]);
+        $this->get('/seoguy')->assertSee('public profile on', false);
+    }
+
+    public function test_bilingual_profile_has_hreflang_with_x_default_and_per_language_canonicals(): void
+    {
+        $this->profile(['languages' => 'both', 'primary_lang' => 'en', 'name_fa' => 'سئو']);
+        $en = $this->get('/seoguy')->assertSee('hreflang="x-default" href="'.url('/seoguy').'"', false)
+            ->assertSee('hreflang="fa" href="'.url('/seoguy').'?lang=fa"', false)->assertSee('hreflang="en" href="'.url('/seoguy').'"', false)
+            ->assertSee('<link rel="canonical" href="'.url('/seoguy').'">', false)->assertSee('og:locale:alternate" content="fa_IR"', false);
+        $this->get('/seoguy?lang=fa')->assertSee('<link rel="canonical" href="'.url('/seoguy').'?lang=fa">', false)->assertSee('property="og:locale" content="fa_IR"', false);
+        $this->assertSame('سئو', $this->ld($this->get('/seoguy')->getContent())['mainEntity']['alternateName']);
+    }
+
+    public function test_data_exports_are_never_indexed(): void
+    {
+        $this->profile();
+        foreach (['json', 'md', 'vcf'] as $f) {
+            $this->get("/seoguy.$f")->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+        }
+    }
+
+    public function test_robots_txt_blocks_private_areas_and_points_to_the_sitemap(): void
+    {
+        $r = $this->get('/robots.txt')->assertOk();
+        $this->assertStringStartsWith('text/plain', $r->headers->get('Content-Type'));
+        $r->assertSee('Disallow: /panel')->assertSee('Disallow: /admin')->assertSee('Disallow: /account')->assertSee('Sitemap: '.url('/sitemap.xml'));
+        $this->assertFileDoesNotExist(public_path('robots.txt'));      // a static file would shadow the route
+    }
+
+    public function test_sitemap_lists_only_indexable_visible_profiles_with_something_to_say(): void
+    {
+        $this->profile();                                                                                                   // listed
+        $this->profile(['username' => 'hidden1', 'allow_indexing' => false]);                                               // owner said no
+        $this->profile(['username' => 'private1', 'show_profile' => false]);                                                // not public
+        $this->profile(['username' => 'thin1', 'bio' => null, 'headline' => null]);                                         // nothing to say
+        $this->profile(['username' => 'noname1', 'name_en' => null, 'name_fa' => null]);                                    // no name
+        $s = User::factory()->create(['suspended_at' => now()]);
+        $this->profile(['username' => 'susp1', 'user_id' => $s->id]);                                                      // suspended
+        $this->profile(['username' => 'dualg', 'languages' => 'both', 'name_fa' => 'دو']);
+
+        $index = $this->get('/sitemap.xml')->assertOk()->getContent();
+        $this->assertStringContainsString('<sitemapindex', $index);
+        $this->assertStringContainsString(url('/sitemap-pages.xml'), $index);
+        $this->assertStringContainsString(url('/sitemap-profiles-1.xml'), $index);
+        $this->assertStringNotContainsString('sitemap-profiles-2', $index);
+
+        $xml = $this->get('/sitemap-profiles-1.xml')->assertOk()->getContent();
+        $this->assertStringContainsString('<loc>'.url('/seoguy').'</loc>', $xml);
+        $this->assertStringContainsString('<loc>'.url('/dualg').'</loc>', $xml);
+        $this->assertStringContainsString('hreflang="x-default"', $xml);
+        foreach (['hidden1', 'private1', 'thin1', 'noname1', 'susp1'] as $u) {
+            $this->assertStringNotContainsString('/'.$u.'<', $xml);
+        }
+        $this->get('/sitemap-profiles-2.xml')->assertNotFound();
+        $simple = simplexml_load_string($xml);
+        $this->assertNotFalse($simple);                                                                                      // well-formed
+    }
+
+    public function test_pages_sitemap_lists_the_public_site(): void
+    {
+        $xml = $this->get('/sitemap-pages.xml')->assertOk()->getContent();
+        foreach (['/', '/docs', '/docs/getting-started', '/terms', '/privacy'] as $p) {
+            $this->assertStringContainsString('<loc>'.url($p).'</loc>', $xml);
+        }
+        $this->assertStringNotContainsString('/panel', $xml);
+    }
+}

@@ -34,7 +34,7 @@ class PublicProfileController extends Controller
 
         // single-language pages always speak their language; bilingual ones follow ?lang=, else the visitor's UI language
         $original = $profile;
-        $lang = $profile->languages === 'both' ? ($request->query('lang') ?: app()->getLocale()) : null;
+        $lang = $profile->languages === 'both' ? ($request->query('lang') ?: $request->cookie('locale')) : null;       // no choice at all (a crawler): the primary language
         $lang = $profile->chooseLang($lang);
         app()->setLocale($lang);
         $profile = $profile->localized($lang);
@@ -45,6 +45,7 @@ class PublicProfileController extends Controller
         $res = response()->view('profile', [
             'p' => $profile,
             'bilingual' => $original->languages === 'both',
+            'seo' => app(\App\Services\Seo::class)->profile($profile, $original, $request, $export->display($profile), app()->getLocale() === 'en' ? (config('brand.name_en') ?: config('brand.name')) : config('brand.name'), (bool) $profile->allow_indexing),
             'socials' => $export->socials($profile),
             'links' => $links,
             'showImages' => (bool) $profile->show_link_images,

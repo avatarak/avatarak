@@ -163,6 +163,12 @@ Route::prefix('admin/api')->middleware(['auth', 'admin'])->group(function () {
     Route::get('export/{kind}.csv', [\App\Http\Controllers\Admin\ExportController::class, 'download'])->where('kind', 'users|reports|audit|payments')->middleware('throttle:10,1');
 });
 
+// robots.txt and sitemaps (only on our own address; a customer's domain serves just the profile)
+Route::get('/robots.txt', [\App\Http\Controllers\SeoFilesController::class, 'robots']);
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoFilesController::class, 'index']);
+Route::get('/sitemap-pages.xml', [\App\Http\Controllers\SeoFilesController::class, 'pages']);
+Route::get('/sitemap-profiles-{page}.xml', [\App\Http\Controllers\SeoFilesController::class, 'profiles'])->whereNumber('page');
+
 // Legal pages (Markdown in resources/legal); /terms and /privacy are reserved usernames.
 Route::get('/{page}', [\App\Http\Controllers\LegalController::class, 'show'])->whereIn('page', ['terms', 'privacy'])->name('legal.show');
 

@@ -50,7 +50,7 @@ class ProfileExportTest extends TestCase
         $r = $this->get('/javid.json')->assertOk();
         $this->assertNull($r->json('avatar_url'));
         $this->assertArrayNotHasKey('image', $r->json('links.0'));
-        $this->assertNull($r->headers->get('X-Robots-Tag'));
+        $this->assertSame('noindex, nofollow', $r->headers->get('X-Robots-Tag'));        // data files are never search results, whatever the page says
 
         $p->update(['show_profile' => false]);
         foreach (['json', 'md', 'vcf', 'card'] as $f) {

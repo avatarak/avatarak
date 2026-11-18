@@ -32,11 +32,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $display }} — {{ $brand }}</title>
     @unless($indexable)<meta name="robots" content="noindex, nofollow">@endunless
-    @if($p->bio)<meta name="description" content="{{ \Illuminate\Support\Str::limit($p->bio, 160) }}">@endif
-    @if($bilingual)
-        <link rel="alternate" hreflang="fa" href="{{ route('profile.show', [$p->username, 'lang' => 'fa']) }}">
-        <link rel="alternate" hreflang="en" href="{{ route('profile.show', [$p->username, 'lang' => 'en']) }}">
-    @endif
+    @include('partials.profile-seo')
     @include('partials.brand')
     <x-brand-head />
     @vite(['resources/css/app.css', 'resources/js/profile.js'])

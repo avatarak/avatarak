@@ -101,8 +101,9 @@ class LocaleTest extends TestCase
         $this->withUnencryptedCookie('locale', '../../x')->get('/sara')->assertSee('اشتراک‌گذاری');
         $this->get('/sara')->assertSee('اشتراک‌گذاری');                                                      // no cookie -> default
 
-        config(['brand.default_locale' => 'en']);
-        $this->get('/sara')->assertSee('Share');                                                             // default follows brand
+        // a bilingual page with no visitor choice (e.g. a crawler) speaks the owner's primary language
+        \App\Models\Profile::where('username', 'sara')->update(['primary_lang' => 'en']);
+        $this->get('/sara')->assertSee('Share');
 
         // the SPA header beats the cookie for API calls
         $this->withUnencryptedCookie('locale', 'fa')->postJson('/register', [], ['X-Locale' => 'en'])

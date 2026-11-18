@@ -42,9 +42,8 @@ class ProfileExportController extends Controller
         $res->headers->set('Access-Control-Allow-Origin', '*');
         $res->headers->set('Cache-Control', 'public, max-age=300');
         $res->headers->set('X-Content-Type-Options', 'nosniff');
-        if (! $profile->allow_indexing) {
-            $res->headers->set('X-Robots-Tag', 'noindex, nofollow');
-        }
+        // these are data files for programs, never search results (the HTML page is what gets indexed)
+        $res->headers->set('X-Robots-Tag', 'noindex, nofollow');
 
         return $res;
     }
