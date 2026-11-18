@@ -1,4 +1,14 @@
 {
+    servers :443 {
+        listener_wrappers {
+            proxy_protocol {
+                timeout 2s
+                allow 127.0.0.1/32 172.16.0.0/12
+                fallback_policy reject
+            }
+            tls
+        }
+    }
     on_demand_tls {
         ask http://web/_internal/domain-check?key={$DOMAIN_CHECK_KEY}
     }
