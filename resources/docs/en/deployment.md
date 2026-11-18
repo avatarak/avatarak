@@ -93,6 +93,8 @@ Migrations run automatically; the queue worker and scheduler restart with the ne
 
 ## Checklist before launch
 
+- `LEGAL_ENTITY` and `LEGAL_CONTACT_EMAIL` are set and a lawyer has read `/terms` and `/privacy` (the texts are in `resources/legal/`).
+- `ADMIN_REQUIRE_2FA=true`, and every administrator has turned on two-step sign-in.
 - `APP_DEBUG=false`, a real `APP_URL` with `https`, a unique `APP_KEY` (keep a copy: losing it invalidates sessions).
 - `mail:test` succeeds and a sign-up email arrives in a real inbox.
 - `backup:run` works, and a copy lives somewhere other than the server.

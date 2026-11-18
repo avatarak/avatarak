@@ -93,6 +93,8 @@ docker compose up -d --build
 
 ## فهرست قبل از انتشار
 
+- `LEGAL_ENTITY` و `LEGAL_CONTACT_EMAIL` پر شده‌اند و یک وکیل `/terms` و `/privacy` را خوانده (متن‌ها در `resources/legal/` هستند).
+- `ADMIN_REQUIRE_2FA=true` است و همه‌ی مدیران ورود دومرحله‌ای را فعال کرده‌اند.
 - `APP_DEBUG=false`، یک `APP_URL` واقعی با `https` و یک `APP_KEY` یکتا (از آن نسخه نگه دارید؛ گم شدنش نشست‌ها را باطل می‌کند).
 - `mail:test` موفق است و ایمیل ثبت‌نام در یک صندوق واقعی می‌رسد.
 - `backup:run` کار می‌کند و یک نسخه جایی غیر از سرور هست.

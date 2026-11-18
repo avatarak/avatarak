@@ -57,7 +57,7 @@ const COPY = {
 
         ctaTitle: 'پروفایل رایگان خود را بسازید!', ctaBtn: 'همین حالا شروع کنید',
         footFeatures: 'ویژگی‌ها', footDevelopers: 'توسعه‌دهنده‌ها', footSupport: 'پشتیبانی', footAccount: 'حساب',
-        fProfile: 'پروفایل عمومی', fVerified: 'حساب‌های تأییدشده', fPrivacy: 'حریم خصوصی', fApi: 'API', fDocs: 'مستندات', fFaq: 'سؤالات متداول', fLogin: 'ورود', fRegister: 'ثبت‌نام',
+        fProfile: 'پروفایل عمومی', fVerified: 'حساب‌های تأییدشده', fPrivacy: 'حریم خصوصی', fApi: 'API', fDocs: 'مستندات', fFaq: 'سؤالات متداول', fTerms: 'شرایط استفاده', fPrivacyPolicy: 'سیاست حریم خصوصی', fLogin: 'ورود', fRegister: 'ثبت‌نام',
         langLabel: 'زبان', rights: 'همه‌ی حقوق محفوظ است.',
     },
     en: {
@@ -112,7 +112,7 @@ const COPY = {
 
         ctaTitle: 'Claim your free profile today!', ctaBtn: 'Get started now',
         footFeatures: 'Features', footDevelopers: 'Developers', footSupport: 'Support', footAccount: 'Account',
-        fProfile: 'Public profile', fVerified: 'Verified accounts', fPrivacy: 'Privacy', fApi: 'API', fDocs: 'Documentation', fFaq: 'FAQ', fLogin: 'Log in', fRegister: 'Sign up',
+        fProfile: 'Public profile', fVerified: 'Verified accounts', fPrivacy: 'Privacy', fApi: 'API', fDocs: 'Documentation', fFaq: 'FAQ', fTerms: 'Terms of Service', fPrivacyPolicy: 'Privacy Policy', fLogin: 'Log in', fRegister: 'Sign up',
         langLabel: 'Language', rights: 'All rights reserved.',
     },
 };

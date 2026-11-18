@@ -9,7 +9,7 @@ import Icon from './Icon.vue';
 const props = defineProps({ open: Boolean, mode: { type: String, default: 'register' }, email: { type: String, default: '' } });
 const emit = defineEmits(['close', 'switch']);
 
-const form = reactive({ name: '', email: '', password: '', username: '', code: '', recovery: '' });
+const form = reactive({ name: '', email: '', password: '', username: '', code: '', recovery: '', accept_terms: false });
 const step = ref('password');   // password | email | code | twofa  (login only)
 const useRecovery = ref(false);
 const wait = ref(0);
@@ -21,7 +21,7 @@ const message = ref('');
 // start clean every time it opens (keeps a prefilled email from the landing form)
 watch(() => props.open, (v) => {
     if (!v) return;
-    Object.assign(form, { name: '', email: props.email, password: '', username: '', code: '', recovery: '' });
+    Object.assign(form, { name: '', email: props.email, password: '', username: '', code: '', recovery: '', accept_terms: false });
     errors.value = {}; message.value = ''; busy.value = false; step.value = 'password';
 });
 
@@ -134,6 +134,13 @@ const err = (k) => errors.value[k]?.[0];
                            :autocomplete="mode === 'register' ? 'new-password' : 'current-password'">
                     <p v-if="err('password')" class="mt-1 text-sm text-red-600">{{ err('password') }}</p>
                     <p v-else-if="mode === 'register'" class="hint mt-1">{{ t('passwordHint') }}</p>
+                </div>
+                <div v-if="mode === 'register'">
+                    <label class="flex items-start gap-2.5 text-sm leading-6">
+                        <input v-model="form.accept_terms" type="checkbox" class="mt-1.5 size-4 shrink-0 accent-[var(--brand)]">
+                        <span>{{ t('acceptPre') }} <a href="/terms" target="_blank" rel="noopener" class="font-semibold text-brand hover:underline">{{ t('acceptTerms') }}</a> {{ t('acceptAnd') }} <a href="/privacy" target="_blank" rel="noopener" class="font-semibold text-brand hover:underline">{{ t('acceptPrivacy') }}</a>{{ t('acceptPost') }}</span>
+                    </label>
+                    <p v-if="err('accept_terms')" class="mt-1 text-sm text-red-600">{{ err('accept_terms') }}</p>
                 </div>
                 <p v-if="message" class="text-sm text-red-600" role="alert">{{ message }}</p>
             </div>

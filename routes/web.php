@@ -46,6 +46,7 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::get('verifications/github/callback', [\App\Http\Controllers\VerificationController::class, 'githubCallback'])->middleware('throttle:20,1')->name('verify.github.callback');
     Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
 
+    Route::post('export', [\App\Http\Controllers\SecurityController::class, 'export'])->middleware('throttle:3,60');
     Route::delete('/', [\App\Http\Controllers\SecurityController::class, 'destroy'])->middleware('throttle:5,1');
     Route::get('2fa', [\App\Http\Controllers\TwoFactorController::class, 'status']);
     Route::post('2fa/setup', [\App\Http\Controllers\TwoFactorController::class, 'setup'])->middleware('throttle:10,1');
@@ -97,6 +98,9 @@ Route::prefix('admin/api')->middleware(['auth', 'admin'])->group(function () {
 
     Route::get('audit', [\App\Http\Controllers\Admin\AuditController::class, 'index']);
 });
+
+// Legal pages (Markdown in resources/legal); /terms and /privacy are reserved usernames.
+Route::get('/{page}', [\App\Http\Controllers\LegalController::class, 'show'])->whereIn('page', ['terms', 'privacy'])->name('legal.show');
 
 // Documentation (Markdown in resources/docs); must come before the /{username} catch-all.
 Route::get('/docs', [\App\Http\Controllers\DocsController::class, 'index'])->name('docs.index');

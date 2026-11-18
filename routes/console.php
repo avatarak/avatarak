@@ -15,7 +15,7 @@ Artisan::command('stats:prune', function () {
 })->purpose('Delete statistics older than STATS_RETENTION_DAYS');
 
 Artisan::command('codes:prune', function (LoginCodeService $codes) {
-    $this->info('Deleted '.$codes->prune().' expired sign-in codes.');
+    $this->info('Deleted '.$codes->prune().' expired sign-in codes and '.\App\Services\SecurityNotices::prune().' stale device records.');
 })->purpose('Delete expired one-time sign-in codes');
 
 Schedule::command('backup:run')->dailyAt('02:30')->onOneServer()->withoutOverlapping();

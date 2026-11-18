@@ -36,6 +36,7 @@ class LoginFlow
     public function complete(Request $request, User $user, string $method): JsonResponse
     {
         Auth::login($user);
+        SecurityNotices::noteSignIn($user, $request);
         $request->session()->forget('login.pending');
         $request->session()->regenerate();
         if ($method === 'code') {

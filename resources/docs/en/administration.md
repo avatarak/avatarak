@@ -43,6 +43,10 @@ You can never suspend or delete yourself or another administrator, and nobody ca
 
 Each change above is recorded with who did it, when, on what, and the details (for example the suspension reason). Entries keep the administrator's email even if that account is later deleted, and the panel offers no way to edit or remove them.
 
+## Two-step sign-in for administrators
+
+Set `ADMIN_REQUIRE_2FA=true` and administrators must turn on two-step sign-in (Security in the dashboard) before the admin area opens; until then it answers with a clear message. Strongly recommended in production. Administrators also get an email when their account is suspended or their password or two-step settings change, like any user.
+
 ## Reports from visitors
 
 Every public profile page has a **Report this profile** link (not shown to the profile's owner). The form takes a reason and an optional note. To stop repeats we keep a **keyed hash** of the reporter's IP address for 24 hours, nothing else, and the page answers the same way whether or not the report was stored. At most six reports a minute are accepted from one address.

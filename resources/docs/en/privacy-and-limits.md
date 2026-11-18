@@ -44,6 +44,10 @@ If a profile later returns `404`, the user hid it or removed it: stop showing th
 
 Each user can see how often their avatar, profile, exports and API data were used, and on which sites. We store **daily counters only**: how many times, and the **host** of the referring site (for example `blog.example.com`). We do **not** store IP addresses, browsers, cookies or anything about the visitor, and the owner's own visits, bots and `HEAD` requests are not counted. Rows older than 90 days are deleted. Only the data of a **real photo or profile** is counted, never the generic default image, so statistics cannot be used to find out whether an address has an account.
 
+## Your account data
+
+Each user can **download everything we hold about them** (a ZIP with their profile, emails, verified accounts, sites without API keys, statistics and photos) and **delete their account** from *Security* in the dashboard. Deleting removes the account, profile, photos, emails, keys and statistics at once; copies in backups disappear when the backup rotates out (about 14 days). Two-step sign-in (an authenticator app, with recovery codes) and a list of active sessions are in the same place, and we email users about a **new device**, a **password** or **two-step change** and a **suspension**. The full legal texts are the [Terms](/terms) and the [Privacy Policy](/privacy).
+
 ## Responsible use
 
 - **Do not enumerate or guess** hashes, or test lists of emails to find who has an account.

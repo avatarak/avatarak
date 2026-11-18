@@ -11,6 +11,8 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         // views use @vite; tests must not depend on a built frontend
         $this->withoutVite();
+        // most tests register users without a checkbox; the acceptance rule has its own tests
+        config(['legal.require_acceptance' => false]);
     }
     //
 }

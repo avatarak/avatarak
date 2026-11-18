@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue';
 import { api, ApiError } from '../../api';
 import { state, toast } from '../../store';
-import { t } from '../../i18n';
+import { t, i18n } from '../../i18n';
 import SaveBar from '../SaveBar.vue';
 import ConfirmDialog from '../admin/ConfirmDialog.vue';
 import TwoFactorCard from './TwoFactorCard.vue';
@@ -27,6 +27,28 @@ async function save() {
 const err = (k) => errors.value[k]?.[0];
 
 const del = reactive({ open: false, busy: false, error: '' });
+const exp = reactive({ open: false, busy: false, error: '' });
+async function exportData({ input }) {
+    exp.busy = true; exp.error = '';
+    try {
+        const xsrf = decodeURIComponent((document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/) || [])[1] || '');
+        const res = await fetch('/account/export', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { Accept: 'application/zip, application/json', 'Content-Type': 'application/json', 'X-XSRF-TOKEN': xsrf, 'X-Locale': i18n.locale },
+            body: JSON.stringify({ password: input }),
+        });
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            exp.error = Object.values(body.errors || {})[0]?.[0] || body.message || t('error');
+            return;
+        }
+        const blob = await res.blob();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `avatarak-data-${state.account.profile.username}.zip`; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        exp.open = false; toast(t('exDone'));
+    } finally { exp.busy = false; }
+}
+
 async function removeAccount({ input }) {
     del.busy = true; del.error = '';
     try {
@@ -62,6 +84,14 @@ async function removeAccount({ input }) {
         </div>
         <SaveBar :busy="busy" />
     </form>
+
+    <section class="rounded-[8px] border border-line p-4">
+        <h3 class="font-bold">{{ t('exTitle') }}</h3>
+        <p class="hint mt-1">{{ t('exText') }}</p>
+        <button type="button" class="btn btn-ghost mt-3 w-full" @click="Object.assign(exp, { open: true, busy: false, error: '' })">{{ t('exBtn') }}</button>
+    </section>
+    <ConfirmDialog :open="exp.open" :title="t('exTitle')" :body="t('exText')" :confirm-label="exp.busy ? t('exMaking') : t('exBtn')" :busy="exp.busy" :error="exp.error"
+                   :input-label="t('exPass')" input-type="password" @close="exp.open = false" @confirm="exportData" />
 
     <section v-if="!state.account.is_admin" class="rounded-[8px] border border-red-200 p-4">
         <h3 class="font-bold text-red-700">{{ t('dangerZone') }}</h3>

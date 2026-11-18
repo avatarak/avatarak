@@ -24,8 +24,11 @@ export default {
         tfLeft: 'کد بازیابی باقی‌مانده', tfRegen: 'ساخت کدهای تازه', tfDisable: 'غیرفعال کردن', tfDisableText: 'برای غیرفعال کردن، گذرواژه و یک کد از برنامه (یا یک کد بازیابی) را وارد کنید.', tfCodeOrRecovery: 'کد برنامه یا کد بازیابی',
         tfEnabledToast: 'ورود دومرحله‌ای فعال شد', tfDisabledToast: 'ورود دومرحله‌ای غیرفعال شد', tfChallenge: 'کد ۶ رقمی برنامه‌ی احراز هویت را وارد کنید.', tfUseRecovery: 'استفاده از کد بازیابی', tfUseApp: 'استفاده از کد برنامه', tfRecoveryLabel: 'کد بازیابی', tfVerify: 'ادامه',
         ssTitle: 'نشست‌های فعال', ssIntro: 'دستگاه‌هایی که الان با حساب شما وارد شده‌اند. اگر یکی را نمی‌شناسید، خروجش دهید و گذرواژه را عوض کنید.', ssCurrent: 'این دستگاه', ssRevoke: 'خروج', ssRevokeOthers: 'خروج از همه‌ی دستگاه‌های دیگر', ssUnsupported: 'این سرور فهرست نشست‌ها را پشتیبانی نمی‌کند.', ssNone: 'نشست دیگری نیست.', ssRevoked: 'خروج انجام شد', ssUnknown: 'مرورگر ناشناس',
+        // legal + export
+        acceptPre: 'با ثبت‌نام،', acceptTerms: 'شرایط استفاده', acceptAnd: 'و', acceptPrivacy: 'سیاست حریم خصوصی', acceptPost: ' را می‌پذیرم.',
+        exTitle: 'دریافت داده‌هایم', exText: 'یک فایل ZIP از همه‌ی چیزهایی که از شما داریم (پروفایل، ایمیل‌ها، حساب‌های تأییدشده، سایت‌ها، آمار و عکس‌ها). کلیدها و گذرواژه هرگز داخلش نیست.', exBtn: 'دانلود داده‌هایم', exPass: 'برای تأیید، گذرواژه‌تان را وارد کنید', exMaking: 'در حال ساخت فایل…', exDone: 'فایل دانلود شد',
         // security
-        nav_security: 'امنیت', d_security: 'گذرواژه، ورود دومرحله‌ای و دستگاه‌های واردشده.',', currentPassword: 'گذرواژه‌ی فعلی', newPassword: 'گذرواژه‌ی جدید', confirmPassword: 'تکرار گذرواژه‌ی جدید',
+        nav_security: 'امنیت', d_security: 'گذرواژه، ورود دومرحله‌ای و دستگاه‌های واردشده.', currentPassword: 'گذرواژه‌ی فعلی', newPassword: 'گذرواژه‌ی جدید', confirmPassword: 'تکرار گذرواژه‌ی جدید',
         changePassword: 'تغییر گذرواژه', passwordChanged: 'گذرواژه تغییر کرد', recentCodeNote: 'چون تازه با کد ایمیلی وارد شده‌اید، لازم نیست گذرواژه‌ی فعلی را وارد کنید.',
     },
     en: {
@@ -47,6 +50,8 @@ export default {
         tfLeft: 'recovery codes left', tfRegen: 'Make new codes', tfDisable: 'Turn off', tfDisableText: 'To turn it off, enter your password and a code from the app (or a recovery code).', tfCodeOrRecovery: 'App code or recovery code',
         tfEnabledToast: 'Two-step sign-in is on', tfDisabledToast: 'Two-step sign-in is off', tfChallenge: 'Enter the 6-digit code from your authenticator app.', tfUseRecovery: 'Use a recovery code', tfUseApp: 'Use an app code', tfRecoveryLabel: 'Recovery code', tfVerify: 'Continue',
         ssTitle: 'Active sessions', ssIntro: 'Devices signed in to your account right now. If you do not recognise one, sign it out and change your password.', ssCurrent: 'This device', ssRevoke: 'Sign out', ssRevokeOthers: 'Sign out of all other devices', ssUnsupported: 'This server cannot list sessions.', ssNone: 'No other sessions.', ssRevoked: 'Signed out', ssUnknown: 'Unknown browser',
+        acceptPre: 'By signing up you accept the', acceptTerms: 'Terms of Service', acceptAnd: 'and the', acceptPrivacy: 'Privacy Policy', acceptPost: '.',
+        exTitle: 'Download my data', exText: 'A ZIP file of everything we hold about you (profile, emails, verified accounts, sites, statistics and photos). Passwords and keys are never included.', exBtn: 'Download my data', exPass: 'To confirm, enter your password', exMaking: 'Building the file…', exDone: 'File downloaded',
         nav_security: 'Security', d_security: 'Password, two-step sign-in and signed-in devices.', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Repeat the new password',
         changePassword: 'Change password', passwordChanged: 'Password changed', recentCodeNote: 'You just signed in with an email code, so the current password is not needed.',
     },

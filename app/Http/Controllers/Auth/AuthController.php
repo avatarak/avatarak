@@ -23,10 +23,14 @@ class AuthController extends Controller
             'email' => ['required', 'email:rfc', 'max:190', 'unique:users,email'],
             'password' => ['required', Password::min(8)],
             'username' => ['required', new Username, 'unique:profiles,username'],
-        ]);
+            'accept_terms' => config('legal.require_acceptance') ? ['accepted'] : ['sometimes'],
+        ], ['accept_terms.accepted' => __('app.accept_terms_required')]);
 
         $user = DB::transaction(function () use ($data) {
             $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => $data['password']]);
+            if (! empty($data['accept_terms'])) {
+                $user->forceFill(['terms_accepted_at' => now()])->save();
+            }
             Profile::create(['user_id' => $user->id, 'username' => $data['username'], 'name_en' => null]);
 
             return $user;

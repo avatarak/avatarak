@@ -30,7 +30,7 @@ const year = new Date().getFullYear();
             </div>
             <div>
                 <h3 class="text-xl font-bold">{{ lt('footSupport') }}</h3>
-                <ul class="mt-5 space-y-4"><li><a href="#faq" class="hover:underline">{{ lt('fFaq') }}</a></li></ul>
+                <ul class="mt-5 space-y-4"><li><a href="#faq" class="hover:underline">{{ lt('fFaq') }}</a></li><li><a href="/terms" class="hover:underline">{{ lt('fTerms') }}</a></li><li><a href="/privacy" class="hover:underline">{{ lt('fPrivacyPolicy') }}</a></li></ul>
             </div>
             <div>
                 <h3 class="text-xl font-bold">{{ lt('footAccount') }}</h3>

@@ -101,6 +101,7 @@ class UserController extends Controller
 
         $u->forceFill(['suspended_at' => now(), 'suspended_reason' => $data['reason']])->save();
         AuditLog::record('user.suspend', $u, ['reason' => $data['reason']]);
+        \App\Services\SecurityNotices::send($u, 'account_suspended', ['reason' => $data['reason']]);
 
         return response()->json(self::brief($u->fresh('profile')));
     }
@@ -110,6 +111,7 @@ class UserController extends Controller
         $u = User::findOrFail($id);
         $u->forceFill(['suspended_at' => null, 'suspended_reason' => null])->save();
         AuditLog::record('user.unsuspend', $u);
+        \App\Services\SecurityNotices::send($u, 'account_unsuspended');
 
         return response()->json(self::brief($u->fresh('profile')));
     }
