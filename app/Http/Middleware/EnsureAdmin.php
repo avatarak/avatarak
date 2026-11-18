@@ -19,6 +19,10 @@ class EnsureAdmin
             return response()->json(['message' => __('app.not_found')], 404);
         }
 
+        if (config('admin.require_two_factor') && ! $user->hasTwoFactor()) {
+            return response()->json(['message' => __('app.admin_needs_2fa'), 'code' => 'two_factor_required'], 403);
+        }
+
         return $next($request);
     }
 }

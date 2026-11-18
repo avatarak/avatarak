@@ -50,4 +50,11 @@ return [
     'mail_verify_title' => 'Verify your email',
     'mail_verify_button' => 'Verify email',
     'mail_code_title' => 'Your sign-in code',
+    'twofa_invalid' => 'The code is incorrect.',
+    'twofa_expired' => 'The sign-in timed out. Please sign in again.',
+    'twofa_locked' => 'Too many failed attempts. Try again in 10 minutes.',
+    'twofa_already' => 'Two-step sign-in is already on.',
+    'twofa_not_enabled' => 'Two-step sign-in is not on.',
+    'session_current' => 'Sign out of this session with “Log out”.',
+    'admin_needs_2fa' => 'Turn on two-step sign-in to use the admin area.',
 ];

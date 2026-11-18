@@ -17,8 +17,15 @@ export default {
         stDays7: '۷ روز', stDays30: '۳۰ روز', stDays90: '۹۰ روز', stTop: 'سایت‌هایی که از شما استفاده کرده‌اند', stNoRef: 'هنوز سایتی ثبت نشده است. وقتی آواتارتان در سایتی نمایش داده شود، نام آن اینجا می‌آید.',
         stPrivacy: 'فقط شمارنده‌ی روزانه ذخیره می‌شود؛ نه IP، نه مرورگر و نه چیزی از بازدیدکننده. بازدید خودتان شمرده نمی‌شود.', stTotal: 'جمع', stPerDay: 'در روز',
         delAccount: 'حذف حساب', delAccountText: 'حساب، پروفایل، عکس‌ها، ایمیل‌ها و کلیدهای API شما برای همیشه پاک می‌شود. این کار برگشت‌ناپذیر است.', delAccountPass: 'برای تأیید، گذرواژه‌تان را وارد کنید', delAccountBtn: 'حذف همیشگی حساب', dangerZone: 'منطقه‌ی خطر',
+        // two-step sign-in + sessions
+        tfTitle: 'ورود دومرحله‌ای', tfOn: 'فعال', tfOff: 'غیرفعال', tfIntro: 'علاوه بر گذرواژه، هنگام ورود یک کد ۶ رقمی از برنامه‌ی احراز هویت (مثل Google Authenticator یا Aegis) می‌خواهیم. حتی اگر گذرواژه‌تان لو برود، حساب امن می‌ماند.',
+        tfEnable: 'فعال‌سازی', tfPassword: 'گذرواژه‌ی فعلی', tfScan: 'این کد QR را با برنامه‌ی احراز هویت اسکن کنید، یا کلید زیر را دستی وارد کنید:', tfCodeLabel: 'کد ۶ رقمی برنامه', tfConfirm: 'تأیید و فعال‌سازی',
+        tfCodesTitle: 'کدهای بازیابی', tfCodesText: 'این ۱۰ کد را همین حالا در جای امنی ذخیره کنید. اگر گوشی‌تان را گم کردید، هرکدام یک‌بار به‌جای کد برنامه کار می‌کند. دوباره نشان داده نمی‌شوند.', tfCopyCodes: 'کپی کدها', tfDownloadCodes: 'دانلود', tfSaved: 'ذخیره کردم',
+        tfLeft: 'کد بازیابی باقی‌مانده', tfRegen: 'ساخت کدهای تازه', tfDisable: 'غیرفعال کردن', tfDisableText: 'برای غیرفعال کردن، گذرواژه و یک کد از برنامه (یا یک کد بازیابی) را وارد کنید.', tfCodeOrRecovery: 'کد برنامه یا کد بازیابی',
+        tfEnabledToast: 'ورود دومرحله‌ای فعال شد', tfDisabledToast: 'ورود دومرحله‌ای غیرفعال شد', tfChallenge: 'کد ۶ رقمی برنامه‌ی احراز هویت را وارد کنید.', tfUseRecovery: 'استفاده از کد بازیابی', tfUseApp: 'استفاده از کد برنامه', tfRecoveryLabel: 'کد بازیابی', tfVerify: 'ادامه',
+        ssTitle: 'نشست‌های فعال', ssIntro: 'دستگاه‌هایی که الان با حساب شما وارد شده‌اند. اگر یکی را نمی‌شناسید، خروجش دهید و گذرواژه را عوض کنید.', ssCurrent: 'این دستگاه', ssRevoke: 'خروج', ssRevokeOthers: 'خروج از همه‌ی دستگاه‌های دیگر', ssUnsupported: 'این سرور فهرست نشست‌ها را پشتیبانی نمی‌کند.', ssNone: 'نشست دیگری نیست.', ssRevoked: 'خروج انجام شد', ssUnknown: 'مرورگر ناشناس',
         // security
-        nav_security: 'امنیت', d_security: 'گذرواژه‌ی حساب خود را تغییر دهید.', currentPassword: 'گذرواژه‌ی فعلی', newPassword: 'گذرواژه‌ی جدید', confirmPassword: 'تکرار گذرواژه‌ی جدید',
+        nav_security: 'امنیت', d_security: 'گذرواژه، ورود دومرحله‌ای و دستگاه‌های واردشده.',', currentPassword: 'گذرواژه‌ی فعلی', newPassword: 'گذرواژه‌ی جدید', confirmPassword: 'تکرار گذرواژه‌ی جدید',
         changePassword: 'تغییر گذرواژه', passwordChanged: 'گذرواژه تغییر کرد', recentCodeNote: 'چون تازه با کد ایمیلی وارد شده‌اید، لازم نیست گذرواژه‌ی فعلی را وارد کنید.',
     },
     en: {
@@ -34,7 +41,13 @@ export default {
         stDays7: '7 days', stDays30: '30 days', stDays90: '90 days', stTop: 'Sites that used your data', stNoRef: 'No sites yet. When your avatar is shown on a site, it will appear here.',
         stPrivacy: 'Only daily counters are stored: no IP address, no browser, nothing about the visitor. Your own visits are not counted.', stTotal: 'Total', stPerDay: 'per day',
         delAccount: 'Delete account', delAccountText: 'Your account, profile, photos, emails and API keys are deleted for good. This cannot be undone.', delAccountPass: 'To confirm, enter your password', delAccountBtn: 'Delete my account for good', dangerZone: 'Danger zone',
-        nav_security: 'Security', d_security: 'Change your account password.', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Repeat the new password',
+        tfTitle: 'Two-step sign-in', tfOn: 'On', tfOff: 'Off', tfIntro: 'Besides your password, sign-in asks for a 6-digit code from an authenticator app (Google Authenticator, Aegis…). Your account stays safe even if your password leaks.',
+        tfEnable: 'Turn on', tfPassword: 'Current password', tfScan: 'Scan this QR code with your authenticator app, or type the key by hand:', tfCodeLabel: '6-digit code from the app', tfConfirm: 'Confirm and turn on',
+        tfCodesTitle: 'Recovery codes', tfCodesText: 'Save these 10 codes somewhere safe right now. If you lose your phone, each one works once in place of an app code. They will not be shown again.', tfCopyCodes: 'Copy codes', tfDownloadCodes: 'Download', tfSaved: 'I saved them',
+        tfLeft: 'recovery codes left', tfRegen: 'Make new codes', tfDisable: 'Turn off', tfDisableText: 'To turn it off, enter your password and a code from the app (or a recovery code).', tfCodeOrRecovery: 'App code or recovery code',
+        tfEnabledToast: 'Two-step sign-in is on', tfDisabledToast: 'Two-step sign-in is off', tfChallenge: 'Enter the 6-digit code from your authenticator app.', tfUseRecovery: 'Use a recovery code', tfUseApp: 'Use an app code', tfRecoveryLabel: 'Recovery code', tfVerify: 'Continue',
+        ssTitle: 'Active sessions', ssIntro: 'Devices signed in to your account right now. If you do not recognise one, sign it out and change your password.', ssCurrent: 'This device', ssRevoke: 'Sign out', ssRevokeOthers: 'Sign out of all other devices', ssUnsupported: 'This server cannot list sessions.', ssNone: 'No other sessions.', ssRevoked: 'Signed out', ssUnknown: 'Unknown browser',
+        nav_security: 'Security', d_security: 'Password, two-step sign-in and signed-in devices.', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Repeat the new password',
         changePassword: 'Change password', passwordChanged: 'Password changed', recentCodeNote: 'You just signed in with an email code, so the current password is not needed.',
     },
 };

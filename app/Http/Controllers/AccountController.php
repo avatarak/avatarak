@@ -23,6 +23,7 @@ class AccountController extends Controller
             'name' => $user->name,
             'id' => $user->id, 'email' => $user->email,
             'is_admin' => (bool) $user->is_admin,
+            'two_factor' => $user->hasTwoFactor(),
             'recent_code_login' => now()->timestamp - (int) $request->session()->get('reauth_at', 0) < 900,
             'profile' => $p->only(['username', 'name_fa', 'name_en', 'bio', 'website', 'socials',
                 'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order',

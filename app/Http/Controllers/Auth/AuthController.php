@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\EmailController;
 use App\Models\Profile;
 use App\Models\User;
+use App\Services\LoginFlow;
 use App\Rules\Username;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,24 +40,20 @@ class AuthController extends Controller
         return response()->json(['message' => __('app.registered')], 201);
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(Request $request, LoginFlow $flow): JsonResponse
     {
         $cred = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string']]);
 
-        if (! Auth::attempt($cred)) {
+        // Check the password WITHOUT signing in: a second factor may still be needed.
+        $user = User::where('email', \App\Models\UserEmail::normalize($cred['email']))->first();
+        if (! $user || ! \Illuminate\Support\Facades\Hash::check($cred['password'], $user->password)) {
             return response()->json(['message' => __('app.bad_credentials')], 422);
         }
-
-        if (Auth::user()->isSuspended()) {
-            Auth::logout();
-            $request->session()->invalidate();
-
+        if ($user->isSuspended()) {
             return response()->json(['message' => __('app.account_suspended')], 403);
         }
 
-        $request->session()->regenerate();
-
-        return response()->json(['message' => 'ok']);
+        return $flow->afterFirstFactor($request, $user, 'password');
     }
 
     public function logout(Request $request): JsonResponse

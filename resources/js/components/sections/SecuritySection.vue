@@ -5,6 +5,8 @@ import { state, toast } from '../../store';
 import { t } from '../../i18n';
 import SaveBar from '../SaveBar.vue';
 import ConfirmDialog from '../admin/ConfirmDialog.vue';
+import TwoFactorCard from './TwoFactorCard.vue';
+import SessionsCard from './SessionsCard.vue';
 
 const form = reactive({ current_password: '', password: '', password_confirmation: '' });
 const errors = ref({});
@@ -38,7 +40,9 @@ async function removeAccount({ input }) {
 </script>
 
 <template>
-    <div>
+    <div class="space-y-8">
+    <TwoFactorCard />
+    <SessionsCard />
     <form class="space-y-4" novalidate @submit.prevent="save">
         <p v-if="state.account.recent_code_login" class="hint">{{ t('recentCodeNote') }}</p>
         <div>
@@ -59,7 +63,7 @@ async function removeAccount({ input }) {
         <SaveBar :busy="busy" />
     </form>
 
-    <section v-if="!state.account.is_admin" class="mt-10 rounded-[8px] border border-red-200 p-4">
+    <section v-if="!state.account.is_admin" class="rounded-[8px] border border-red-200 p-4">
         <h3 class="font-bold text-red-700">{{ t('dangerZone') }}</h3>
         <p class="hint mt-1">{{ t('delAccountText') }}</p>
         <button type="button" class="btn mt-3 w-full !bg-red-600 text-white hover:!bg-red-700" @click="Object.assign(del, { open: true, busy: false, error: '' })">{{ t('delAccount') }}</button>

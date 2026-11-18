@@ -20,6 +20,7 @@ Route::post('/register', [AuthController::class, 'register'])->middleware('throt
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 Route::post('/login/code', [\App\Http\Controllers\Auth\CodeLoginController::class, 'send'])->middleware('throttle:6,1');
 Route::post('/login/code/verify', [\App\Http\Controllers\Auth\CodeLoginController::class, 'verify'])->middleware('throttle:10,1');
+Route::post('/login/2fa', [\App\Http\Controllers\Auth\TwoFactorLoginController::class, 'verify'])->middleware('throttle:10,1');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::middleware('auth')->prefix('account')->group(function () {
@@ -46,6 +47,14 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
 
     Route::delete('/', [\App\Http\Controllers\SecurityController::class, 'destroy'])->middleware('throttle:5,1');
+    Route::get('2fa', [\App\Http\Controllers\TwoFactorController::class, 'status']);
+    Route::post('2fa/setup', [\App\Http\Controllers\TwoFactorController::class, 'setup'])->middleware('throttle:10,1');
+    Route::post('2fa/confirm', [\App\Http\Controllers\TwoFactorController::class, 'confirm'])->middleware('throttle:10,1');
+    Route::post('2fa/disable', [\App\Http\Controllers\TwoFactorController::class, 'disable'])->middleware('throttle:10,1');
+    Route::post('2fa/recovery-codes', [\App\Http\Controllers\TwoFactorController::class, 'regenerate'])->middleware('throttle:10,1');
+    Route::get('sessions', [\App\Http\Controllers\SessionsController::class, 'index']);
+    Route::delete('sessions', [\App\Http\Controllers\SessionsController::class, 'destroyOthers']);
+    Route::delete('sessions/{handle}', [\App\Http\Controllers\SessionsController::class, 'destroy'])->where('handle', '[a-f0-9]{20}');
     Route::get('stats', [\App\Http\Controllers\StatsController::class, 'show']);
     Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');
 

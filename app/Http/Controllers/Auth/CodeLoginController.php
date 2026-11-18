@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Mail\LoginCode;
 use App\Models\UserEmail;
 use App\Services\LoginCodeService;
+use App\Services\LoginFlow;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 /** Passwordless sign-in: email a one-time code, then exchange it for a session. */
@@ -30,7 +30,7 @@ class CodeLoginController extends Controller
         return response()->json(['message' => __('app.code_sent'), 'expires_in' => LoginCodeService::TTL_MINUTES * 60]);
     }
 
-    public function verify(Request $request, LoginCodeService $codes): JsonResponse
+    public function verify(Request $request, LoginCodeService $codes, LoginFlow $flow): JsonResponse
     {
         $data = $request->validate(['email' => ['required', 'email:rfc'], 'code' => ['required', 'string', 'max:12']]);
 
@@ -46,10 +46,6 @@ class CodeLoginController extends Controller
             $email->update(['verified_at' => now(), 'verification_token' => null]);
         }
 
-        Auth::login($user);
-        $request->session()->regenerate();
-        $request->session()->put('reauth_at', now()->timestamp);   // may set a new password right away
-
-        return response()->json(['message' => 'ok']);
+        return $flow->afterFirstFactor($request, $user, 'code');
     }
 }
