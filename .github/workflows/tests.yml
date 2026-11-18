@@ -3,6 +3,7 @@ name: Tests
 on:
   push:
     branches:
+      - main
       - master
       - '*.x'
   pull_request:
@@ -47,3 +48,22 @@ jobs:
 
       - name: Execute tests
         run: php artisan test
+
+  js-sdk:
+    runs-on: ubuntu-latest
+    name: JavaScript SDK
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Test @avatarak/client
+        working-directory: packages/js
+        run: npm test

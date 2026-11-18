@@ -1,0 +1,20 @@
+{
+    "name": "@avatarak/client",
+    "version": "1.0.0",
+    "description": "JavaScript client for the Avatarak.ir avatar and profile API. Zero dependencies; browsers, Node 18+, Deno, Bun.",
+    "type": "module",
+    "license": "MIT",
+    "keywords": ["avatar", "gravatar", "avatarak", "profile"],
+    "main": "./src/index.js",
+    "types": "./src/index.d.ts",
+    "exports": {
+        ".": { "types": "./src/index.d.ts", "default": "./src/index.js" },
+        "./element": { "default": "./src/element.js" }
+    },
+    "files": ["src", "README.md"],
+    "sideEffects": ["./src/element.js"],
+    "scripts": {
+        "test": "node --test"
+    },
+    "engines": { "node": ">=18" }
+}

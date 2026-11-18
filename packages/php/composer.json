@@ -1,0 +1,31 @@
+{
+    "name": "avatarak/avatarak-php",
+    "description": "PHP client for the Avatarak.ir avatar and profile API, with optional Laravel integration.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["avatar", "gravatar", "avatarak", "profile", "laravel"],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5 || ^11 || ^12"
+    },
+    "suggest": {
+        "ext-curl": "Used by the default HTTP transport",
+        "illuminate/support": "Laravel service provider, facade and <x-avatarak-avatar> component"
+    },
+    "autoload": {
+        "psr-4": { "Avatarak\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Avatarak\\Tests\\": "tests/" }
+    },
+    "extra": {
+        "laravel": {
+            "providers": ["Avatarak\\Laravel\\AvatarakServiceProvider"],
+            "aliases": { "Avatarak": "Avatarak\\Laravel\\Facades\\Avatarak" }
+        }
+    },
+    "minimum-stability": "stable"
+}

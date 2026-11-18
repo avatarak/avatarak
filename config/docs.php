@@ -12,7 +12,7 @@ return [
     'groups' => [
         ['title' => ['fa' => 'شروع', 'en' => 'Get started'], 'slugs' => ['getting-started', 'hash']],
         ['title' => ['fa' => 'آواتار', 'en' => 'Avatars'], 'slugs' => ['avatars']],
-        ['title' => ['fa' => 'REST API', 'en' => 'REST API'], 'slugs' => ['authentication', 'api-reference']],
+        ['title' => ['fa' => 'REST API', 'en' => 'REST API'], 'slugs' => ['authentication', 'api-reference', 'sdks']],
         ['title' => ['fa' => 'داده‌ی عمومی', 'en' => 'Public data'], 'slugs' => ['exports', 'verified-accounts']],
         ['title' => ['fa' => 'اصول', 'en' => 'Policies'], 'slugs' => ['privacy-and-limits']],
     ],
