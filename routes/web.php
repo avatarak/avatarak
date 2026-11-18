@@ -38,6 +38,10 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::post('verifications/website', [\App\Http\Controllers\VerificationController::class, 'website'])->middleware('throttle:20,1');
     Route::post('verifications/website/check', [\App\Http\Controllers\VerificationController::class, 'websiteCheck'])->middleware('throttle:10,1');
     Route::post('verifications/telegram', [\App\Http\Controllers\VerificationController::class, 'telegram'])->middleware('throttle:20,1');
+    Route::post('verifications/github', [\App\Http\Controllers\VerificationController::class, 'github'])->middleware('throttle:20,1');
+    Route::post('verifications/github/check', [\App\Http\Controllers\VerificationController::class, 'githubCheck'])->middleware('throttle:10,1');
+    Route::get('verifications/github/redirect', [\App\Http\Controllers\VerificationController::class, 'githubRedirect'])->middleware('throttle:20,1');
+    Route::get('verifications/github/callback', [\App\Http\Controllers\VerificationController::class, 'githubCallback'])->middleware('throttle:20,1')->name('verify.github.callback');
     Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
 
     Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');

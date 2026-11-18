@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VerificationChallenge;
 use App\Models\VerifiedAccount;
+use App\Services\GitHubVerifier;
 use App\Services\TelegramVerifier;
 use App\Services\WebsiteVerifier;
 use Illuminate\Http\JsonResponse;
@@ -70,6 +71,61 @@ class VerificationController extends Controller
         ]);
     }
 
+    public function github(Request $request, GitHubVerifier $github): JsonResponse
+    {
+        $handle = GitHubVerifier::normalizeHandle((string) $request->validate(['handle' => ['required', 'string', 'max:120']])['handle']);
+        abort_unless($handle, 422, __('app.verify_gh_bad_handle'));
+
+        $user = $request->user();
+        if ($user->verifiedAccounts()->where('network', 'github')->where('identifier', $handle)->exists()) {
+            return response()->json(['verified' => true] + $this->state($request));
+        }
+        abort_if(VerifiedAccount::where('network', 'github')->where('identifier', $handle)->exists(), 422, __('app.verify_taken'));
+
+        return response()->json(['verified' => false, 'instructions' => $github->instructions(VerificationChallenge::issue($user, 'github', $handle))]);
+    }
+
+    public function githubCheck(Request $request, GitHubVerifier $github): JsonResponse
+    {
+        $handle = GitHubVerifier::normalizeHandle((string) $request->validate(['handle' => ['required', 'string', 'max:120']])['handle']);
+        abort_unless($handle, 422, __('app.verify_gh_bad_handle'));
+
+        $challenge = VerificationChallenge::where('user_id', $request->user()->id)->where('network', 'github')->where('identifier', $handle)->first();
+        abort_unless($challenge, 404, __('app.verify_no_challenge'));
+
+        $result = $github->check($challenge);
+        if (! $result['ok']) {
+            return response()->json([
+                'verified' => false, 'error' => $result['error'], 'message' => __('app.verify_err_'.$result['error']),
+            ], $result['error'] === 'not_found' ? 200 : 422);
+        }
+
+        return response()->json(['verified' => true, 'method' => $result['method']] + $this->state($request));
+    }
+
+    /** Step 1 of "Sign in with GitHub": send the browser to GitHub. */
+    public function githubRedirect(Request $request, GitHubVerifier $github)
+    {
+        abort_unless(GitHubVerifier::oauthEnabled(), 503, __('app.verify_gh_oauth_off'));
+
+        $state = \Illuminate\Support\Str::random(40);
+        $request->session()->put('github_oauth_state', $state);
+
+        return redirect()->away($github->authorizeUrl($state, route('verify.github.callback')));
+    }
+
+    /** Step 2: GitHub sends the browser back here with ?code=…&state=… */
+    public function githubCallback(Request $request, GitHubVerifier $github)
+    {
+        abort_unless(GitHubVerifier::oauthEnabled(), 503, __('app.verify_gh_oauth_off'));
+
+        $expected = (string) $request->session()->pull('github_oauth_state', '');
+        $ok = $expected !== '' && hash_equals($expected, (string) $request->query('state')) && is_string($request->query('code'));
+        $result = $ok ? $github->completeOAuth($request->user(), $request->query('code'), route('verify.github.callback')) : ['ok' => false, 'error' => 'github_oauth_failed'];
+
+        return redirect('/?verify=github-'.($result['ok'] ? 'ok' : $result['error']));
+    }
+
     public function destroy(Request $request, int $id): JsonResponse
     {
         $request->user()->verifiedAccounts()->findOrFail($id)->delete();
@@ -85,6 +141,7 @@ class VerificationController extends Controller
                 'method' => $a->method, 'verified_at' => $a->verified_at?->toIso8601String(),
             ])->values(),
             'telegram' => ['enabled' => TelegramVerifier::enabled(), 'bot' => config('verification.telegram.bot_username')],
+            'github' => ['oauth' => GitHubVerifier::oauthEnabled()],
         ];
     }
 }

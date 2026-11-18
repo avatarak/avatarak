@@ -35,4 +35,10 @@ return [
     'code_invalid' => 'The code is wrong or has expired.',
     'wrong_current_password' => 'The current password is incorrect.',
     'account_suspended' => 'This account has been suspended. Contact support for details.',
+    'verify_gh_bad_handle' => 'Invalid GitHub username.',
+    'verify_gh_oauth_off' => 'Sign in with GitHub is not configured on this server.',
+    'verify_err_github_user_not_found' => 'That user was not found on GitHub.',
+    'verify_err_github_rate_limited' => 'GitHub is rate-limiting us for now. Try again in a few minutes.',
+    'verify_err_github_unavailable' => 'Could not reach GitHub. Try again shortly.',
+    'verify_err_github_oauth_failed' => 'Sign in with GitHub failed.',
 ];

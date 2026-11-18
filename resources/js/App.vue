@@ -1,12 +1,20 @@
 <script setup>
 import { onMounted } from 'vue';
-import { state, load } from './store';
+import { state, load, toast } from './store';
 import { applyDir, t } from './i18n';
 import Landing from './components/Landing.vue';
 import Panel from './components/Panel.vue';
 
 applyDir();
-onMounted(load);
+onMounted(async () => {
+    await load();
+    // returning from "Sign in with GitHub": /?verify=github-ok | github-<error>
+    const v = new URLSearchParams(location.search).get('verify');
+    if (v?.startsWith('github-')) {
+        toast(v === 'github-ok' ? t('vGhOk') : t('vGhFail'));
+        history.replaceState(null, '', location.pathname);
+    }
+});
 </script>
 
 <template>

@@ -9,6 +9,7 @@ import SocialIcon from '../SocialIcon.vue';
 
 const accounts = ref([]);
 const tg = reactive({ enabled: false, bot: '' });
+const gh = reactive({ oauth: false });
 const firstError = (e) => (e instanceof ApiError ? (Object.values(e.errors)[0]?.[0] || e.message) : t('error'));
 
 async function load() {
@@ -16,6 +17,7 @@ async function load() {
     accounts.value = r.accounts;
     tg.enabled = r.telegram.enabled;
     tg.bot = r.telegram.bot;
+    gh.oauth = !!r.github?.oauth;
 }
 async function changed() { await load(); await refresh(); }   // refresh() updates the live preview too
 
@@ -68,6 +70,30 @@ async function startTelegram() {
     } catch (e) { tgErr.value = firstError(e); } finally { tgBusy.value = false; }
 }
 
+/* ---------------- github ---------------- */
+const ghHandle = ref(state.draft.socials?.github || '');
+const ghInstr = ref(null);
+const ghBusy = ref(false);
+const ghMsg = ref('');
+const ghErr = ref('');
+const githubVerified = computed(() => accounts.value.find((a) => a.network === 'github'));
+
+async function startGithub() {
+    ghErr.value = ''; ghMsg.value = ''; ghBusy.value = true;
+    try {
+        const r = await api('POST', '/account/verifications/github', { handle: ghHandle.value });
+        r.verified ? await changed() : (ghInstr.value = r.instructions);
+    } catch (e) { ghErr.value = firstError(e); } finally { ghBusy.value = false; }
+}
+async function checkGithub() {
+    ghErr.value = ''; ghMsg.value = ''; ghBusy.value = true;
+    try {
+        const r = await api('POST', '/account/verifications/github/check', { handle: ghHandle.value });
+        if (r.verified) { ghInstr.value = null; toast(t('vDone')); await changed(); } else { ghMsg.value = r.message; }
+    } catch (e) { ghErr.value = firstError(e); } finally { ghBusy.value = false; }
+}
+const netName = (n) => ({ website: t('vWebsite'), telegram: t('vTelegram'), github: t('vGithub') }[n] || n);
+
 async function remove(a) {
     if (!confirm(t('confirmDelete'))) return;
     await api('DELETE', `/account/verifications/${a.id}`);
@@ -88,10 +114,10 @@ onBeforeUnmount(stopPolling);
                     <span class="grid size-9 shrink-0 place-items-center"><SocialIcon v-if="a.network !== 'website'" :name="a.network" :size="18" /><Icon v-else name="globe" :size="18" /></span>
                     <span class="min-w-0 flex-1">
                         <span class="flex items-center gap-1.5 text-sm font-semibold">
-                            {{ a.network === 'website' ? t('vWebsite') : t('vTelegram') }}
+                            {{ netName(a.network) }}
                             <svg width="16" height="16" viewBox="0 0 24 24" aria-label="verified" class="text-[#3B6BF0]"><path fill="currentColor" d="M12 1.5l2.6 1.9 3.2-.1 1 3 2.6 1.9-1 3 1 3-2.6 1.9-1 3-3.2-.1L12 22.5l-2.6-1.9-3.2.1-1-3-2.6-1.9 1-3-1-3 2.6-1.9 1-3 3.2.1z"/><path fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.3l2.7 2.7L16 9.6"/></svg>
                         </span>
-                        <span dir="ltr" class="block truncate text-start text-sm text-muted">{{ a.network === 'telegram' ? '@' : '' }}{{ a.identifier }}</span>
+                        <span dir="ltr" class="block truncate text-start text-sm text-muted">{{ a.network === 'telegram' || a.network === 'github' ? '@' : '' }}{{ a.identifier }}</span>
                     </span>
                     <button type="button" class="icon-btn text-muted hover:text-red-700" :title="t('vRemove')" :aria-label="t('vRemove')" @click="remove(a)"><Icon name="trash" :size="16" /></button>
                 </li>
@@ -140,6 +166,37 @@ onBeforeUnmount(stopPolling);
 
                 <button type="button" class="btn btn-primary w-full" :disabled="webBusy" @click="checkWebsite">{{ webBusy ? t('vChecking') : t('vCheck') }}</button>
                 <p v-if="webMsg" class="text-sm text-amber-800" role="status">{{ webMsg }}</p>
+            </div>
+        </section>
+
+        <!-- github -->
+        <section>
+            <h3 class="flex items-center gap-2 text-lg font-bold"><SocialIcon name="github" :size="18" /> {{ t('vGithub') }}</h3>
+            <a v-if="gh.oauth && !githubVerified" href="/account/verifications/github/redirect" class="btn btn-primary mt-3 w-full">{{ t('vGhOauth') }}</a>
+            <p v-if="gh.oauth && !githubVerified" class="hint my-2 text-center">{{ t('vGhOr') }}</p>
+            <form class="mt-3 flex flex-col gap-2" @submit.prevent="startGithub">
+                <input v-model="ghHandle" dir="ltr" class="field text-start" placeholder="octocat" :aria-label="t('vGhHandle')" autocapitalize="none" spellcheck="false">
+                <button class="btn" :class="gh.oauth ? 'btn-ghost' : 'btn-primary'" :disabled="ghBusy || !ghHandle || githubVerified">{{ githubVerified ? t('vDone') : t('vGhStart') }}</button>
+            </form>
+            <p v-if="ghErr" class="mt-2 text-sm text-red-600" role="alert">{{ ghErr }}</p>
+            <div v-if="ghInstr" class="mt-4 space-y-3">
+                <p class="hint">{{ t('vGhGistHelp') }}</p>
+                <div class="rounded-[8px] border border-line p-3">
+                    <div class="text-sm font-semibold">{{ t('vGhFilename') }}</div>
+                    <div class="mt-2 flex items-start gap-2">
+                        <code dir="ltr" class="min-w-0 flex-1 break-all rounded-[4px] bg-soft p-2 text-start text-xs leading-5">{{ ghInstr.filename }}</code>
+                        <button type="button" class="icon-btn shrink-0" :aria-label="t('copy')" @click="copyText(ghInstr.filename)"><Icon name="copy" :size="16" /></button>
+                    </div>
+                    <div class="mt-3 text-sm font-semibold">{{ t('vGhContent') }}</div>
+                    <div class="mt-2 flex items-start gap-2">
+                        <code dir="ltr" class="min-w-0 flex-1 break-all rounded-[4px] bg-soft p-2 text-start text-xs leading-5">{{ ghInstr.content }}</code>
+                        <button type="button" class="icon-btn shrink-0" :aria-label="t('copy')" @click="copyText(ghInstr.content)"><Icon name="copy" :size="16" /></button>
+                    </div>
+                </div>
+                <a :href="ghInstr.gist_url" target="_blank" rel="noopener" class="btn btn-ghost w-full">{{ t('vGhOpenGist') }} <Icon name="external" :size="16" /></a>
+                <button type="button" class="btn btn-primary w-full" :disabled="ghBusy" @click="checkGithub">{{ ghBusy ? t('vChecking') : t('vCheck') }}</button>
+                <p v-if="ghMsg" class="text-sm text-amber-800" role="status">{{ ghMsg }}</p>
+                <p class="hint">{{ t('vGhRemoveGist') }}</p>
             </div>
         </section>
 

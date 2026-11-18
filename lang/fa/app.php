@@ -35,4 +35,10 @@ return [
     'code_invalid' => 'کد نادرست یا منقضی است.',
     'wrong_current_password' => 'گذرواژه‌ی فعلی نادرست است.',
     'account_suspended' => 'این حساب مسدود شده است. برای پیگیری با پشتیبانی تماس بگیرید.',
+    'verify_gh_bad_handle' => 'نام کاربری گیت‌هاب نامعتبر است.',
+    'verify_gh_oauth_off' => 'ورود با گیت‌هاب روی این سرور تنظیم نشده است.',
+    'verify_err_github_user_not_found' => 'این کاربر در گیت‌هاب پیدا نشد.',
+    'verify_err_github_rate_limited' => 'گیت‌هاب موقتاً درخواست‌های بیشتری نمی‌پذیرد. چند دقیقه بعد دوباره امتحان کنید.',
+    'verify_err_github_unavailable' => 'ارتباط با گیت‌هاب ممکن نشد. کمی بعد دوباره امتحان کنید.',
+    'verify_err_github_oauth_failed' => 'ورود با گیت‌هاب ناموفق بود.',
 ];

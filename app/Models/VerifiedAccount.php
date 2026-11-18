@@ -18,6 +18,7 @@ class VerifiedAccount extends Model
     {
         return match ($this->network) {
             'telegram' => 'https://t.me/'.$this->identifier,
+            'github' => 'https://github.com/'.$this->identifier,
             default => 'https://'.$this->identifier,
         };
     }

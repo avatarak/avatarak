@@ -12,4 +12,13 @@ return [
         // Sent back by Telegram in X-Telegram-Bot-Api-Secret-Token; the webhook rejects anything else.
         'webhook_secret' => env('TELEGRAM_WEBHOOK_SECRET'),
     ],
+
+    'github' => [
+        // Gist proof works with no setup. Optional: a token only raises GitHub's anonymous rate limit
+        // (60/hour per server IP); an OAuth app (callback: <APP_URL>/account/verifications/github/callback)
+        // adds the one-click "Sign in with GitHub" method.
+        'api_token' => env('GITHUB_API_TOKEN'),
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
+    ],
 ];
