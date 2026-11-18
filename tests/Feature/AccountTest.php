@@ -40,7 +40,7 @@ class AccountTest extends TestCase
         $this->assertSame('ali', $u->profile->username);
         $this->assertTrue($u->emails->first()->is_primary);
         $this->assertFalse($u->emails->first()->isVerified());
-        Mail::assertSent(VerifyEmailAddress::class);
+        Mail::assertQueued(VerifyEmailAddress::class);
         $this->assertAuthenticatedAs($u);
     }
 

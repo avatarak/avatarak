@@ -3,13 +3,20 @@
 namespace App\Mail;
 
 use App\Services\LoginCodeService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 
-class LoginCode extends Mailable
+class LoginCode extends Mailable implements ShouldQueue
 {
-    public function __construct(public string $code) {}
+    use Queueable;
+
+    public function __construct(public string $code)
+    {
+        $this->locale(app()->getLocale());
+    }
 
     public function envelope(): Envelope
     {

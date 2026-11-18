@@ -30,7 +30,7 @@ class CodeLoginTest extends TestCase
         $code = null;
         Mail::fake();
         $this->postJson('/login/code', ['email' => $email])->assertOk();
-        Mail::assertSent(LoginCode::class, function (LoginCode $m) use (&$code) {
+        Mail::assertQueued(LoginCode::class, function (LoginCode $m) use (&$code) {
             $code = $m->code;
 
             return true;
@@ -72,7 +72,7 @@ class CodeLoginTest extends TestCase
     {
         Mail::fake();
         $a = $this->postJson('/login/code', ['email' => 'nobody@example.com'])->assertOk()->json();
-        Mail::assertNothingSent();
+        Mail::assertNothingQueued();
         $this->user();
         $b = $this->postJson('/login/code', ['email' => 'ali@example.com'])->assertOk()->json();
         $this->assertSame($a, $b, 'no account enumeration');
@@ -104,7 +104,7 @@ class CodeLoginTest extends TestCase
         Mail::fake();
         $this->postJson('/login/code', ['email' => 'ali@example.com'])->assertOk();
         $this->postJson('/login/code', ['email' => 'ali@example.com'])->assertOk();
-        Mail::assertSent(LoginCode::class, 1);
+        Mail::assertQueued(LoginCode::class, 1);
     }
 
     public function test_only_a_hash_of_the_code_is_stored(): void
@@ -130,7 +130,7 @@ class CodeLoginTest extends TestCase
         $u->emails()->create(['email' => 'claimed@example.com']);     // claimed, not proven
         Mail::fake();
         $this->postJson('/login/code', ['email' => 'claimed@example.com'])->assertOk();
-        Mail::assertNothingSent();
+        Mail::assertNothingQueued();
     }
 
     public function test_suspended_users_cannot_sign_in_by_code_or_password(): void
@@ -139,7 +139,7 @@ class CodeLoginTest extends TestCase
         $u->forceFill(['suspended_at' => now()])->save();
         Mail::fake();
         $this->postJson('/login/code', ['email' => 'ali@example.com'])->assertOk();
-        Mail::assertNothingSent();
+        Mail::assertNothingQueued();
         $this->postJson('/login', ['email' => 'ali@example.com', 'password' => 'old-password-1'])->assertStatus(403);
         $this->assertGuest();
     }

@@ -46,4 +46,8 @@ return [
     'cannot_self' => 'You cannot do this to your own account.',
     'cannot_admin' => 'Remove this user\'s admin access first.',
     'delete_account_confirm' => 'Enter your password to delete your account.',
+    'mail_footer' => 'This message was sent by :app. Please do not reply to it.',
+    'mail_verify_title' => 'Verify your email',
+    'mail_verify_button' => 'Verify email',
+    'mail_code_title' => 'Your sign-in code',
 ];
