@@ -1,7 +1,7 @@
-# syntax=docker/dockerfile:1
+ARG IMAGE_REGISTRY=docker.io/library
 
 # ---- 1) front-end assets --------------------------------------------------------------
-FROM node:22-alpine AS assets
+FROM ${IMAGE_REGISTRY}/node:22-alpine AS assets
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -13,7 +13,7 @@ COPY public ./public
 RUN npm run build
 
 # ---- 2) PHP dependencies ---------------------------------------------------------------
-FROM composer:2 AS vendor
+FROM ${IMAGE_REGISTRY}/composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
@@ -21,7 +21,7 @@ COPY . .
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative --no-scripts
 
 # ---- 3) runtime: PHP-FPM ---------------------------------------------------------------
-FROM php:8.5-fpm-alpine AS app
+FROM ${IMAGE_REGISTRY}/php:8.5-fpm-alpine AS app
 RUN apk add --no-cache libpng libjpeg-turbo libwebp libzip icu-libs fcgi mariadb-client \
  && apk add --no-cache --virtual .build $PHPIZE_DEPS libpng-dev libjpeg-turbo-dev libwebp-dev libzip-dev icu-dev linux-headers \
  && docker-php-ext-configure gd --with-jpeg --with-webp \
@@ -48,6 +48,6 @@ CMD ["php-fpm"]
 HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong
 
 # ---- 4) web: nginx with the static assets baked in --------------------------------------
-FROM nginx:1.27-alpine AS web
+FROM ${IMAGE_REGISTRY}/nginx:stable-alpine AS web
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=assets /app/public /var/www/html/public

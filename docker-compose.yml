@@ -6,6 +6,8 @@ x-app: &app
   build:
     context: .
     target: app
+    args:
+      IMAGE_REGISTRY: ${IMAGE_REGISTRY:-docker.io/library}
   image: avatarak/app:latest
   env_file: .env
   restart: unless-stopped
@@ -24,6 +26,8 @@ services:
     build:
       context: .
       target: web
+      args:
+        IMAGE_REGISTRY: ${IMAGE_REGISTRY:-docker.io/library}
     image: avatarak/web:latest
     restart: unless-stopped
     depends_on: [app]
@@ -53,7 +57,7 @@ services:
       disable: true
 
   mysql:
-    image: mysql:8.4
+    image: ${IMAGE_REGISTRY:-docker.io/library}/mysql:8.4
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-avatarak}
@@ -70,7 +74,7 @@ services:
       retries: 12
 
   redis:
-    image: redis:7-alpine
+    image: ${IMAGE_REGISTRY:-docker.io/library}/redis:7-alpine
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "noeviction"]
     volumes:

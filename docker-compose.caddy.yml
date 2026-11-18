@@ -1,6 +1,6 @@
 services:
   caddy:
-    image: caddy:2-alpine
+    image: ${IMAGE_REGISTRY:-docker.io/library}/caddy:2-alpine
     restart: unless-stopped
     environment:
       SITE_HOST: ${SITE_HOST:-avatarak.ir}
