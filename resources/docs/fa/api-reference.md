@@ -26,9 +26,13 @@ curl -H "Authorization: Bearer avk_YOUR_API_KEY" \
     "profile_url": "{{origin}}/javid",
     "name_fa": "جاوید میرزایی",
     "name_en": "Javid Mirzaei",
+    "headline": "Founder at Example",
+    "location": "Tehran, Iran",
     "bio": "Full-stack engineer and founder.",
     "website": "https://javid.example.ir",
     "socials": { "github": "javid", "telegram": "javid_t" },
+    "links": [{ "label": "Blog", "url": "https://javid.example.ir/blog" }],
+    "verified_accounts": [{ "network": "website", "identifier": "javid.example.ir", "url": "https://javid.example.ir" }],
     "avatar_url": "{{origin}}/avatar/f7254a5b7d62b61c5353da4a235812f4b2171e8f16fd876a210d268da1793fd7"
   }
 }
@@ -70,12 +74,16 @@ curl -X POST -H "Authorization: Bearer avk_YOUR_API_KEY" -H "Content-Type: appli
 | `profile_url` | string | صفحه‌ی عمومی پروفایل |
 | `name_fa` | string \| null | نام نمایشی فارسی |
 | `name_en` | string \| null | نام نمایشی انگلیسی |
+| `headline` | string \| null | عنوان کوتاه، مثل شغل یا شعار |
+| `location` | string \| null | موقعیت (متن آزاد) |
 | `bio` | string \| null | بیوگرافی کوتاه |
 | `website` | string \| null | وب‌سایت شخصی |
 | `socials` | object | شبکه ← نام کاربری، مثل `{"github": "javid"}`؛ اگر خالی باشد `{}` |
+| `links` | array | `[{label, url, description?, image?}]`؛ در صورت نبود `[]` |
+| `verified_accounts` | array | `[{network, identifier, url}]`، فقط حساب‌هایی که کاربر مالکیتشان را ثابت کرده؛ در صورت نبود `[]` |
 | `avatar_url` | string \| null | [آدرس آواتار](/docs/avatars)، یا `null` وقتی کاربر عکس را مخفی کرده |
 
-برای داده‌ی کامل‌تر (عنوان، موقعیت، لینک‌ها، حساب‌های تأییدشده) از [خروجی JSON عمومی](/docs/exports) صفحه‌ی پروفایل استفاده کنید.
+در اینجا `socials` فقط شناسه (handle) است؛ [خروجی JSON عمومی](/docs/exports) آدرس کامل برمی‌گرداند و `display_name`، `verified`، `created_at` و `updated_at` را هم دارد.
 
 ## خطاها
 

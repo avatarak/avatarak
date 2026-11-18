@@ -134,4 +134,19 @@ class ProfileApiTest extends TestCase
         $this->artisan('site:create', ['user' => 'o@x.ir', 'name' => 'blog', 'domain' => 'blog.ir'])->assertSuccessful();
         $this->assertSame(1, $u->sites()->count());
     }
+
+    public function test_response_includes_headline_location_links_and_only_verified_accounts(): void
+    {
+        $h = $this->person();
+        $p = Profile::latest('id')->first();
+        $p->update(['headline' => 'Founder', 'location' => 'Tehran', 'links' => [['label' => 'Blog', 'url' => 'https://j.ir/blog'], ['label' => 'Bad', 'url' => 'javascript:alert(1)']]]);
+        \App\Models\VerifiedAccount::create(['user_id' => $p->user_id, 'network' => 'website', 'identifier' => 'j.ir', 'method' => 'meta', 'verified_at' => now()]);
+
+        $r = $this->getJson("/api/v1/profiles/$h", $this->auth())->assertOk();
+        $this->assertSame('Founder', $r->json('data.headline'));
+        $this->assertSame('Tehran', $r->json('data.location'));
+        $this->assertSame([['label' => 'Blog', 'url' => 'https://j.ir/blog']], $r->json('data.links'));
+        $this->assertSame('website', $r->json('data.verified_accounts.0.network'));
+        $this->assertCount(1, $r->json('data.verified_accounts'));
+    }
 }

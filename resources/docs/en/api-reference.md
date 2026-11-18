@@ -26,9 +26,13 @@ curl -H "Authorization: Bearer avk_YOUR_API_KEY" \
     "profile_url": "{{origin}}/javid",
     "name_fa": "جاوید میرزایی",
     "name_en": "Javid Mirzaei",
+    "headline": "Founder at Example",
+    "location": "Tehran, Iran",
     "bio": "Full-stack engineer and founder.",
     "website": "https://javid.example.ir",
     "socials": { "github": "javid", "telegram": "javid_t" },
+    "links": [{ "label": "Blog", "url": "https://javid.example.ir/blog" }],
+    "verified_accounts": [{ "network": "website", "identifier": "javid.example.ir", "url": "https://javid.example.ir" }],
     "avatar_url": "{{origin}}/avatar/f7254a5b7d62b61c5353da4a235812f4b2171e8f16fd876a210d268da1793fd7"
   }
 }
@@ -70,12 +74,16 @@ Use this to render a list of comments or members with one call instead of many.
 | `profile_url` | string | the public profile page |
 | `name_fa` | string \| null | Persian display name |
 | `name_en` | string \| null | English display name |
+| `headline` | string \| null | short title, e.g. job or tagline |
+| `location` | string \| null | free-text location |
 | `bio` | string \| null | short biography |
 | `website` | string \| null | personal website |
 | `socials` | object | network → handle, e.g. `{"github": "javid"}`; `{}` when empty |
+| `links` | array | `[{label, url, description?, image?}]`; `[]` when empty |
+| `verified_accounts` | array | `[{network, identifier, url}]`, only accounts the user proved they own; `[]` when none |
 | `avatar_url` | string \| null | the [avatar URL](/docs/avatars), or `null` when the user hides the photo |
 
-For richer data (headline, location, links, verified accounts) use the public [JSON export](/docs/exports) of the profile page.
+`socials` holds handles here; the public [JSON export](/docs/exports) returns full URLs instead and adds `display_name`, `verified`, `created_at` and `updated_at`.
 
 ## Errors
 

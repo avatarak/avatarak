@@ -250,7 +250,7 @@ class DocsTest extends TestCase
 
         $r = $this->getJson("/api/v1/profiles/$hash", $auth)->assertOk();
         $this->assertSame('max-age=60, private', $this->cc($r));
-        $this->assertSame(['hash', 'username', 'profile_url', 'name_fa', 'name_en', 'bio', 'website', 'socials', 'avatar_url'], array_keys($r->json('data')));
+        $this->assertSame(['hash', 'username', 'profile_url', 'name_fa', 'name_en', 'headline', 'location', 'bio', 'website', 'socials', 'links', 'verified_accounts', 'avatar_url'], array_keys($r->json('data')));
         $this->assertSame(['github' => 'javid'], $r->json('data.socials'));
         $this->assertSame($hash, $r->json('data.hash'));
 
