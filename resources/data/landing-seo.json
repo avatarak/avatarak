@@ -1,0 +1,108 @@
+{
+  "fa": {
+    "title": "یک عکس، یک هویت، همه‌جا",
+    "subtitle": "ایمیل شما، گذرنامه‌ی دیجیتال شما: یک عکس، یک بیوگرافی، شبکه‌های اجتماعی و لینک‌های تأییدشده.",
+    "features": [
+      [
+        "یک بار به‌روزرسانی، همه‌جا همگام",
+        "وقتی عکس یا پروفایلتان را عوض می‌کنید، در همه‌ی سایت‌هایی که با API ما وصل‌اند همان لحظه به‌روز می‌شود. وقت کمتر، حضور یکدست‌تر."
+      ],
+      [
+        "پروفایل شما، به سبک شما",
+        "شبکه‌های اجتماعی، وب‌سایت، نمونه‌کار و لینک‌های دیگرتان را یک‌جا بگذارید. پروفایل شما مثل یک کارت ویزیت دیجیتال است: ساده، شیک و فقط خودتان. مناسب برای لینک در بیو."
+      ],
+      [
+        "حساب‌های تأییدشده",
+        "ثابت کنید صاحب وب‌سایت و حساب تلگرام خودتان هستید؛ کنارشان تیک آبی می‌نشیند و دیگران مطمئن می‌شوند که شما واقعی هستید."
+      ],
+      [
+        "چند ایمیل، یک هویت",
+        "هویت شما به ایمیلتان وصل است، نه فقط یک نام. ایمیل شخصی و کاری را به یک حساب وصل کنید، هرکدام را عمومی یا خصوصی کنید و تا ۱۰ عکس نگه دارید."
+      ],
+      [
+        "حریم خصوصی در اولویت",
+        "شما کنترل دارید: نمایش عکس، نمایش صفحه‌ی پروفایل و ایندکس‌شدن در گوگل را جدا جدا تعیین کنید. ایمیل شما هرگز در صفحه‌ی عمومی یا خروجی‌ها نمی‌آید."
+      ],
+      [
+        "برای توسعه‌دهنده‌ها",
+        "تجربه‌ی کاربرانتان را شخصی‌سازی کنید و جامعه‌تان را با پروفایل‌های تأییدشده، شامل عکس و لینک‌های اجتماعی، بسازید. اتصال ساده است: یک آدرس برای عکس و یک REST API برای اطلاعات پروفایل."
+      ]
+    ],
+    "faqTitle": "پرسیدید، پاسخ دادیم",
+    "faq": [
+      [
+        "آیا واقعاً رایگان است؟",
+        "بله. حساب کاربران و سایت‌های کوچک کاملاً رایگان است. برای کسب‌وکارهای بزرگ هم استفاده رایگان است و فقط حذف برند ما (وایت‌لیبل) پولی خواهد بود."
+      ],
+      [
+        "چه کسی می‌تواند ایمیل من را ببیند؟",
+        "هیچ‌کس. آدرس عکس شما از هش SHA-256 ایمیل ساخته می‌شود و خود ایمیل هرگز در صفحه‌ی عمومی یا API نمی‌آید. عکس هم فقط برای ایمیل‌های تأییدشده‌ای نشان داده می‌شود که عمومی کرده باشید."
+      ],
+      [
+        "می‌توانم چند ایمیل داشته باشم؟",
+        "بله. ایمیل شخصی و کاری را به یک هویت وصل کنید و برای هرکدام تعیین کنید عمومی باشد یا خصوصی."
+      ],
+      [
+        "تأیید حساب‌ها چطور کار می‌کند؟",
+        "برای وب‌سایت، یک کد را در سایتتان (تگ meta، فایل یا رکورد DNS) می‌گذارید. برای تلگرام، روی ربات ما Start می‌زنید و ما می‌فهمیم حساب واقعاً مال شماست."
+      ],
+      [
+        "کد منبع در دسترس است؟",
+        "بله، کد پروژه روی GitHub است: github.com/avatarak/avatarak."
+      ]
+    ]
+  },
+  "en": {
+    "title": "One photo, one identity, everywhere",
+    "subtitle": "Your email is your digital passport: one avatar, one bio, social connections and verified links.",
+    "features": [
+      [
+        "Update once, sync everywhere",
+        "When you change your avatar or profile, it updates instantly on every site connected through our API. Save time and keep a consistent presence."
+      ],
+      [
+        "Your profile, your way",
+        "Share your social profiles, website, portfolio and other links in one place. Your profile works like a digital business card: simple, elegant and uniquely you. Perfect for your link-in-bio."
+      ],
+      [
+        "Verified accounts",
+        "Prove you own your website and Telegram account; a blue check appears next to them so people know it is really you."
+      ],
+      [
+        "Several emails, one identity",
+        "Your identity is tied to your email, not just a name. Link your personal and work addresses to one account, make each public or private, and keep up to 10 photos."
+      ],
+      [
+        "Privacy first",
+        "You are in control: choose separately whether your photo, your profile page and search-engine indexing are visible. Your email is never shown on the public page or in exports."
+      ],
+      [
+        "For developers",
+        "Customize your users' experience and bootstrap your community with verified profiles, including avatars and social links. Integration is simple: one URL for the image and a REST API for profile data."
+      ]
+    ],
+    "faqTitle": "You asked, we answered",
+    "faq": [
+      [
+        "Is it really free?",
+        "Yes. Accounts for people and small sites are completely free. Large businesses can use it free too; only removing our branding (white-label) will be paid."
+      ],
+      [
+        "Who can see my email?",
+        "No one. Your avatar URL is built from a SHA-256 hash of your email and the email itself never appears on the public page or in the API. The photo is only served for verified emails you made public."
+      ],
+      [
+        "Can I have several emails?",
+        "Yes. Link your personal and work addresses to one identity and choose, per address, whether it is public or private."
+      ],
+      [
+        "How does account verification work?",
+        "For a website you publish a code on your site (meta tag, file or DNS record). For Telegram you press Start on our bot and we confirm the account is really yours."
+      ],
+      [
+        "Is the source code available?",
+        "Yes, the project is on GitHub: github.com/avatarak/avatarak."
+      ]
+    ]
+  }
+}

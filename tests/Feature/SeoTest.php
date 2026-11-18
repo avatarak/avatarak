@@ -134,4 +134,47 @@ class SeoTest extends TestCase
         }
         $this->assertStringNotContainsString('/panel', $xml);
     }
+
+    public function test_home_page_is_readable_without_javascript_and_has_site_schemas(): void
+    {
+        foreach (['fa', 'en'] as $l) {
+            $r = $this->withUnencryptedCookie('locale', $l)->get('/')->assertOk();
+            $h = $r->getContent();
+            $this->assertStringContainsString('<link rel="canonical" href="'.url('/').'">', $h);
+            $this->assertStringContainsString('property="og:image" content="'.url('/brand/og-default.jpg').'"', $h);
+            $this->assertStringContainsString('summary_large_image', $h);
+            $this->assertStringNotContainsString('noindex', $h);
+            $this->assertMatchesRegularExpression('#<h1>[^<]+</h1>#', $h);
+            $types = collect($this->ld($h)['@graph'])->pluck('@type')->all();
+            $this->assertSame(['WebSite', 'Organization', 'SoftwareApplication', 'FAQPage'], $types);
+        }
+        // the structured FAQ is exactly the FAQ the page shows
+        $faq = collect($this->ld($this->withUnencryptedCookie('locale', 'en')->get('/')->getContent())['@graph'])->firstWhere('@type', 'FAQPage');
+        $this->assertCount(5, $faq['mainEntity']);
+        $this->assertSame('Is it really free?', $faq['mainEntity'][0]['name']);
+        $this->withUnencryptedCookie('locale', 'fa')->get('/')->assertSee('lang="fa"', false)->assertSee('مستندات');
+    }
+
+    public function test_dashboard_and_admin_shells_are_not_indexable(): void
+    {
+        foreach (['/panel', '/admin'] as $p) {
+            $h = $this->get($p)->assertOk()->getContent();
+            $this->assertStringContainsString('noindex, nofollow', $h);
+            $this->assertStringNotContainsString('application/ld+json', $h);
+            $this->assertStringNotContainsString('rel="canonical"', $h);
+        }
+    }
+
+    public function test_landing_seo_data_matches_the_page_copy(): void
+    {
+        // resources/data/landing-seo.json is generated from copy-data.js (npm run build); catch a forgotten regeneration
+        $json = json_decode(file_get_contents(resource_path('data/landing-seo.json')), true);
+        $src = file_get_contents(resource_path('js/components/landing/copy-data.js'));
+        foreach (['fa', 'en'] as $l) {
+            foreach ($json[$l]['faq'] as [$q, $a]) {
+                $this->assertStringContainsString(addcslashes($q, "'"), $src, "stale FAQ question in landing-seo.json ($l); run npm run build");
+            }
+            $this->assertStringContainsString($json[$l]['title'], $src);
+        }
+    }
 }
