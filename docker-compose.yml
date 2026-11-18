@@ -3,11 +3,6 @@
 # 2) docker compose up -d --build
 # TLS: put Caddy, Traefik, a load balancer or Cloudflare in front of the "web" service (port 8080 by default).
 x-app: &app
-  build:
-    context: .
-    target: app
-    args:
-      IMAGE_REGISTRY: ${IMAGE_REGISTRY:-docker.io/library}
   image: avatarak/app:latest
   env_file: .env
   restart: unless-stopped
@@ -20,6 +15,11 @@ x-app: &app
 services:
   app:
     <<: *app
+    build:
+      context: .
+      target: app
+      args:
+        IMAGE_REGISTRY: ${IMAGE_REGISTRY:-docker.io/library}
     command: ["php-fpm"]
 
   web:
