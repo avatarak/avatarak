@@ -91,6 +91,12 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::post('domains', [\App\Http\Controllers\DomainController::class, 'store'])->middleware('throttle:10,1');
     Route::post('domains/{id}/check', [\App\Http\Controllers\DomainController::class, 'check'])->middleware('throttle:20,1');
     Route::delete('domains/{id}', [\App\Http\Controllers\DomainController::class, 'destroy']);
+    Route::get('webhooks', [\App\Http\Controllers\WebhookController::class, 'index']);
+    Route::post('webhooks', [\App\Http\Controllers\WebhookController::class, 'store'])->middleware('throttle:10,1');
+    Route::patch('webhooks/{id}', [\App\Http\Controllers\WebhookController::class, 'update']);
+    Route::post('webhooks/{id}/secret', [\App\Http\Controllers\WebhookController::class, 'rotate'])->middleware('throttle:10,1');
+    Route::post('webhooks/{id}/ping', [\App\Http\Controllers\WebhookController::class, 'ping'])->middleware('throttle:10,1');
+    Route::delete('webhooks/{id}', [\App\Http\Controllers\WebhookController::class, 'destroy']);
     Route::get('stats', [\App\Http\Controllers\StatsController::class, 'show']);
     Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');
 

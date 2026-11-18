@@ -42,3 +42,5 @@ export class Avatarak {
     profile(emailOrHash: string): Promise<Profile | null>;
     lookup(emailsOrHashes: Iterable<string>): Promise<Record<string, Profile | null>>;
 }
+
+export function verifyWebhook(rawBody: string, signatureHeader: string | null | undefined, secret: string, options?: { tolerance?: number; now?: number }): Promise<boolean>;

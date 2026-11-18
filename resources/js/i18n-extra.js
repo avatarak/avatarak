@@ -34,6 +34,11 @@ export default {
         plDomain: 'دامنه‌ی اختصاصی', plWhite: 'حذف برند (وایت‌لیبل)', plUsage: 'سایت‌های شما', plToman: 'تومان', plHistory: 'سوابق پرداخت', plNoPayments: 'هنوز پرداختی ندارید.', plRef: 'پیگیری', plPaid: 'پرداخت‌شده', plFailed: 'ناموفق', plPending: 'در انتظار',
         plRedirect: 'در حال رفتن به درگاه پرداخت…', plOk: 'پرداخت موفق بود؛ پلن شما فعال شد ✓', plFail: 'پرداخت انجام نشد. اگر مبلغی کم شده، تا چند دقیقه به حسابتان برمی‌گردد.', plManual: 'فعال‌سازی توسط پشتیبانی', plPayment: 'پرداخت آنلاین', plSource: 'نوع',
         prTitle: 'قیمت‌ها', prSub: 'رایگان شروع کنید. وقتی بزرگ شدید، ارتقا دهید.',
+        // webhooks & key scopes
+        whTitle: 'وب‌هوک‌ها', whHelp: 'وقتی پروفایل‌تان تغییر کند، یک درخواست امضاشده به آدرس شما فرستاده می‌شود.', whUrl: 'آدرس (https)', whAdd: 'افزودن وب‌هوک', whNeedPlan: 'وب‌هوک در پلن حرفه‌ای و بالاتر است.', whEvents: 'رویدادها', whSecretOnce: 'این رمز امضا فقط همین یک بار نشان داده می‌شود. آن را همین حالا ذخیره کنید:',
+        whPing: 'ارسال آزمایشی', whPinged: 'درخواست آزمایشی در صف قرار گرفت', whRotate: 'رمز جدید', whOn: 'فعال', whOff: 'غیرفعال', whAutoOff: 'به‌خاطر شکست‌های پیاپی خودکار خاموش شد', whLast: 'آخرین ارسال', whDeliveries: 'ارسال‌های اخیر',
+        ev_profile_updated: 'پروفایل تغییر کرد', ev_avatar_changed: 'آواتار تغییر کرد', ev_verification_added: 'حساب تأییدشده اضافه شد', ev_verification_removed: 'حساب تأییدشده حذف شد',
+        scopesLabel: 'دسترسی‌های این کلید', sc_profiles_read: 'خواندن یک پروفایل', sc_profiles_lookup: 'جست‌وجوی گروهی', explorerLink: 'آزمایش API در مرورگر',
         // custom domain
         nav_domain: 'دامنه‌ی اختصاصی', d_domain: 'پروفایل‌تان را روی دامنه‌ی خودتان نشان بدهید.', dmHost: 'دامنه‌ی شما', dmAdd: 'افزودن دامنه', dmNeedPlan: 'دامنه‌ی اختصاصی در پلن حرفه‌ای و بالاتر است.', dmUpgrade: 'دیدن پلن‌ها',
         dmStep1: '۱. این رکورد TXT را روی دامنه‌تان بسازید تا ثابت شود مال شماست:', dmStep2: '۲. دامنه را به سرور ما وصل کنید (رکورد CNAME):', dmCheck: 'بررسی', dmChecking: 'در حال بررسی…', dmVerified: 'تأییدشده', dmPending: 'در انتظار تأیید',
@@ -69,6 +74,11 @@ export default {
         plDomain: 'Custom domain', plWhite: 'No branding (white-label)', plUsage: 'Your sites', plToman: 'Toman', plHistory: 'Payment history', plNoPayments: 'No payments yet.', plRef: 'Reference', plPaid: 'Paid', plFailed: 'Failed', plPending: 'Pending',
         plRedirect: 'Taking you to the payment page…', plOk: 'Payment received; your plan is active ✓', plFail: 'The payment did not go through. If money was taken it returns to your account within minutes.', plManual: 'Activated by support', plPayment: 'Online payment', plSource: 'Type',
         prTitle: 'Pricing', prSub: 'Start free. Upgrade when you grow.',
+        // webhooks & key scopes
+        whTitle: 'Webhooks', whHelp: 'When your profile changes we send a signed request to your address.', whUrl: 'Address (https)', whAdd: 'Add webhook', whNeedPlan: 'Webhooks come with the Pro plan and above.', whEvents: 'Events', whSecretOnce: 'This signing secret is shown only once. Save it now:',
+        whPing: 'Send a test', whPinged: 'Test request queued', whRotate: 'New secret', whOn: 'On', whOff: 'Off', whAutoOff: 'Switched off automatically after repeated failures', whLast: 'Last delivery', whDeliveries: 'Recent deliveries',
+        ev_profile_updated: 'Profile changed', ev_avatar_changed: 'Avatar changed', ev_verification_added: 'Verified account added', ev_verification_removed: 'Verified account removed',
+        scopesLabel: 'What this key may do', sc_profiles_read: 'Read one profile', sc_profiles_lookup: 'Bulk lookup', explorerLink: 'Try the API in your browser',
         nav_domain: 'Custom domain', d_domain: 'Show your profile on your own domain.', dmHost: 'Your domain', dmAdd: 'Add domain', dmNeedPlan: 'Custom domains come with the Pro plan and above.', dmUpgrade: 'See plans',
         dmStep1: '1. Create this TXT record on your domain to prove it is yours:', dmStep2: '2. Point the domain at our server (a CNAME record):', dmCheck: 'Check', dmChecking: 'Checking…', dmVerified: 'Verified', dmPending: 'Waiting for verification',
         dmPointed: 'The domain points at our server', dmNotPointed: 'The CNAME record has not been seen yet. DNS changes can take a few hours.', dmNotFound: 'The TXT record is not visible yet. Wait a few minutes and check again.', dmLive: 'Your profile is shown on this domain.', dmRemove: 'Remove domain', dmType: 'Type', dmName: 'Name', dmValue: 'Value',

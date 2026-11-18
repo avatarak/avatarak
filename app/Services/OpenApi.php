@@ -74,6 +74,12 @@ class OpenApi
                     'responses' => ['200' => ['description' => 'The profile.', 'content' => ['application/json' => ['schema' => ['$ref' => '#/components/schemas/PublicProfile']]]], '404' => ['description' => 'No such public profile.']],
                 ]],
             ],
+            'webhooks' => collect(\App\Models\Webhook::EVENTS)->mapWithKeys(fn ($e) => [$e => ['post' => [
+                'summary' => "Delivered when: {$e}",
+                'description' => 'Signed with `Avatarak-Signature: t=<unix>,v1=<HMAC-SHA256(secret, "<t>.<raw body>")>`. Answer 2xx within 8 seconds; failures are retried.',
+                'requestBody' => ['required' => true, 'content' => ['application/json' => ['schema' => ['$ref' => '#/components/schemas/WebhookEvent']]]],
+                'responses' => ['200' => ['description' => 'Acknowledged']],
+            ]]])->all(),
             'components' => [
                 'securitySchemes' => [
                     'bearerAuth' => ['type' => 'http', 'scheme' => 'bearer', 'bearerFormat' => 'avk_…', 'description' => 'Your API key: `Authorization: Bearer avk_…`'],
@@ -84,6 +90,14 @@ class OpenApi
                     'VerifiedAccount' => ['type' => 'object', 'required' => ['network', 'identifier', 'url'], 'properties' => [
                         'network' => ['type' => 'string', 'enum' => ['website', 'github', 'linkedin', 'telegram']], 'identifier' => ['type' => 'string'],
                         'url' => ['type' => ['string', 'null'], 'description' => 'null for LinkedIn, which has no public address.'],
+                    ]],
+                    'WebhookEvent' => ['type' => 'object', 'required' => ['id', 'type', 'created_at', 'data'], 'properties' => [
+                        'id' => ['type' => 'string', 'format' => 'uuid'], 'type' => ['type' => 'string', 'enum' => [...\App\Models\Webhook::EVENTS, 'ping']], 'created_at' => ['type' => 'string', 'format' => 'date-time'],
+                        'data' => ['type' => 'object', 'properties' => [
+                            'username' => ['type' => ['string', 'null']], 'profile_url' => ['type' => ['string', 'null'], 'format' => 'uri'],
+                            'email_hashes' => ['type' => 'array', 'items' => ['type' => 'string']], 'changed' => ['type' => 'array', 'items' => ['type' => 'string']],
+                            'network' => ['type' => 'string'], 'identifier' => ['type' => 'string'],
+                        ]],
                     ]],
                     'Link' => ['type' => 'object', 'required' => ['label', 'url'], 'properties' => ['label' => ['type' => 'string'], 'url' => ['type' => 'string', 'format' => 'uri'], 'description' => ['type' => 'string'], 'image' => ['type' => 'string', 'format' => 'uri']]],
                     'Profile' => ['type' => 'object', 'required' => self::PROFILE_FIELDS, 'properties' => [

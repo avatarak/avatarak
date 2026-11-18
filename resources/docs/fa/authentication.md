@@ -40,6 +40,10 @@ curl_setopt_array($ch, [
 $profile = json_decode(curl_exec($ch), true)['data'] ?? null;
 ```
 
+## دسترسی‌های کلید (scope)
+
+هنگام ساخت کلید انتخاب می‌کنید چه کاری بتواند بکند: `profiles:read` (یک پروفایل با هش) و `profiles:lookup` (تا ۱۰۰ مورد یک‌جا). درخواست خارج از scope کلید `403` می‌گیرد. کلیدهای قدیمی (قبل از scope) دسترسی کامل را نگه می‌دارند. همه‌ی endpointها را می‌توانید در مرورگر در [/docs/api-explorer](/docs/api-explorer) امتحان کنید؛ توضیح ماشین‌خوان در [/docs/openapi.json](/docs/openapi.json) است.
+
 ## آدرس پایه
 
 ```text

@@ -3,9 +3,13 @@ import { ref, reactive, onMounted } from 'vue';
 import { api, ApiError } from '../../api';
 import { copyText } from '../../composables';
 import { t } from '../../i18n';
+import WebhooksSection from './WebhooksSection.vue';
 
+defineEmits(['goto']);
 const sites = ref([]);
-const form = reactive({ name: '', domain: '' });
+const SCOPES = ['profiles:read', 'profiles:lookup'];
+const form = reactive({ name: '', domain: '', scopes: [...SCOPES] });
+const scKey = (s) => 'sc_' + s.replace(':', '_');
 const newKey = ref('');
 const error = ref('');
 const origin = window.location.origin;
@@ -18,7 +22,7 @@ async function create() {
     try {
         const s = await api('POST', '/account/sites', form);
         newKey.value = s.api_key;
-        form.name = form.domain = '';
+        form.name = form.domain = ''; form.scopes = [...SCOPES];
         await load();
     } catch (e) {
         if (!(e instanceof ApiError)) throw e;
@@ -35,11 +39,16 @@ const fmt = (d) => (d ? new Date(d).toLocaleString() : t('never'));
 
 <template>
     <div>
-        <a href="/docs" target="_blank" rel="noopener" class="btn btn-ghost mb-5 w-full">{{ t('docsLink') }} <Icon name="external" :size="16" /></a>
+        <a href="/docs" target="_blank" rel="noopener" class="btn btn-ghost mb-2 w-full">{{ t('docsLink') }} <Icon name="external" :size="16" /></a>
+        <a href="/docs/api-explorer" target="_blank" rel="noopener" class="btn btn-ghost mb-5 w-full">{{ t('explorerLink') }} <Icon name="external" :size="16" /></a>
         <form class="grid gap-2" @submit.prevent="create">
             <input v-model="form.name" class="field" :placeholder="t('siteName')" :aria-label="t('siteName')" required>
             <input v-model="form.domain" dir="ltr" class="field" :placeholder="t('siteDomain')" :aria-label="t('siteDomain')" required>
-            <button class="btn btn-primary">{{ t('createKey') }}</button>
+            <fieldset class="grid gap-1 text-sm">
+                <legend class="label">{{ t('scopesLabel') }}</legend>
+                <label v-for="s in SCOPES" :key="s" class="flex items-center gap-2"><input v-model="form.scopes" type="checkbox" :value="s"> {{ t(scKey(s)) }} <code dir="ltr" class="text-xs text-muted">{{ s }}</code></label>
+            </fieldset>
+            <button class="btn btn-primary" :disabled="!form.scopes.length">{{ t('createKey') }}</button>
         </form>
         <p v-if="error" class="mt-2 text-sm text-red-600" role="alert">{{ error }}</p>
 
@@ -57,6 +66,7 @@ const fmt = (d) => (d ? new Date(d).toLocaleString() : t('never'));
                 <div class="min-w-0">
                     <div class="font-medium">{{ s.name }} <span dir="ltr" class="text-muted">· {{ s.domain }}</span></div>
                     <div class="hint mt-0.5"><span dir="ltr">{{ s.api_key_prefix }}…</span> · {{ t('lastUsed') }}: {{ fmt(s.last_used_at) }}</div>
+                    <div class="hint mt-0.5" dir="ltr">{{ (s.scopes || []).join(' · ') }}</div>
                 </div>
                 <button class="btn btn-danger !min-h-0 !px-3 !py-1 text-sm" @click="remove(s)">{{ t('delete') }}</button>
             </li>
@@ -65,5 +75,7 @@ const fmt = (d) => (d ? new Date(d).toLocaleString() : t('never'));
         <h3 class="mt-9 text-lg font-bold">{{ t('example') }}</h3>
         <pre dir="ltr" class="mt-2 overflow-x-auto rounded-[8px] bg-soft p-4 text-start text-xs leading-6">curl -H "Authorization: Bearer avk_…" \
   {{ origin }}/api/v1/profiles/&lt;sha256-of-email&gt;</pre>
+
+        <WebhooksSection @goto="(s) => $emit('goto', s)" />
     </div>
 </template>

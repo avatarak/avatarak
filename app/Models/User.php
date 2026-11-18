@@ -83,6 +83,11 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class);
     }
 
+    public function webhooks(): HasMany
+    {
+        return $this->hasMany(Webhook::class);
+    }
+
     public function sites(): HasMany
     {
         return $this->hasMany(Site::class);

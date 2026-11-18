@@ -37,6 +37,19 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(Login::class, fn (Login $e) => $e->user->forceFill(['last_login_at' => now()])->saveQuietly());
 
+        // Tell the owner's webhooks about changes, whichever code path made them.
+        $hooks = fn () => app(\App\Services\Webhooks::class);
+        \App\Models\Profile::updated(function (\App\Models\Profile $p) use ($hooks) {
+            $changed = array_values(array_diff(array_keys($p->getChanges()), ['updated_at']));
+            if ($changed && $p->user) {
+                $hooks()->dispatch($p->user, 'profile.updated', ['changed' => $changed]);
+            }
+        });
+        \App\Models\Avatar::created(fn ($a) => $a->user && $hooks()->dispatch($a->user, 'avatar.changed'));
+        \App\Models\Avatar::deleted(fn ($a) => $a->user && $hooks()->dispatch($a->user, 'avatar.changed'));
+        \App\Models\VerifiedAccount::created(fn ($v) => $v->user && $hooks()->dispatch($v->user, 'verification.added', ['network' => $v->network, 'identifier' => $v->identifier]));
+        \App\Models\VerifiedAccount::deleted(fn ($v) => $v->user && $hooks()->dispatch($v->user, 'verification.removed', ['network' => $v->network, 'identifier' => $v->identifier]));
+
         RateLimiter::for('avatar', fn (Request $r) => Limit::perMinute(600)->by($r->ip()));
     }
 }

@@ -122,3 +122,19 @@ export class Avatarak {
         throw new ApiError(message, res.status, body);
     }
 }
+
+/**
+ * Verify a webhook delivery. `rawBody` must be the exact text received (not re-serialised JSON).
+ * Works in Node 18+, browsers, Deno and Bun.
+ */
+export async function verifyWebhook(rawBody, signatureHeader, secret, { tolerance = 300, now = Math.floor(Date.now() / 1000) } = {}) {
+    const m = /^t=(\d+),v1=([a-f0-9]{64})$/.exec(signatureHeader || '');
+    if (!m || Math.abs(now - Number(m[1])) > tolerance) return false;
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, enc.encode(`${m[1]}.${rawBody}`)));
+    const expected = Array.from(sig, (b) => b.toString(16).padStart(2, '0')).join('');
+    let diff = expected.length ^ m[2].length;                 // constant-time compare
+    for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ (m[2].charCodeAt(i) || 0);
+    return diff === 0;
+}

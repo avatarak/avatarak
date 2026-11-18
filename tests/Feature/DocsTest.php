@@ -109,6 +109,9 @@ class DocsTest extends TestCase
             foreach ($pages as $slug => $html) {
                 preg_match_all('#href="(/docs/([a-z0-9-]+))(?:\#([^"]+))?"#u', $html, $m, PREG_SET_ORDER);
                 foreach ($m as $x) {
+                    if ($x[2] === 'api-explorer') {
+                        continue;       // a tool page, not Markdown
+                    }
                     $this->assertArrayHasKey($x[2], $pages, "$l/$slug links to unknown page {$x[1]}");
                     if (! empty($x[3])) {
                         $this->assertStringContainsString('id="'.urldecode($x[3]).'"', $pages[$x[2]], "$l/$slug links to a missing anchor #{$x[3]} on {$x[2]}");

@@ -40,6 +40,10 @@ curl_setopt_array($ch, [
 $profile = json_decode(curl_exec($ch), true)['data'] ?? null;
 ```
 
+## Key scopes
+
+When you create a key you choose what it may do: `profiles:read` (one profile by hash) and `profiles:lookup` (up to 100 at once). A request outside a key's scopes gets `403`. Keys made before scopes existed keep full access. You can try every endpoint in your browser at [/docs/api-explorer](/docs/api-explorer); the machine-readable description is at [/docs/openapi.json](/docs/openapi.json).
+
 ## Base URL
 
 ```text

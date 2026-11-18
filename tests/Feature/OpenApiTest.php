@@ -165,4 +165,15 @@ class OpenApiTest extends TestCase
         $this->postJson('/account/sites', ['name' => 'C', 'domain' => 'c.example.ir', 'scopes' => []])->assertStatus(422);
         $this->getJson('/account/sites')->assertOk()->assertJsonPath('0.scopes', Site::SCOPES);
     }
+
+    public function test_webhook_events_are_documented(): void
+    {
+        $spec = $this->getJson('/docs/openapi.json')->assertOk()->json();
+        foreach (\App\Models\Webhook::EVENTS as $e) {
+            $this->assertArrayHasKey($e, $spec['webhooks']);
+        }
+        $this->assertArrayHasKey('WebhookEvent', $spec['components']['schemas']);
+        $this->get('/docs/webhooks?lang=en')->assertOk()->assertSee('Avatarak-Signature');
+        $this->get('/docs/webhooks?lang=fa')->assertOk()->assertSee('Avatarak-Signature');
+    }
 }
