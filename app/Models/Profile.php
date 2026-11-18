@@ -26,6 +26,12 @@ class Profile extends Model
         ];
     }
 
+    /** Publicly visible: switched on by the owner AND the account is not suspended. */
+    public function scopeVisible($query)
+    {
+        return $query->where('show_profile', true)->whereHas('user', fn ($q) => $q->whereNull('suspended_at'));
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

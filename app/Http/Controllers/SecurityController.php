@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\UserDeletion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -26,6 +27,26 @@ class SecurityController extends Controller
         }
 
         $request->user()->update(['password' => $data['password']]);
+
+        return response()->json(['message' => 'ok']);
+    }
+
+    /** Delete your own account and everything attached to it. Needs the password (or a fresh email-code sign-in). */
+    public function destroy(Request $request, UserDeletion $deletion): JsonResponse
+    {
+        $data = $request->validate(['password' => ['nullable', 'string']]);
+        $user = $request->user();
+
+        $recent = now()->timestamp - (int) $request->session()->get('reauth_at', 0) < self::REAUTH_MINUTES * 60;
+        if (! $recent && ! Hash::check((string) ($data['password'] ?? ''), $user->password)) {
+            throw ValidationException::withMessages(['password' => [__('app.wrong_current_password')]]);
+        }
+        abort_if($user->is_admin, 422, __('app.cannot_admin'));
+
+        \Illuminate\Support\Facades\Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        $deletion->delete($user);
 
         return response()->json(['message' => 'ok']);
     }

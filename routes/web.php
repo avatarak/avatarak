@@ -44,6 +44,7 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::get('verifications/github/callback', [\App\Http\Controllers\VerificationController::class, 'githubCallback'])->middleware('throttle:20,1')->name('verify.github.callback');
     Route::delete('verifications/{id}', [\App\Http\Controllers\VerificationController::class, 'destroy']);
 
+    Route::delete('/', [\App\Http\Controllers\SecurityController::class, 'destroy'])->middleware('throttle:5,1');
     Route::get('stats', [\App\Http\Controllers\StatsController::class, 'show']);
     Route::patch('password', [\App\Http\Controllers\SecurityController::class, 'password'])->middleware('throttle:10,1');
 
@@ -56,6 +57,35 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::post('emails/{id}/primary', [EmailController::class, 'makePrimary']);
     Route::post('emails/{id}/resend', [EmailController::class, 'resend'])->middleware('throttle:5,1');
     Route::delete('emails/{id}', [EmailController::class, 'destroy']);
+});
+
+// Administration: the UI is part of the same single-page app, the data comes from /admin/api (admins only).
+Route::view('/admin', 'app');
+Route::prefix('admin/api')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('overview', [\App\Http\Controllers\Admin\OverviewController::class, 'show']);
+
+    Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index']);
+    Route::get('users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->whereNumber('id');
+    Route::post('users/{id}/suspend', [\App\Http\Controllers\Admin\UserController::class, 'suspend'])->whereNumber('id');
+    Route::post('users/{id}/unsuspend', [\App\Http\Controllers\Admin\UserController::class, 'unsuspend'])->whereNumber('id');
+    Route::post('users/{id}/admin', [\App\Http\Controllers\Admin\UserController::class, 'admin'])->whereNumber('id');
+    Route::post('users/{id}/rename', [\App\Http\Controllers\Admin\UserController::class, 'rename'])->whereNumber('id');
+    Route::post('users/{id}/avatar/remove', [\App\Http\Controllers\Admin\UserController::class, 'removeAvatar'])->whereNumber('id');
+    Route::post('users/{id}/profile/clear', [\App\Http\Controllers\Admin\UserController::class, 'clearProfile'])->whereNumber('id');
+    Route::delete('users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->whereNumber('id');
+
+    Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index']);
+    Route::post('reports/{id}/resolve', [\App\Http\Controllers\Admin\ReportController::class, 'resolve'])->whereNumber('id');
+    Route::post('reports/{id}/reopen', [\App\Http\Controllers\Admin\ReportController::class, 'reopen'])->whereNumber('id');
+
+    Route::get('sites', [\App\Http\Controllers\Admin\SiteController::class, 'index']);
+    Route::patch('sites/{id}', [\App\Http\Controllers\Admin\SiteController::class, 'update'])->whereNumber('id');
+    Route::delete('sites/{id}', [\App\Http\Controllers\Admin\SiteController::class, 'destroy'])->whereNumber('id');
+
+    Route::get('verified', [\App\Http\Controllers\Admin\VerifiedController::class, 'index']);
+    Route::delete('verified/{id}', [\App\Http\Controllers\Admin\VerifiedController::class, 'destroy'])->whereNumber('id');
+
+    Route::get('audit', [\App\Http\Controllers\Admin\AuditController::class, 'index']);
 });
 
 // Documentation (Markdown in resources/docs); must come before the /{username} catch-all.
@@ -85,6 +115,8 @@ Route::get('/{username}.{format}', [\App\Http\Controllers\ProfileExportControlle
 // shadow another route; usernames that collide with routes are reserved (App\Rules\Username).
 Route::get('/{username}', [PublicProfileController::class, 'show'])
     ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->name('profile.show');
+Route::post('/{username}/report', [\App\Http\Controllers\ReportController::class, 'store'])
+    ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:6,1')->name('profile.report');
 Route::get('/{username}/print', [\App\Http\Controllers\ProfileExportController::class, 'printCard'])
     ->where('username', '[A-Za-z][A-Za-z0-9_]{2,31}')->middleware('throttle:60,1')->name('profile.print');
 Route::get('/{username}/share.svg', [\App\Http\Controllers\ProfileExportController::class, 'shareImage'])

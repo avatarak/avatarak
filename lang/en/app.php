@@ -41,4 +41,9 @@ return [
     'verify_err_github_rate_limited' => 'GitHub is rate-limiting us for now. Try again in a few minutes.',
     'verify_err_github_unavailable' => 'Could not reach GitHub. Try again shortly.',
     'verify_err_github_oauth_failed' => 'Sign in with GitHub failed.',
+    'report_thanks' => 'Thank you. Your report was received and will be reviewed.',
+    'wrong_confirmation' => 'The confirmation does not match.',
+    'cannot_self' => 'You cannot do this to your own account.',
+    'cannot_admin' => 'Remove this user\'s admin access first.',
+    'delete_account_confirm' => 'Enter your password to delete your account.',
 ];

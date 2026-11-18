@@ -15,7 +15,7 @@ class ProfileExportController extends Controller
 {
     public function show(Request $request, ProfileExport $export, QrService $qr, string $username, string $format): Response
     {
-        $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
+        $profile = Profile::visible()->where('username', strtolower($username))->firstOrFail();
 
         if (auth()->id() !== $profile->user_id) {
             StatsRecorder::record($profile->user_id, 'export', $request);
@@ -74,7 +74,7 @@ class ProfileExportController extends Controller
     /** /{username}/print — a business card (85x55 mm) and a ready-to-print A4 sheet of ten. */
     public function printCard(Request $request, ProfileExport $export, QrService $qr, string $username): Response
     {
-        $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
+        $profile = Profile::visible()->where('username', strtolower($username))->firstOrFail();
 
         return response()->view('cards.print', [
             'p' => $profile, 'name' => $export->display($profile), 'url' => route('profile.show', $profile->username),
@@ -87,7 +87,7 @@ class ProfileExportController extends Controller
     /** /{username}/share.svg — a 1080x1350 shareable card (post or story) with the QR code. */
     public function shareImage(Request $request, ProfileExport $export, QrService $qr, AvatarService $avatars, string $username): Response
     {
-        $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
+        $profile = Profile::visible()->where('username', strtolower($username))->firstOrFail();
         $esc = fn (?string $s) => htmlspecialchars((string) $s, ENT_XML1 | ENT_QUOTES, 'UTF-8');
         $accent = $this->accent($profile);
         $name = $export->display($profile);

@@ -10,14 +10,14 @@ class Site extends Model
 {
     protected $fillable = [
         'user_id', 'name', 'domain', 'api_key_hash', 'api_key_prefix',
-        'plan', 'white_label', 'rate_limit_per_minute', 'last_used_at',
+        'plan', 'white_label', 'rate_limit_per_minute', 'last_used_at', 'disabled_at',
     ];
 
     protected $hidden = ['api_key_hash'];
 
     protected function casts(): array
     {
-        return ['white_label' => 'boolean', 'last_used_at' => 'datetime'];
+        return ['white_label' => 'boolean', 'last_used_at' => 'datetime', 'disabled_at' => 'datetime'];
     }
 
     /** Create a site; returns [Site, plainKey]. Plain key is never stored. */
@@ -35,6 +35,11 @@ class Site extends Model
     public static function findByKey(string $plain): ?self
     {
         return static::where('api_key_hash', hash('sha256', $plain))->first();
+    }
+
+    public function isDisabled(): bool
+    {
+        return $this->disabled_at !== null || $this->user?->isSuspended() === true;
     }
 
     public function user(): BelongsTo

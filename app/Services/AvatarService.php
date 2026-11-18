@@ -40,7 +40,7 @@ class AvatarService
             ->where('is_public', true)
             ->first();
 
-        $profile = $email?->user?->profile;
+        $profile = $email?->user?->isSuspended() ? null : $email?->user?->profile;
 
         return $profile ? $this->renderProfile($profile, $size, $format) : null;
     }

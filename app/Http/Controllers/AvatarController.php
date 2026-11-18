@@ -24,7 +24,7 @@ class AvatarController extends Controller
     public function profile(Request $request, AvatarService $avatars, string $username): Response
     {
         [$size, $format] = $this->params($request, $avatars);
-        $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->first();
+        $profile = Profile::visible()->where('username', strtolower($username))->first();
 
         return $this->respond($request, $avatars, $profile ? $avatars->renderProfile($profile, $size, $format) : null, $size, null, $profile, strtolower($username));
     }

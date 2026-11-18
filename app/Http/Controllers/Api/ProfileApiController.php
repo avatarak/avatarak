@@ -69,7 +69,7 @@ class ProfileApiController extends Controller
         $out = [];
         foreach ($emails as $e) {
             $profile = $e->user?->profile;
-            if ($profile && $profile->show_profile) {
+            if ($profile && $profile->show_profile && ! $e->user->isSuspended()) {
                 $out[$e->email_hash] = $profile;
             }
         }

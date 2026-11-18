@@ -25,7 +25,7 @@ class PublicProfileController extends Controller
 
     public function show(Request $request, ProfileExport $export, string $username): Response
     {
-        $profile = Profile::where('username', strtolower($username))->where('show_profile', true)->firstOrFail();
+        $profile = Profile::visible()->where('username', strtolower($username))->firstOrFail();
 
         // the owner looking at their own page is not a view
         if (auth()->id() !== $profile->user_id) {

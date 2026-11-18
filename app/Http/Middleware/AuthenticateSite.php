@@ -20,7 +20,8 @@ class AuthenticateSite
         $key = $request->bearerToken() ?: $request->header('X-API-Key');
         $site = is_string($key) && $key !== '' ? Site::findByKey($key) : null;
 
-        if (! $site) {
+        // a key that an administrator disabled (or whose owner is suspended) looks like any other bad key
+        if (! $site || $site->isDisabled()) {
             return response()->json(['message' => 'Invalid or missing API key.'], 401, ['WWW-Authenticate' => 'Bearer']);
         }
 
