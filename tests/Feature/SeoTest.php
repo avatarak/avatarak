@@ -283,4 +283,19 @@ class SeoTest extends TestCase
             $backup === null ? @unlink($file) : file_put_contents($file, $backup);
         }
     }
+
+    public function test_the_prerendered_page_is_not_used_while_the_vite_dev_server_is_running(): void
+    {
+        $file = resource_path('data/landing-prerender-fa.html');
+        $backup = is_file($file) ? file_get_contents($file) : null;
+        $hot = public_path('hot');
+        try {
+            file_put_contents($file, '<div class="x"><h1>سلام</h1></div>');
+            file_put_contents($hot, 'http://localhost:5173');
+            $this->assertStringNotContainsString('data-prerendered', $this->get('/')->getContent());
+        } finally {
+            @unlink($hot);
+            $backup === null ? @unlink($file) : file_put_contents($file, $backup);
+        }
+    }
 }

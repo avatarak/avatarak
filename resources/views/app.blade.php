@@ -32,9 +32,10 @@
         ]))];
     }
     // The home page is pre-rendered at build time (npm run build): paint it straight from the HTML, then hydrate.
-    // A custom logo changes the markup, so such installs keep the plain (crawler-only) text below.
+    // A custom logo changes the markup, so such installs keep the plain (crawler-only) text below. Never with the Vite dev server
+    // running (npm run dev): the components change under your feet there, and a build made earlier would not match them.
     $prerender = null;
-    if ($landing && ! config('brand.logo_url') && is_file($pf = resource_path("data/landing-prerender-{$seoLoc}.html"))) {
+    if ($landing && ! config('brand.logo_url') && ! is_file(public_path('hot')) && is_file($pf = resource_path("data/landing-prerender-{$seoLoc}.html"))) {
         $tokens = ['@@BRAND_NAME@@' => $brandJs['name'], '@@BRAND_NAME_EN@@' => $brandJs['name_en'] ?: $brandJs['name'], '@@TAGLINE@@' => $brandJs['tagline'], '@@TAGLINE_EN@@' => $brandJs['tagline_en'] ?: $brandJs['tagline'],
             '@@ORIGIN@@' => rtrim(url('/'), '/'), '@@HOST@@' => request()->getHttpHost()];
         $prerender = strtr(file_get_contents($pf), array_map('e', $tokens));
