@@ -12,6 +12,8 @@ class SeoFilesController extends Controller
 {
     private const PER_FILE = 5000;
 
+    private const HEAD = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+
     public function robots(): Response
     {
         $lines = [
@@ -48,7 +50,7 @@ class SeoFilesController extends Controller
                 $files[] = url("/sitemap-profiles-{$i}.xml");
             }
 
-            return '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            return self::HEAD.'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
                 .collect($files)->map(fn ($f) => '<sitemap><loc>'.e($f).'</loc></sitemap>')->implode('')
                 .'</sitemapindex>'."\n";
         });
@@ -61,7 +63,7 @@ class SeoFilesController extends Controller
         $xml = Cache::remember('sitemap:pages', 600, function () use ($docs) {
             $paths = array_merge(['/', '/docs', '/docs/api-explorer', '/terms', '/privacy'], array_map(fn ($s) => "/docs/{$s}", $docs->slugs()));
 
-            return '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            return self::HEAD.'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
                 .collect($paths)->map(fn ($p) => '<url><loc>'.e(url($p)).'</loc></url>')->implode('')
                 .'</urlset>'."\n";
         });
@@ -76,7 +78,7 @@ class SeoFilesController extends Controller
             $rows = $this->listable()->orderBy('id')->forPage($page, self::PER_FILE)->get();
             abort_if($rows->isEmpty() && $page > 1, 404);
 
-            $out = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
+            $out = self::HEAD.'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
             foreach ($rows as $p) {
                 $loc = route('profile.show', $p->username);
                 $out .= '<url><loc>'.e($loc).'</loc><lastmod>'.$p->updated_at?->toAtomString().'</lastmod>';
@@ -95,8 +97,26 @@ class SeoFilesController extends Controller
         return $this->xml($xml);
     }
 
+    /**
+     * Crawlers get the XML. A person opening the address in a browser (the browser announces a page navigation with
+     * Sec-Fetch-Dest: document, crawlers do not) gets the same list as a readable page with clickable links.
+     */
     private function xml(string $body): Response
     {
-        return response($body, 200, ['Content-Type' => 'application/xml; charset=utf-8', 'Cache-Control' => 'public, max-age=600']);
+        if (request()->header('Sec-Fetch-Dest') === 'document') {
+            $x = simplexml_load_string($body);
+            $rows = [];
+            foreach ($x->children() as $item) {
+                $langs = [];
+                foreach ($item->children('xhtml', true) as $l) {
+                    $langs[(string) $l['hreflang']] = (string) $l['href'];
+                }
+                $rows[] = ['loc' => (string) $item->loc, 'lastmod' => (string) $item->lastmod, 'langs' => $langs];
+            }
+
+            return response()->view('seo.sitemap-html', ['index' => $x->getName() === 'sitemapindex', 'rows' => $rows], 200, ['Vary' => 'Sec-Fetch-Dest', 'X-Robots-Tag' => 'noindex']);
+        }
+
+        return response($body, 200, ['Content-Type' => 'application/xml; charset=utf-8', 'Cache-Control' => 'public, max-age=600', 'Vary' => 'Sec-Fetch-Dest']);
     }
 }

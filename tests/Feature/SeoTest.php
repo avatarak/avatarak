@@ -177,4 +177,23 @@ class SeoTest extends TestCase
             $this->assertStringContainsString($json[$l]['title'], $src);
         }
     }
+
+    public function test_browsers_get_a_clickable_page_and_crawlers_get_the_xml(): void
+    {
+        $this->profile();
+        // a crawler: plain XML
+        foreach (['/sitemap.xml', '/sitemap-pages.xml', '/sitemap-profiles-1.xml'] as $p) {
+            $r = $this->get($p)->assertOk();
+            $this->assertStringStartsWith('application/xml', $r->headers->get('Content-Type'));
+            $this->assertNotFalse(simplexml_load_string($r->getContent()));
+            $this->assertStringContainsString('Sec-Fetch-Dest', $r->headers->get('Vary'));
+        }
+        // a person in a browser: the same data as links
+        $this->withHeader('Sec-Fetch-Dest', 'document')->get('/sitemap.xml')->assertOk()
+            ->assertSee('<a href="'.url('/sitemap-profiles-1.xml').'">', false)->assertSee('noindex', false);
+        $this->withHeader('Sec-Fetch-Dest', 'document')->get('/sitemap-profiles-1.xml')->assertOk()
+            ->assertSee('<a href="'.url('/seoguy').'">', false)->assertSee('Last modified');
+        // a browser fetching it as a resource (e.g. a validator tool) still gets XML
+        $this->withHeader('Sec-Fetch-Dest', 'empty')->get('/sitemap.xml')->assertHeader('Content-Type', 'application/xml; charset=utf-8');
+    }
 }
