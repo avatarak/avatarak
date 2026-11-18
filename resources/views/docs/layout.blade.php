@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ isset($page) ? $page['title'].' · ' : '' }}{{ $t['docs'] }} · {{ $brand }}</title>
     <meta name="description" content="{{ $page['description'] ?? ($rtl ? 'مستندات توسعه‌دهنده‌ها: آواتار، REST API و داده‌ی عمومی پروفایل.' : 'Developer documentation: avatars, the REST API and public profile data.') }}">
+    <x-brand-head />
     <link rel="alternate" type="text/plain" href="{{ route('docs.llms') }}" title="llms.txt">
     @include('partials.brand')
     @vite(['resources/css/app.css', 'resources/js/docs.js'])
@@ -17,7 +18,7 @@
     <div class="mx-auto flex h-16 max-w-[1280px] items-center gap-4 px-4 sm:px-6">
         <button type="button" class="icon-btn lg:hidden" data-docs-menu aria-label="{{ $t['menu'] }}" aria-expanded="false"><x-icon name="menu" :size="22" /></button>
         <a href="{{ route('docs.index') }}" class="flex items-center gap-2 font-bold">
-            <span class="grid size-8 place-items-center rounded-lg bg-brand text-sm text-white">{{ mb_substr($brand, 0, 1) }}</span>
+            <x-logo-mark :size="30" />
             <span class="hidden sm:inline">{{ $brand }}</span>
             <span class="rounded-[4px] border border-line px-2 py-0.5 text-xs font-medium text-brand">{{ $t['docs'] }}</span>
         </a>

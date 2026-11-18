@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12 12 76 76" role="img" aria-label="Avatarak.ir">
+  <path d="M65 38V56A8 8 0 0 0 81 56V50A31 31 0 1 0 68.6 74.8" fill="none" stroke="#1D4FC4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="50" cy="50" r="13" fill="#1D4FC4"/>
+  <circle cx="50" cy="45" r="4.5" fill="#fff"/>
+  <path d="M39.75 58Q50 47 60.25 58A13 13 0 0 1 39.75 58Z" fill="#fff"/>
+</svg>

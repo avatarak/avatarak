@@ -24,6 +24,7 @@
     @unless($indexable)<meta name="robots" content="noindex, nofollow">@endunless
     @if($p->bio)<meta name="description" content="{{ \Illuminate\Support\Str::limit($p->bio, 160) }}">@endif
     @include('partials.brand')
+    <x-brand-head />
     @vite(['resources/css/app.css', 'resources/js/profile.js'])
 </head>
 <body class="min-h-screen">
