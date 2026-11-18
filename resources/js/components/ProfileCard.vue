@@ -9,7 +9,7 @@ import { localize, previewLang } from '../lang';
 
 /**
  * The public profile, rendered live. resources/views/p.blade.php mirrors this markup and these
- * measurements (taken from gravatar.com): 640px cards with 4px radius and 24px gaps, 148px avatar,
+ * measurements (taken from gravatar.com, with a little more air between name, headline and location): 640px cards with 4px radius and 24px gaps, 148px avatar,
  * 34px name, 16px text, 42px buttons, 18px social icons, 192x108 link thumbnails. Keep them in sync.
  */
 const props = defineProps({ profile: Object, avatarSrc: String, verified: Boolean, verifiedAccounts: { type: Array, default: () => [] }, gallery: { type: Array, default: () => [] } });
@@ -62,9 +62,11 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure));
                     <span class="absolute end-0 top-0 grid size-[38px] place-items-center rounded-full bg-ink text-white"><Icon name="qr" :size="20" /></span>
                 </div>
 
-                <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.1] tracking-[-0.01em]">{{ display }}</h1>
-                <p v-if="p.headline" class="text-base leading-6 text-ink/75">{{ p.headline }}</p>
-                <p v-if="p.location" class="text-base leading-6 text-ink/75">{{ p.location }}</p>
+                <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.3] tracking-[-0.01em]">{{ display }}</h1>
+                <div v-if="p.headline || p.location" class="mt-2 space-y-1">
+                    <p v-if="p.headline" class="text-base leading-[1.6] text-ink/75">{{ p.headline }}</p>
+                    <p v-if="p.location" class="text-base leading-[1.6] text-ink/75">{{ p.location }}</p>
+                </div>
 
                 <div v-if="verified || socials.length" class="mt-7 flex flex-wrap items-center gap-3 text-ink">
                     <svg v-if="verified" width="22" height="22" viewBox="0 0 24 24" aria-label="verified" class="text-[#3B6BF0]">

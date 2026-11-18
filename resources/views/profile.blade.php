@@ -76,9 +76,13 @@
                 </button>
             </div>
 
-            <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.1] tracking-[-0.01em]">{{ $display }}</h1>
-            @if($p->headline)<p class="text-base leading-6 text-ink/75">{{ $p->headline }}</p>@endif
-            @if($p->location)<p class="text-base leading-6 text-ink/75">{{ $p->location }}</p>@endif
+            <h1 class="mt-4 text-[2.125rem] font-bold leading-[1.3] tracking-[-0.01em]">{{ $display }}</h1>
+            @if($p->headline || $p->location)
+                <div class="mt-2 space-y-1">
+                    @if($p->headline)<p class="text-base leading-[1.6] text-ink/75">{{ $p->headline }}</p>@endif
+                    @if($p->location)<p class="text-base leading-[1.6] text-ink/75">{{ $p->location }}</p>@endif
+                </div>
+            @endif
 
             @if($verified || count($socials))
                 <div class="mt-7 flex flex-wrap items-center gap-3 text-ink">
