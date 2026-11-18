@@ -15,6 +15,7 @@ export function setLocale(l) {
     applyDir();
 }
 export function applyDir() {
+    if (typeof document === 'undefined') return;       // build-time pre-rendering has no page to change
     document.documentElement.lang = i18n.locale;
     document.documentElement.dir = dir.value;
     // Server-rendered pages (the public profile) read this cookie so they match the UI language.

@@ -39,6 +39,7 @@ function lock() {
 function unlock() { document.body.style.overflow = prevOverflow; document.body.style.paddingInlineEnd = prevPad; }
 
 watch(() => props.open, async (v) => {
+    if (typeof document === 'undefined') return;      // build-time pre-rendering
     if (v) {
         opener = document.activeElement;
         lock();

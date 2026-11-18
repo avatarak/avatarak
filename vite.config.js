@@ -12,6 +12,8 @@ export default defineConfig({
         vue(),
         tailwindcss(),
     ],
+    // VUE_DEBUG_HYDRATION=1 npm run build  -> the browser console names every difference between the pre-rendered HTML and the app
+    define: process.env.VUE_DEBUG_HYDRATION ? { __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true } : {},
     server: {
         watch: { ignored: ['**/storage/framework/views/**'] },
     },

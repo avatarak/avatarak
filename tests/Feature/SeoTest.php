@@ -144,7 +144,7 @@ class SeoTest extends TestCase
             $this->assertStringContainsString('property="og:image" content="'.url('/brand/og-default.jpg').'"', $h);
             $this->assertStringContainsString('summary_large_image', $h);
             $this->assertStringNotContainsString('noindex', $h);
-            $this->assertMatchesRegularExpression('#<h1>[^<]+</h1>#', $h);
+            $this->assertMatchesRegularExpression('#<h1[^>]*>[^<]+</h1>#', $h);
             $types = collect($this->ld($h)['@graph'])->pluck('@type')->all();
             $this->assertSame(['WebSite', 'Organization', 'SoftwareApplication', 'FAQPage'], $types);
         }
@@ -260,5 +260,27 @@ class SeoTest extends TestCase
             ->assertSee('<a href="'.url('/seoguy').'">', false)->assertSee('Last modified');
         // a browser fetching it as a resource (e.g. a validator tool) still gets XML
         $this->withHeader('Sec-Fetch-Dest', 'empty')->get('/sitemap.xml')->assertHeader('Content-Type', 'application/xml; charset=utf-8');
+    }
+
+    public function test_prerendered_home_page_is_embedded_with_the_installs_own_brand(): void
+    {
+        $file = resource_path('data/landing-prerender-fa.html');
+        $backup = is_file($file) ? file_get_contents($file) : null;
+        try {
+            file_put_contents($file, '<div class="x"><h1>سلام</h1><b>@@BRAND_NAME@@|@@BRAND_NAME_EN@@|@@ORIGIN@@</b></div>');
+            config(['brand.name' => 'برند <من>', 'brand.name_en' => '', 'brand.logo_url' => null]);
+            $h = $this->get('/')->assertOk()->getContent();
+            $this->assertStringContainsString('<div id="app" data-prerendered><div class="x"><h1>سلام</h1>', $h);     // attached node-for-node: no whitespace in between
+            $this->assertStringContainsString('<b>برند &lt;من&gt;|برند &lt;من&gt;|'.rtrim(url('/'), '/').'</b>', $h);      // tokens filled in and escaped
+            $this->assertStringNotContainsString('position:absolute;width:1px', $h);                                      // the crawler-only copy is not needed
+
+            // a custom logo changes the markup, so such an install falls back to the plain text
+            config(['brand.logo_url' => 'https://cdn.example/logo.png']);
+            $h = $this->get('/')->getContent();
+            $this->assertStringNotContainsString('data-prerendered', $h);
+            $this->assertStringContainsString('position:absolute;width:1px', $h);
+        } finally {
+            $backup === null ? @unlink($file) : file_put_contents($file, $backup);
+        }
     }
 }

@@ -33,17 +33,16 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-if="!state.ready" class="grid min-h-screen place-items-center text-muted">{{ t('loading') }}</div>
-    <AdminGate v-else-if="isAdmin" />
+    <AdminGate v-if="isAdmin" />
+    <!-- the dashboard needs to know who you are first; the home page does not (so it can be on screen at once) -->
+    <div v-else-if="isPanel && !state.ready" class="grid min-h-screen place-items-center text-muted">{{ t('loading') }}</div>
+    <div v-else-if="isPanel && state.account" class="flex h-dvh flex-col">
+        <AnnouncementBar class="shrink-0" />
+        <div class="min-h-0 flex-1"><Panel /></div>
+    </div>
     <template v-else>
-        <div v-if="isPanel && state.account" class="flex h-dvh flex-col">
-            <AnnouncementBar class="shrink-0" />
-            <div class="min-h-0 flex-1"><Panel /></div>
-        </div>
-        <template v-else>
-            <AnnouncementBar />
-            <Landing :ask-login="isPanel" />
-        </template>
+        <AnnouncementBar />
+        <Landing :ask-login="isPanel" />
     </template>
 
     <Transition enter-active-class="transition duration-150" enter-from-class="opacity-0 translate-y-2"

@@ -1,27 +1,22 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, defineAsyncComponent, hydrateOnVisible } from 'vue';
 import { state } from '../store';
 import AuthCard from './AuthCard.vue';
 import LandingHeader from './landing/LandingHeader.vue';
 import LandingHero from './landing/LandingHero.vue';
-import FeatureRow from './landing/FeatureRow.vue';
-import MockApps from './landing/MockApps.vue';
-import MockProfile from './landing/MockProfile.vue';
-import MockVerified from './landing/MockVerified.vue';
-import MockIdentities from './landing/MockIdentities.vue';
-import MockPrivacy from './landing/MockPrivacy.vue';
-import DevSection from './landing/DevSection.vue';
-import FaqSection from './landing/FaqSection.vue';
-import PricingSection from './landing/PricingSection.vue';
-import FinalCta from './landing/FinalCta.vue';
-import LandingFooter from './landing/LandingFooter.vue';
-import Icon from './Icon.vue';
-import { lt } from './landing/copy';
+
+// Below the first screen: pre-rendered in the HTML (so it is readable and searchable at once), but its code is fetched and
+// attached only when the visitor scrolls close to it.
+const lazy = (loader) => defineAsyncComponent({ loader, hydrate: hydrateOnVisible({ rootMargin: '400px' }) });
+const LandingBody = lazy(() => import('./LandingBody.vue'));
+const LandingFooter = lazy(() => import('./landing/LandingFooter.vue'));
 
 const props = defineProps({ askLogin: Boolean });       // /panel while signed out: ask to sign in
 const auth = ref(props.askLogin ? 'login' : 'register');
 const authOpen = ref(props.askLogin);
 const email = ref('');
+const mounted = ref(false);        // the sign-in dialog lives outside the page (a Teleport), so it is added after the pre-rendered page is attached
+onMounted(() => { mounted.value = true; });
 const show = (mode, prefill) => {
     if (state.account) { location.href = '/panel'; return; }       // already signed in: every call to action leads to the dashboard
     auth.value = mode;
@@ -37,26 +32,10 @@ watch(() => state.account, (a) => { if (a && authOpen.value) location.href = '/p
         <main>
             <LandingHero @start="(e) => show('register', e)" />
 
-            <!-- "at a glance" strip: honest replacement for a customers row -->
-            <section class="bg-white px-5 pb-6 pt-14">
-                <p class="text-center text-sm font-medium uppercase tracking-[0.04em] text-[#a7aaad]">{{ lt('stripLabel') }}</p>
-                <ul class="mx-auto mt-8 flex max-w-[1060px] flex-wrap justify-center gap-x-14 gap-y-6 text-[#7a7f85]">
-                    <li v-for="[icon, label] in lt('strip')" :key="icon" class="flex flex-col items-center gap-2 text-sm"><Icon :name="icon" :size="28" />{{ label }}</li>
-                </ul>
-            </section>
-
-            <FeatureRow id="sync" :title="lt('syncTitle')" :text="lt('syncText')"><MockApps /></FeatureRow>
-            <FeatureRow id="profile" tone="warm" reverse :title="lt('profTitle')" :text="lt('profText')" :cta="lt('profCta')" @cta="show('register')"><MockProfile /></FeatureRow>
-            <FeatureRow id="verified" :title="lt('verTitle')" :text="lt('verText')"><MockVerified /></FeatureRow>
-            <FeatureRow id="identities" tone="gray" :title="lt('idTitle')" :text="lt('idText')"><MockIdentities /></FeatureRow>
-            <FeatureRow id="privacy" reverse :title="lt('privTitle')" :text="lt('privText')"><MockPrivacy /></FeatureRow>
-            <DevSection @cta="show('register')" />
-            <PricingSection @start="show('register')" />
-            <FaqSection />
-            <FinalCta @start="show('register')" />
+            <LandingBody @register="show('register')" />
         </main>
         <LandingFooter @login="show('login')" @register="show('register')" />
 
-        <AuthCard :open="authOpen" :mode="auth" :email="email" @close="authOpen = false" @switch="auth = $event" />
+        <AuthCard v-if="mounted" :open="authOpen" :mode="auth" :email="email" @close="authOpen = false" @switch="auth = $event" />
     </div>
 </template>

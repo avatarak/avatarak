@@ -31,6 +31,14 @@
             ! empty($landing['faq']) ? ['@type' => 'FAQPage', 'mainEntity' => array_map(fn ($qa) => ['@type' => 'Question', 'name' => $qa[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $qa[1]]], $landing['faq'])] : null,
         ]))];
     }
+    // The home page is pre-rendered at build time (npm run build): paint it straight from the HTML, then hydrate.
+    // A custom logo changes the markup, so such installs keep the plain (crawler-only) text below.
+    $prerender = null;
+    if ($landing && ! config('brand.logo_url') && is_file($pf = resource_path("data/landing-prerender-{$seoLoc}.html"))) {
+        $tokens = ['@@BRAND_NAME@@' => $brandJs['name'], '@@BRAND_NAME_EN@@' => $brandJs['name_en'] ?: $brandJs['name'], '@@TAGLINE@@' => $brandJs['tagline'], '@@TAGLINE_EN@@' => $brandJs['tagline_en'] ?: $brandJs['tagline'],
+            '@@ORIGIN@@' => rtrim(url('/'), '/'), '@@HOST@@' => request()->getHttpHost()];
+        $prerender = strtr(file_get_contents($pf), array_map('e', $tokens));
+    }
 @endphp
 <!doctype html>
 <html lang="{{ $seoLoc }}" dir="{{ $seoLoc === 'en' ? 'ltr' : 'rtl' }}">
@@ -72,6 +80,10 @@
 </head>
 <body>
     {{-- What a crawler (or a browser without JavaScript) reads. Vue replaces it the moment the app starts. --}}
+    @if($prerender)
+        {{-- no whitespace between the tags and the markup: the browser attaches to it node by node --}}
+        <div id="app" data-prerendered>{!! $prerender !!}</div>
+    @else
     <div id="app">
         @if($landing)
             <div style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">
@@ -88,6 +100,7 @@
             </div>
         @endif
     </div>
+    @endif
     <noscript>{{ $seoLoc === 'en' ? 'JavaScript is required to sign in and manage your profile.' : 'برای ورود و مدیریت پروفایل به جاوااسکریپت نیاز است.' }}</noscript>
 </body>
 </html>
