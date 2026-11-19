@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profile;
-use App\Services\AvatarService;
-use App\Services\DefaultAvatars;
+use App\Services\CardPhone;
+use App\Services\CardTheme;
 use App\Services\ProfileExport;
 use App\Services\QrService;
+use App\Services\ShareCard;
 use App\Services\StatsRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -85,47 +86,32 @@ class ProfileExportController extends Controller
         return $profile->localized($lang);
     }
 
-    /** /{username}/print — a business card (85x55 mm) and a ready-to-print A4 sheet of ten. */
+    /**
+     * /{username}/print — the business card, front and back (85x55 mm), or an A4 sheet of ten per side for duplex printing.
+     * ?style=classic|band|bold previews a design; ?sheet=1 the A4 layout.
+     */
     public function printCard(Request $request, ProfileExport $export, QrService $qr, string $username): Response
     {
         $profile = $this->speak($request, Profile::visible()->where('username', strtolower($username))->firstOrFail());
+        $theme = new CardTheme($profile, $request->query('style'));
+        $url = route('profile.show', $profile->username);
 
         return response()->view('cards.print', [
-            'p' => $profile, 'name' => $export->display($profile), 'url' => route('profile.show', $profile->username),
-            'qrSvg' => $qr->inner($qr->svg(route('profile.show', $profile->username), 400, [16, 21, 23], [255, 255, 255], 1)),
+            'p' => $profile, 'name' => $export->display($profile), 'url' => $url,
+            'qrSvg' => $qr->inner($qr->svg($url, 400, CardTheme::rgb($theme->qr), [255, 255, 255], 0)),
+            'qrDark' => $qr->inner($qr->svg($url, 400, CardTheme::rgb(CardTheme::INK), [255, 255, 255], 0)),
             'avatar' => $export->avatarUrl($profile, 256), 'rtl' => app()->getLocale() !== 'en',
-            'accent' => $this->accent($profile), 'sheet' => $request->boolean('sheet'),
+            'th' => $theme, 'sheet' => $request->boolean('sheet'),
+            'phone' => ($ph = $this->phoneFor($profile, forPrint: true)) ? CardPhone::pretty($ph) : null,
+            'styles' => Profile::CARD_STYLES,
         ], 200, ['X-Robots-Tag' => 'noindex, nofollow', 'Cache-Control' => 'private, max-age=0']);
     }
 
-    /** /{username}/share.svg — a 1080x1350 shareable card (post or story) with the QR code. */
-    public function shareImage(Request $request, ProfileExport $export, QrService $qr, AvatarService $avatars, string $username): Response
+    /** /{username}/share.svg — a 1080x1350 shareable card (post or story) with the QR code. ?style= previews a design. */
+    public function shareImage(Request $request, ShareCard $card, string $username): Response
     {
         $profile = $this->speak($request, Profile::visible()->where('username', strtolower($username))->firstOrFail());
-        $esc = fn (?string $s) => htmlspecialchars((string) $s, ENT_XML1 | ENT_QUOTES, 'UTF-8');
-        $accent = $this->accent($profile);
-        $name = $export->display($profile);
-        $photo = $avatars->renderProfile($profile, 320, 'jpeg');
-
-        $face = $photo
-            ? '<clipPath id="c"><circle cx="540" cy="380" r="160"/></clipPath><image href="data:image/jpeg;base64,'.base64_encode($photo['body']).'" x="380" y="220" width="320" height="320" clip-path="url(#c)" preserveAspectRatio="xMidYMid slice"/>'
-            : '<circle cx="540" cy="380" r="160" fill="'.DefaultAvatars::PALETTE[DefaultAvatars::colorIndex($profile->username)][0].'"/>'
-                .'<text x="540" y="380" dy=".35em" text-anchor="middle" fill="#fff" font-size="120" font-weight="700" font-family="Vazirmatn, Tahoma, Arial, sans-serif">'.$esc(DefaultAvatars::initials($name)).'</text>';
-
-        $sub = $esc(implode(' · ', array_filter([$profile->headline, $profile->location])));
-        $qrNested = preg_replace('/^<svg /', '<svg x="340" y="800" ', $qr->inner($qr->svg(route('profile.show', $profile->username), 400, [16, 21, 23], [255, 255, 255], 0)), 1);
-
-        $svg = '<?xml version="1.0" encoding="UTF-8"?>'
-            .'<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-label="'.$esc($name).'">'
-            .'<rect width="1080" height="1350" fill="'.$esc($accent).'"/>'
-            .'<rect x="60" y="60" width="960" height="1230" rx="36" fill="#fff"/>'
-            .$face
-            .'<text x="540" y="650" text-anchor="middle" font-size="64" font-weight="700" fill="#101517" font-family="Vazirmatn, Tahoma, Arial, sans-serif">'.$esc($name).'</text>'
-            .($sub !== '' ? '<text x="540" y="715" text-anchor="middle" font-size="34" fill="#5B6470" font-family="Vazirmatn, Tahoma, Arial, sans-serif">'.$sub.'</text>' : '')
-            .'<rect x="320" y="780" width="440" height="440" rx="20" fill="#fff" stroke="#E4E7EC" stroke-width="2"/>'
-            .$qrNested
-            .'<text x="540" y="1262" text-anchor="middle" font-size="32" font-weight="600" fill="#101517" font-family="Inter, Arial, sans-serif" direction="ltr">'.$esc(preg_replace('#^https?://#', '', route('profile.show', $profile->username))).'</text>'
-            .'</svg>';
+        $svg = $card->render($profile, new CardTheme($profile, $request->query('style')), $this->phoneFor($profile, forPrint: false), app()->getLocale() !== 'en');
 
         $res = response($svg, 200, ['Content-Type' => 'image/svg+xml; charset=utf-8', 'Cache-Control' => 'public, max-age=300', 'Access-Control-Allow-Origin' => '*', 'X-Content-Type-Options' => 'nosniff']);
         if ($request->boolean('download')) {
@@ -135,8 +121,13 @@ class ProfileExportController extends Controller
         return $res;
     }
 
-    private function accent(Profile $profile): string
+    /** The card phone is private by default: the owner sees it on their own print page, everyone else only when it was made public. */
+    private function phoneFor(Profile $profile, bool $forPrint): ?string
     {
-        return preg_match('/^#[0-9A-Fa-f]{6}$/', (string) $profile->accent_color) ? $profile->accent_color : '#1D4FC4';
+        if (! $profile->card_phone) {
+            return null;
+        }
+
+        return $profile->card_phone_public || ($forPrint && auth()->id() === $profile->user_id) ? $profile->card_phone : null;
     }
 }

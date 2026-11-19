@@ -27,7 +27,7 @@ class AccountController extends Controller
             'recent_code_login' => now()->timestamp - (int) $request->session()->get('reauth_at', 0) < 900,
             'profile' => $p->only(['username', 'name_fa', 'name_en', 'bio', 'website', 'socials',
                 'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order',
-                'headline', 'location', 'links', 'hidden_sections', 'show_link_images', 'theme', 'custom_sections', 'languages', 'primary_lang', 'headline_alt', 'location_alt', 'bio_alt']) + ['section_limit' => app(\App\Services\PlanService::class)->limit($user, 'sections'), 'has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
+                'headline', 'location', 'links', 'hidden_sections', 'show_link_images', 'theme', 'custom_sections', 'languages', 'primary_lang', 'headline_alt', 'location_alt', 'bio_alt', 'card_phone', 'card_phone_public', 'card_style']) + ['section_limit' => app(\App\Services\PlanService::class)->limit($user, 'sections'), 'has_avatar' => (bool) $p->avatar_path, 'avatar_version' => $p->avatar_version, 'avatar_id' => $p->avatar_id],
             'gallery' => $user->galleryImages()->get()->map(fn ($g) => ['id' => $g->id, 'caption' => $g->caption, 'caption_alt' => $g->caption_alt])->values(),
             'avatars' => $user->avatars()->latest('id')->get()->map(fn ($a) => [
                 'id' => $a->id, 'active' => $a->id === $p->avatar_id, 'created_at' => $a->created_at,
@@ -109,6 +109,28 @@ class AccountController extends Controller
             $profile->swapPrimary($data['primary_lang']);
         }
         $profile->fill($data)->save();
+
+        return $this->show($request);
+    }
+
+    /** Business-card options: the optional phone number, whether it is public, and the design. */
+    public function updateCard(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'card_phone' => ['nullable', 'string', 'max:40'],
+            'card_phone_public' => ['sometimes', 'boolean'],
+            'card_style' => ['sometimes', 'string', Rule::in(\App\Models\Profile::CARD_STYLES)],
+        ]);
+        if (filled($data['card_phone'] ?? null)) {
+            $phone = \App\Services\CardPhone::normalize($data['card_phone']);
+            if ($phone === null) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['card_phone' => [__('app.phone_invalid')]]);
+            }
+            $data['card_phone'] = $phone;
+        } else {
+            $data['card_phone'] = null;
+        }
+        $request->user()->profile->update($data);
 
         return $this->show($request);
     }

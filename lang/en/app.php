@@ -100,6 +100,7 @@ return [
     'webhook_limit' => 'You have reached the webhook limit of your plan.',
     'webhook_url' => 'The address must be a public https:// URL.',
     'gallery_limit' => 'You have reached the photo limit of your plan.',
+    'phone_invalid' => 'Enter a valid mobile number, for example 09123456789 or +14155550123.',
     'sections_limit' => 'You have reached the limit of custom sections for your plan.',
     'registration_closed' => 'New sign-ups are paused right now. Please come back later.',
     'login_throttled' => 'Too many sign-in attempts. Try again in :minutes minute(s), or sign in with an emailed code.',

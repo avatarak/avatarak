@@ -9,7 +9,7 @@ class Profile extends Model
 {
     protected $fillable = [
         'user_id', 'username', 'name_fa', 'name_en', 'bio', 'website', 'socials',
-        'avatar_path', 'avatar_version', 'avatar_id', 'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order', 'headline', 'location', 'links', 'hidden_sections', 'show_link_images', 'theme', 'custom_sections', 'languages', 'primary_lang', 'headline_alt', 'location_alt', 'bio_alt',
+        'avatar_path', 'avatar_version', 'avatar_id', 'show_avatar', 'show_profile', 'allow_indexing', 'accent_color', 'section_order', 'headline', 'location', 'links', 'hidden_sections', 'show_link_images', 'theme', 'custom_sections', 'languages', 'primary_lang', 'headline_alt', 'location_alt', 'bio_alt', 'card_phone', 'card_phone_public', 'card_style',
     ];
 
     protected function casts(): array
@@ -24,6 +24,7 @@ class Profile extends Model
             'show_avatar' => 'boolean',
             'show_profile' => 'boolean',
             'allow_indexing' => 'boolean',
+            'card_phone_public' => 'boolean',
         ];
     }
 
@@ -32,6 +33,8 @@ class Profile extends Model
     {
         return $query->where('show_profile', true)->whereHas('user', fn ($q) => $q->whereNull('suspended_at'));
     }
+
+    public const CARD_STYLES = ['classic', 'band', 'bold'];
 
     public const LANGS = ['fa', 'en'];
     public const MODES = ['fa', 'en', 'both'];

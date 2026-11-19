@@ -60,6 +60,7 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::get('/', [AccountController::class, 'show']);
     Route::patch('profile', [AccountController::class, 'updateProfile']);
     Route::patch('appearance', [AccountController::class, 'updateAppearance']);
+    Route::patch('card', [AccountController::class, 'updateCard']);
     Route::patch('privacy', [AccountController::class, 'updatePrivacy']);
     Route::post('avatar', [AccountController::class, 'uploadAvatar'])->middleware('throttle:20,1');
     Route::get('avatar', [AccountController::class, 'myAvatar']);

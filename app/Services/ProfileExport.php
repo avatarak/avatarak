@@ -206,6 +206,9 @@ class ProfileExport
         if ($p->location) {
             $rows[] = 'ADR;TYPE=HOME:;;;'.$esc($p->location).';;;';
         }
+        if ($p->card_phone && $p->card_phone_public) {
+            $rows[] = 'TEL;TYPE=CELL:'.CardPhone::e164($p->card_phone);
+        }
         $rows[] = 'URL:'.route('profile.show', $p->username);
         if ($p->website) {
             $rows[] = 'URL;TYPE=WORK:'.$p->website;
