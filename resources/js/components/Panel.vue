@@ -9,6 +9,7 @@ import Icon from './Icon.vue';
 import InitialsAvatar from './InitialsAvatar.vue';
 import LangSwitch from './LangSwitch.vue';
 import ProfileCard from './ProfileCard.vue';
+import GetStarted from './sections/GetStarted.vue';
 import AvatarsSection from './sections/AvatarsSection.vue';
 import AboutSection from './sections/AboutSection.vue';
 import LinksSection from './sections/LinksSection.vue';
@@ -57,7 +58,7 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
 </script>
 
 <template>
-    <div class="flex h-full flex-col bg-white">
+    <div class="touch-ui flex h-full flex-col bg-white">
         <header class="flex h-[70px] shrink-0 items-center justify-between px-5">
             <Logo />
             <div class="flex items-center gap-1">
@@ -81,13 +82,26 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
             </div>
         </header>
 
+        <!-- phones: switch between editing and the live preview (a real control, so nothing floats over the forms) -->
+        <div class="shrink-0 px-5 pb-2 lg:hidden">
+            <div class="grid grid-cols-2 rounded-full bg-soft p-1 text-sm font-semibold" role="tablist" :aria-label="t('preview')">
+                <button type="button" role="tab" :aria-selected="!mobilePreview" class="min-h-[40px] rounded-full transition-colors"
+                        :class="!mobilePreview ? 'bg-white text-ink shadow-card' : 'text-muted'" @click="mobilePreview = false">{{ t('editTab') }}</button>
+                <button type="button" role="tab" :aria-selected="mobilePreview" class="min-h-[40px] rounded-full transition-colors"
+                        :class="mobilePreview ? 'bg-white text-ink shadow-card' : 'text-muted'" @click="mobilePreview = true">{{ t('preview') }}</button>
+            </div>
+        </div>
+
         <div class="flex min-h-0 flex-1">
             <aside class="relative flex min-h-0 w-full flex-col lg:w-[26rem] lg:shrink-0" :class="mobilePreview ? 'hidden lg:flex' : 'flex'">
-                <div class="flex-1 overflow-y-auto px-5 pb-24 lg:pb-6">
-                    <div v-if="!verified" class="mt-3 rounded-[8px] border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-900" role="status">
-                        <p>{{ t('verifyNotice') }}</p>
-                        <button v-if="open !== 'emails'" type="button" class="mt-2 font-semibold underline underline-offset-2" @click="open = 'emails'">{{ t('verifyAction') }}</button>
+                <div class="flex-1 overflow-y-auto px-5 pb-6">
+                  <div class="mx-auto w-full max-w-xl lg:max-w-none">
+                    <div v-if="!verified && open !== 'emails'" class="mt-3 flex items-center gap-3 rounded-[8px] border border-amber-300 bg-amber-50 px-3 py-2.5 text-sm leading-6 text-amber-900" role="status">
+                        <Icon name="alert" :size="18" class="shrink-0" />
+                        <p class="min-w-0 flex-1"><span class="sm:hidden">{{ t('verifyShort') }}</span><span class="hidden sm:inline">{{ t('verifyNotice') }}</span></p>
+                        <button type="button" class="shrink-0 rounded-[6px] px-2 py-1.5 font-semibold underline underline-offset-2" @click="open = 'emails'">{{ t('verifyAction') }}</button>
                     </div>
+                    <GetStarted v-if="!open" @goto="open = $event" />
                     <!-- section list -->
                     <nav v-if="!open" :aria-label="t('menu')" class="pt-4">
                         <ul v-for="(group, gi) in GROUPS" :key="gi" class="py-2" :class="gi ? 'mt-2' : ''">
@@ -104,12 +118,15 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
                     </nav>
 
                     <!-- one section -->
-                    <div v-else class="pt-2">
-                        <button type="button" class="icon-btn !bg-soft" :aria-label="t('back')" @click="open = null"><Icon name="back" :size="20" flip /></button>
-                        <h1 class="mt-5 text-xl font-bold">{{ t('nav_' + open) }}</h1>
-                        <p class="hint mt-1">{{ t('d_' + open) }}</p>
-                        <div class="mt-6"><component :is="SECTIONS[open]" :key="open" @goto="open = $event" /></div>
+                    <div v-else class="pt-3">
+                        <div class="flex items-center gap-3">
+                            <button type="button" class="icon-btn !bg-soft shrink-0" :aria-label="t('back')" @click="open = null"><Icon name="back" :size="20" flip /></button>
+                            <h1 class="min-w-0 text-xl font-bold">{{ t('nav_' + open) }}</h1>
+                        </div>
+                        <p class="hint mt-2">{{ t('d_' + open) }}</p>
+                        <div class="mt-5"><component :is="SECTIONS[open]" :key="open" @goto="open = $event" /></div>
                     </div>
+                  </div>
                 </div>
 
                 <div v-if="!open" class="shrink-0 px-5 pb-5">
@@ -125,8 +142,5 @@ onBeforeUnmount(() => document.removeEventListener('click', outside));
             </main>
         </div>
 
-        <button type="button" class="btn btn-primary fixed inset-x-0 bottom-5 z-20 mx-auto w-fit shadow-card lg:hidden" @click="mobilePreview = !mobilePreview">
-            {{ mobilePreview ? t('back') : t('preview') }}
-        </button>
     </div>
 </template>

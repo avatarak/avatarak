@@ -75,6 +75,15 @@
     .icon-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 999px; cursor: pointer; color: var(--ink); }
     .icon-btn:hover { background: var(--soft); }
 
+    /* The dashboard on a phone or tablet: every tappable thing is at least 44px (also the compact ones used in lists) */
+    @media (max-width: 1023px), (pointer: coarse) {
+        .touch-ui .btn { min-height: 44px !important; }
+        .touch-ui .icon-btn { width: 44px; height: 44px; }
+        .touch-ui [role='switch'] { position: relative; }
+        .touch-ui [role='switch']::before { content: ''; position: absolute; inset: -10px -6px; }   /* a bigger hit area around the small switch */
+        .touch-ui details > summary, .touch-ui [role='tab'] { min-height: 44px; }
+    }
+
     /* themed canvas behind the public profile / live preview; --accent set per profile */
     .profile-canvas {
         --accent: var(--brand);
