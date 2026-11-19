@@ -5,6 +5,8 @@ import { load, adopt, siteStatus, loadStatus } from '../store';
 import { t } from '../i18n';
 import Modal from './Modal.vue';
 import Icon from './Icon.vue';
+import LogoMark from './LogoMark.vue';
+import InitialsAvatar from './InitialsAvatar.vue';
 
 const props = defineProps({ open: Boolean, mode: { type: String, default: 'register' }, email: { type: String, default: '' } });
 const emit = defineEmits(['close', 'switch']);
@@ -110,28 +112,44 @@ async function submit() {
 }
 loadStatus();
 const busyLabel = computed(() => (props.mode === 'register' ? t('registerBusy') : step.value === 'email' ? t('saving') : t('loginBusy')));
+const host = window.location.host;
+const showSwitch = computed(() => step.value !== 'twofa');
+const typed = computed(() => props.mode === 'register' && form.name.trim() !== '');
+const handle = computed(() => (form.username || '').trim().toLowerCase());
 const err = (k) => errors.value[k]?.[0];
 </script>
 
 <template>
     <Modal :open="open" :label="t(mode)" width="26rem" @close="emit('close')">
-        <form class="p-7" :class="{ 'auth-shake': shake }" novalidate @submit.prevent="submit" @animationend="shake = false">
-            <div class="mb-6 flex items-center justify-between">
-                <h2 class="text-2xl font-bold">{{ t(mode) }}</h2>
-                <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('close')"><Icon name="close" :size="20" /></button>
-            </div>
+        <form class="relative" :class="{ 'auth-shake': shake }" novalidate @submit.prevent="submit" @animationend="shake = false">
+            <button type="button" class="icon-btn absolute end-3 top-3 z-10" :aria-label="t('close')" @click="emit('close')"><Icon name="close" :size="20" /></button>
 
+            <!-- who you are about to be: the brand on sign-in, your own avatar (built as you type) on sign-up -->
+            <div class="grid justify-items-center gap-2.5 rounded-t-[inherit] bg-gradient-to-b from-[#eaf0fd] to-white px-7 pb-2 pt-7 text-center">
+                <span class="grid size-[72px] place-items-center overflow-hidden rounded-full bg-brand text-white shadow-[0_0_0_4px_#fff,0_0_0_6px_var(--brand),0_8px_20px_rgb(29_79_196/0.3)] transition-transform duration-300" :class="typed ? 'scale-105' : ''">
+                    <InitialsAvatar v-if="typed" :name="form.name" :seed="handle || form.name" />
+                    <LogoMark v-else :size="40" face="var(--brand)" />
+                </span>
+                <h2 class="text-lg font-bold leading-6">{{ typed ? form.name : (mode === 'register' ? t('createAccount') : t('welcome')) }}</h2>
+                <p v-if="mode === 'register'" dir="ltr" class="-mt-1.5 text-xs text-muted">{{ host }}/{{ handle || 'username' }}</p>
+            </div>
+            <div v-if="showSwitch" class="mx-7 mt-3 grid grid-cols-2 gap-1 rounded-[12px] bg-soft p-1" role="tablist" :aria-label="t('login') + ' / ' + t('register')">
+                <button v-for="m in ['login', 'register']" :key="m" type="button" role="tab" :aria-selected="mode === m"
+                        class="min-h-[40px] rounded-[9px] text-sm font-bold transition-all" :class="mode === m ? 'bg-white text-ink shadow-sm' : 'text-muted hover:text-ink'"
+                        @click="mode !== m && emit('switch', m)">{{ t(m) }}</button>
+            </div>
+            <div class="px-7 pb-7 pt-3">
             <p v-if="mode === 'register' && !siteStatus.registration_open" class="mb-4 rounded-[6px] bg-amber-50 p-3 text-sm leading-6 text-amber-900" role="alert">{{ t('regClosed') }}</p>
             <div class="space-y-4">
                 <template v-if="mode === 'register'">
                     <div>
                         <label class="label" for="a-name">{{ t('name') }}</label>
-                        <input id="a-name" v-model="form.name" class="field" autocomplete="name" data-autofocus>
+                        <span class="relative block"><Icon name="user" :size="18" class="pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted rtl:right-3 ltr:left-3" /><input id="a-name" v-model="form.name" class="field rtl:!pr-10 ltr:!pl-10" autocomplete="name" data-autofocus></span>
                         <p v-if="err('name')" class="mt-1 text-sm text-red-600">{{ err('name') }}</p>
                     </div>
                     <div>
                         <label class="label" for="a-user">{{ t('username') }}</label>
-                        <input id="a-user" v-model="form.username" dir="ltr" class="field text-start" autocomplete="username" autocapitalize="none" spellcheck="false">
+                        <span class="relative block"><Icon name="link" :size="18" class="pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted rtl:right-3 ltr:left-3" /><input id="a-user" v-model="form.username" dir="ltr" class="field text-start rtl:!pr-10 ltr:!pl-10" autocomplete="username" autocapitalize="none" spellcheck="false"></span>
                         <p v-if="err('username')" class="mt-1 text-sm text-red-600">{{ err('username') }}</p>
                     </div>
                 </template>
@@ -145,7 +163,7 @@ const err = (k) => errors.value[k]?.[0];
                 </div>
                 <div v-if="step !== 'twofa'">
                     <label class="label" for="a-email">{{ t('email') }}</label>
-                    <input id="a-email" v-model="form.email" type="email" dir="ltr" class="field text-start" autocomplete="email" :readonly="step === 'code'" :data-autofocus="mode === 'login' ? '' : null">
+                    <span class="relative block"><Icon name="mail" :size="18" class="pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted rtl:right-3 ltr:left-3" /><input id="a-email" v-model="form.email" type="email" dir="ltr" class="field text-start rtl:!pr-10 ltr:!pl-10" autocomplete="email" :readonly="step === 'code'" :data-autofocus="mode === 'login' ? '' : null"></span>
                     <p v-if="err('email')" class="mt-1 text-sm text-red-600">{{ err('email') }}</p>
                 </div>
                 <div v-if="step === 'code'">
@@ -158,8 +176,8 @@ const err = (k) => errors.value[k]?.[0];
                 </div>
                 <div v-if="step === 'password'">
                     <label class="label" for="a-pass">{{ t('password') }}</label>
-                    <input id="a-pass" v-model="form.password" type="password" dir="ltr" class="field text-start"
-                           :autocomplete="mode === 'register' ? 'new-password' : 'current-password'">
+                    <span class="relative block"><Icon name="lock" :size="18" class="pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted rtl:right-3 ltr:left-3" /><input id="a-pass" v-model="form.password" type="password" dir="ltr" class="field text-start rtl:!pr-10 ltr:!pl-10"
+                           :autocomplete="mode === 'register' ? 'new-password' : 'current-password'"></span>
                     <p v-if="err('password')" class="mt-1 text-sm text-red-600">{{ err('password') }}</p>
                     <p v-else-if="mode === 'register'" class="hint mt-1">{{ t('passwordHint') }}</p>
                 </div>
@@ -184,12 +202,7 @@ const err = (k) => errors.value[k]?.[0];
                 <button v-if="step === 'password'" type="button" class="font-semibold text-brand hover:underline" @click="step = 'email'; errors = {}; message = ''">{{ t('codeLogin') }}</button>
                 <button v-else type="button" class="font-semibold text-brand hover:underline" @click="step = 'password'; errors = {}; message = ''">{{ t('passwordLogin') }}</button>
             </p>
-            <p class="mt-5 text-center text-sm text-muted">
-                {{ mode === 'register' ? t('haveAccount') : t('needAccount') }}
-                <button type="button" class="font-semibold text-brand hover:underline" @click="emit('switch', mode === 'register' ? 'login' : 'register')">
-                    {{ mode === 'register' ? t('login') : t('register') }}
-                </button>
-            </p>
+            </div>
         </form>
     </Modal>
 </template>
