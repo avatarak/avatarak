@@ -74,12 +74,15 @@ class CustomDomainTest extends TestCase
     public function test_the_plan_decides_whether_and_how_many_domains_you_can_add(): void
     {
         $free = $this->user('free@example.com', 'freeuser', null);
-        $this->actingAs($free)->postJson('/account/domains', ['host' => 'a-site.org'])->assertStatus(403);
-        $this->getJson('/account/domains')->assertOk()->assertJsonPath('allowed', 0);
+        $this->actingAs($free)->postJson('/account/domains', ['host' => 'a-site.org'])->assertCreated();   // Free allows one
+        $this->postJson('/account/domains', ['host' => 'b-site.org'])->assertStatus(422);
+        $this->getJson('/account/domains')->assertOk()->assertJsonPath('allowed', 1);
 
         $pro = $this->user('pro@example.com', 'prouser');
         $this->actingAs($pro)->postJson('/account/domains', ['host' => 'one-site.org'])->assertCreated();
-        $this->postJson('/account/domains', ['host' => 'two-site.org'])->assertStatus(422);              // Pro allows one
+        $this->postJson('/account/domains', ['host' => 'two-site.org'])->assertCreated();                // Pro allows three
+        $this->postJson('/account/domains', ['host' => 'three-site.org'])->assertCreated();
+        $this->postJson('/account/domains', ['host' => 'four-site.org'])->assertStatus(422);
         $this->postJson('/account/domains', ['host' => 'ONE-site.org'])->assertCreated();                // the same one again is not a second domain
 
         $biz = $this->user('biz@example.com', 'bizuser', 'business');
@@ -219,9 +222,7 @@ class CustomDomainTest extends TestCase
         $this->get('http://ali-site.org/')->assertNotFound();
         $u->forceFill(['suspended_at' => null])->save();
 
-        $this->travel(31)->days();                                                                         // Pro ran out: no custom domains on Free
-        $this->get('http://ali-site.org/')->assertNotFound();
-        app(PlanService::class)->grant($u->fresh(), 'pro', 30, 'admin');
+        $this->travel(31)->days();                                                                         // Pro ran out: Free still includes one custom domain
         $this->get('http://ali-site.org/')->assertOk();
     }
 

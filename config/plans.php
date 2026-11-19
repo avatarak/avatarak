@@ -16,15 +16,15 @@ return [
             'name' => ['fa' => 'رایگان', 'en' => 'Free'],
             'tagline' => ['fa' => 'برای افراد و سایت‌های کوچک', 'en' => 'For people and small sites'],
             'price' => ['month' => 0, 'year' => 0],
-            'limits' => ['sites' => 3, 'rate_limit' => 600, 'gallery' => 3, 'sections' => 2, 'webhooks' => 0, 'domains' => 0],
-            'features' => ['custom_domain' => false, 'white_label' => false],
+            'limits' => ['sites' => 3, 'rate_limit' => 600, 'gallery' => 3, 'sections' => 2, 'webhooks' => 0, 'domains' => 1],
+            'features' => ['custom_domain' => true, 'white_label' => false],
         ],
         'pro' => [
             'rank' => 1,
             'name' => ['fa' => 'حرفه‌ای', 'en' => 'Pro'],
             'tagline' => ['fa' => 'برای فروشگاه‌ها و وب‌سایت‌های فعال', 'en' => 'For shops and busy sites'],
             'price' => ['month' => (int) env('PLAN_PRO_PRICE_MONTH', 150000), 'year' => (int) env('PLAN_PRO_PRICE_YEAR', 1500000)],
-            'limits' => ['sites' => 25, 'rate_limit' => 6000, 'gallery' => 12, 'sections' => 6, 'webhooks' => 3, 'domains' => 1],
+            'limits' => ['sites' => 25, 'rate_limit' => 6000, 'gallery' => 12, 'sections' => 6, 'webhooks' => 3, 'domains' => 3],
             'features' => ['custom_domain' => true, 'white_label' => false],
         ],
         'business' => [
