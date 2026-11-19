@@ -13,7 +13,7 @@ class DomainController extends Controller
 {
     private function present(CustomDomain $d, DomainVerifier $v): array
     {
-        return ['id' => $d->id, 'host' => $d->host, 'verified' => $d->isVerified(), 'instructions' => $v->instructions($d), 'last_checked_at' => $d->last_checked_at?->toIso8601String()];
+        return ['id' => $d->id, 'host' => $d->host, 'verified' => $d->isVerified(), 'pointed' => $d->isVerified() && \Illuminate\Support\Facades\Cache::remember('dom-pointed:'.$d->id.':'.$d->host, 60, fn () => $v->pointed($d->host)), 'instructions' => $v->instructions($d), 'last_checked_at' => $d->last_checked_at?->toIso8601String()];
     }
 
     public function index(Request $request, PlanService $plans, DomainVerifier $v): JsonResponse
