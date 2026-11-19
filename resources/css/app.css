@@ -215,3 +215,12 @@
 .toast [data-toast-icon] { display: grid; width: 1.5rem; height: 1.5rem; flex: none; place-items: center; border-radius: 999px; background: #16A34A; }
 .toast[data-tone='error'] [data-toast-icon] { background: #DC2626; }
 @media (prefers-reduced-motion: reduce) { .toast, .report-dialog[open], .sel-list { animation: none; transition: none; } }
+
+/* sign-in: a refused form shakes once; the dashboard fades in; skeleton blocks shimmer */
+@keyframes auth-shake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+.auth-shake { animation: auth-shake .38s ease-in-out; }
+@keyframes page-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.page-in { animation: page-in .35s ease-out both; }
+@keyframes sk-shimmer { 0% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
+.sk { border-radius: 8px; background: linear-gradient(100deg, #eceef1 30%, #f6f7f9 50%, #eceef1 70%); background-size: 220% 100%; animation: sk-shimmer 1.4s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .auth-shake, .page-in, .sk { animation: none; } }

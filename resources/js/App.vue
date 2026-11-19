@@ -4,7 +4,8 @@ import { state, load, toast } from './store';
 import { applyDir, t } from './i18n';
 import Landing from './components/Landing.vue';
 // the dashboard and the admin panel are big and most visitors never open them: load them only when needed
-const Panel = defineAsyncComponent(() => import('./components/Panel.vue'));
+import PanelSkeleton from './components/PanelSkeleton.vue';
+const Panel = defineAsyncComponent({ loader: () => import('./components/Panel.vue'), loadingComponent: PanelSkeleton, delay: 0 });
 const AdminGate = defineAsyncComponent(() => import('./components/admin/AdminGate.vue'));
 import AnnouncementBar from './components/AnnouncementBar.vue';
 
@@ -35,8 +36,8 @@ onMounted(async () => {
 <template>
     <AdminGate v-if="isAdmin" />
     <!-- the dashboard needs to know who you are first; the home page does not (so it can be on screen at once) -->
-    <div v-else-if="isPanel && !state.ready" class="grid min-h-screen place-items-center text-muted">{{ t('loading') }}</div>
-    <div v-else-if="isPanel && state.account" class="flex h-dvh flex-col">
+    <PanelSkeleton v-else-if="isPanel && !state.ready" />
+    <div v-else-if="isPanel && state.account" class="page-in flex h-dvh flex-col">
         <AnnouncementBar class="shrink-0" />
         <div class="min-h-0 flex-1"><Panel /></div>
     </div>

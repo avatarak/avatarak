@@ -1,7 +1,7 @@
 <script setup>
-import { ref, reactive, watch, onBeforeUnmount } from 'vue';
+import { ref, reactive, watch, computed, onBeforeUnmount } from 'vue';
 import { api, ApiError } from '../api';
-import { load, siteStatus, loadStatus } from '../store';
+import { load, adopt, siteStatus, loadStatus } from '../store';
 import { t } from '../i18n';
 import Modal from './Modal.vue';
 import Icon from './Icon.vue';
@@ -17,12 +17,14 @@ let timer;
 const errors = ref({});
 const busy = ref(false);
 const message = ref('');
+const welcome = ref('');   // set once sign-in worked: the button turns into a check mark for a moment
+const shake = ref(false);
 
 // start clean every time it opens (keeps a prefilled email from the landing form)
 watch(() => props.open, (v) => {
     if (!v) return;
     Object.assign(form, { name: '', email: props.email, password: '', username: '', code: '', recovery: '', accept_terms: false });
-    errors.value = {}; message.value = ''; busy.value = false; step.value = 'password';
+    errors.value = {}; message.value = ''; busy.value = false; welcome.value = ''; step.value = 'password';
 });
 
 function startWait() {
@@ -30,6 +32,32 @@ function startWait() {
     timer = setInterval(() => { if (--wait.value <= 0) clearInterval(timer); }, 1000);
 }
 onBeforeUnmount(() => clearInterval(timer));
+
+/** A refused form gives a short shake (never a delay: errors should be instant). */
+function fail(e) {
+    errors.value = e.errors; message.value = Object.keys(e.errors).length ? '' : e.message;
+    busy.value = false;
+    shake.value = false;
+    requestAnimationFrame(() => { shake.value = true; });
+}
+
+/**
+ * Signed in. Fetch the account and warm up the dashboard code while the button shows a check mark for a moment,
+ * then open the dashboard. Reduced-motion users get the same words with no waiting animation.
+ */
+async function finish() {
+    welcome.value = t('welcome');
+    const started = Date.now();
+    try {
+        const [acc] = await Promise.all([api('GET', '/account'), import('./Panel.vue').catch(() => null)]);
+        welcome.value = acc?.name ? t('welcomeName', { name: acc.name.split(' ')[0] }) : t('welcome');
+        const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        await new Promise((r) => setTimeout(r, Math.max(0, (reduce ? 250 : 750) - (Date.now() - started))));
+        adopt(acc);
+    } catch {
+        await load();
+    }
+}
 
 async function sendCode() {
     if (busy.value) return;
@@ -51,11 +79,10 @@ async function submit() {
         busy.value = true; errors.value = {}; message.value = '';
         try {
             await api('POST', '/login/2fa', useRecovery.value ? { recovery_code: form.recovery } : { code: form.code });
-            await load();
+            await finish();
         } catch (e) {
             if (!(e instanceof ApiError)) throw e;
-            errors.value = e.errors; message.value = Object.keys(e.errors).length ? '' : e.message;
-            busy.value = false;
+            fail(e);
         }
         return;
     }
@@ -64,11 +91,10 @@ async function submit() {
         try {
             const r = await api('POST', '/login/code/verify', { email: form.email, code: form.code });
             if (r?.two_factor) { step.value = 'twofa'; form.code = ''; busy.value = false; return; }
-            await load();
+            await finish();
         } catch (e) {
             if (!(e instanceof ApiError)) throw e;
-            errors.value = e.errors; message.value = Object.keys(e.errors).length ? '' : e.message;
-            busy.value = false;
+            fail(e);
         }
         return;
     }
@@ -76,20 +102,20 @@ async function submit() {
     try {
         const r = await api('POST', props.mode === 'register' ? '/register' : '/login', form);
         if (r?.two_factor) { step.value = 'twofa'; form.code = ''; busy.value = false; return; }
-        await load();
+        await finish();
     } catch (e) {
         if (!(e instanceof ApiError)) throw e;
-        errors.value = e.errors; message.value = Object.keys(e.errors).length ? '' : e.message;
-        busy.value = false;
+        fail(e);
     }
 }
 loadStatus();
+const busyLabel = computed(() => (props.mode === 'register' ? t('registerBusy') : step.value === 'email' ? t('saving') : t('loginBusy')));
 const err = (k) => errors.value[k]?.[0];
 </script>
 
 <template>
     <Modal :open="open" :label="t(mode)" width="26rem" @close="emit('close')">
-        <form class="p-7" novalidate @submit.prevent="submit">
+        <form class="p-7" :class="{ 'auth-shake': shake }" novalidate @submit.prevent="submit" @animationend="shake = false">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold">{{ t(mode) }}</h2>
                 <button type="button" class="icon-btn -me-2" :aria-label="t('close')" @click="emit('close')"><Icon name="close" :size="20" /></button>
@@ -147,8 +173,12 @@ const err = (k) => errors.value[k]?.[0];
                 <p v-if="message" class="text-sm text-red-600" role="alert">{{ message }}</p>
             </div>
 
-            <button class="btn btn-primary mt-7 w-full !min-h-[48px]" :disabled="busy || (mode === 'register' && !siteStatus.registration_open)">
-                {{ busy ? t('saving') : (mode === 'login' && step === 'email') ? t('sendCode') : (mode === 'login' && step === 'code') ? t('codeEnter') : (mode === 'login' && step === 'twofa') ? t('tfVerify') : t(mode) }}
+            <button class="btn btn-primary mt-7 w-full !min-h-[48px] transition-colors duration-300" :class="welcome ? '!bg-emerald-600 !border-emerald-600 !opacity-100' : busy ? '!opacity-90' : ''" :disabled="busy || !!welcome || (mode === 'register' && !siteStatus.registration_open)">
+                <span class="inline-flex items-center justify-center gap-2" aria-live="polite">
+                    <Icon v-if="welcome" name="check" :size="20" />
+                    <span v-else-if="busy" class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" aria-hidden="true"></span>
+                    {{ welcome || (busy ? busyLabel : (mode === 'login' && step === 'email') ? t('sendCode') : (mode === 'login' && step === 'code') ? t('codeEnter') : (mode === 'login' && step === 'twofa') ? t('tfVerify') : t(mode)) }}
+                </span>
             </button>
             <p v-if="mode === 'login' && step !== 'twofa'" class="mt-4 text-center text-sm">
                 <button v-if="step === 'password'" type="button" class="font-semibold text-brand hover:underline" @click="step = 'email'; errors = {}; message = ''">{{ t('codeLogin') }}</button>

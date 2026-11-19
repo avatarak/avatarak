@@ -16,6 +16,12 @@ export function setAccount(a) {
     state.draft = a ? JSON.parse(JSON.stringify(a.profile)) : null;
 }
 
+/** Adopt an account that was fetched ahead of time (the sign-in animation fetches it while the check mark shows). */
+export function adopt(a) {
+    setAccount(a);
+    state.ready = true;
+}
+
 export async function load() {
     try {
         setAccount(await api('GET', '/account'));
