@@ -39,7 +39,10 @@ class ResolveCustomDomain
         if (! $profile || ! app(PlanService::class)->can($profile->user, 'custom_domain')) {
             abort(404);
         }
-        if (! preg_match(self::ALLOWED, $request->getPathInfo())) {
+        // The page builds its photo and report-form addresses as /{username}/…, even on the customer's domain:
+        // those two are fine for the OWNER's own username and nobody else's.
+        $own = '#^/'.preg_quote(strtolower($profile->username), '#').'/(?:avatar|report)$#';
+        if (! preg_match(self::ALLOWED, $request->getPathInfo()) && ! preg_match($own, strtolower($request->getPathInfo()))) {
             abort(404);
         }
 

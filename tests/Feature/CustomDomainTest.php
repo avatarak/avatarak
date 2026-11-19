@@ -176,6 +176,9 @@ class CustomDomainTest extends TestCase
         $this->get('http://ali-site.org/profile.vcf')->assertOk()->assertHeader('Content-Type', 'text/vcard; charset=utf-8');
         $this->get('http://ali-site.org/profile.qr')->assertOk();
         $this->get('http://ali-site.org/profile.card')->assertOk();
+        $this->get('http://ali-site.org/ali/avatar?s=512')->assertOk()->assertHeader('Content-Type', 'image/svg+xml');   // the page's own <img> uses this form
+        $this->get('http://ali-site.org/bob/avatar')->assertNotFound();                                                 // only the owner's
+        $this->assertStringContainsString('/ali/avatar', $page->getContent());
     }
 
     public function test_nothing_else_of_the_app_is_reachable_through_a_customers_domain(): void
