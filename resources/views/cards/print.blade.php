@@ -28,7 +28,7 @@
     @vite(['resources/css/app.css'])
     <style>
         @page { size: {{ $sheet ? 'A4' : '85mm 55mm' }}; margin: {{ $sheet ? '10mm' : '0' }}; }
-        .bc { --ac: {{ $ac }}; --ink: {{ $ink }}; --on: {{ $on }}; width: 85mm; height: 55mm; box-sizing: border-box; position: relative; overflow: hidden; border-radius: 3mm; box-shadow: 0 1px 8px rgb(0 0 0 / .2); break-inside: avoid; background: #fff; color: #101517; font-family: Vazirmatn, Tahoma, Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .bc { --ac: {{ $ac }}; --ink: {{ $ink }}; --on: {{ $on }}; width: 85mm; height: 55mm; box-sizing: border-box; position: relative; overflow: hidden; border-radius: 3mm; box-shadow: 0 1px 8px rgb(0 0 0 / .2); break-inside: avoid; background: #fff; color: #101517; font-family: 'Vazirmatn Variable', Vazirmatn, Tahoma, Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .bc .q svg { display: block; width: 100%; height: auto; }
         .bc b, .bc span { unicode-bidi: plaintext; }
         .bc img.ph { object-fit: cover; border-radius: 50%; display: block; }
@@ -95,7 +95,7 @@
 <div class="no-print mx-auto flex max-w-3xl flex-wrap items-center gap-3 px-4 py-5">
     <a href="{{ route('profile.show', $p->username) }}" class="btn btn-ghost">{{ $t['back'] }}</a>
     <a href="{{ $href(['sheet' => $sheet ? 0 : 1]) }}" class="btn btn-ghost">{{ $sheet ? $t['single'] : $t['sheet'] }}</a>
-    <button type="button" class="btn btn-primary ms-auto" onclick="window.print()">{{ $t['print'] }}</button>
+    <button type="button" class="btn btn-primary ms-auto" data-print>{{ $t['print'] }}</button>
     <div class="pick flex w-full flex-wrap items-center gap-2" role="group" aria-label="{{ $t['design'] }}">
         <span class="text-sm text-muted">{{ $t['design'] }}:</span>
         @foreach($styles as $s)<a href="{{ $href(['style' => $s]) }}" @if($s === $th->style) aria-current="true" @endif>{{ $t['styles'][$s] }}</a>@endforeach
@@ -119,5 +119,6 @@
         @endforeach
     </div>
 </div>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">document.querySelectorAll('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });</script>
 </body>
 </html>

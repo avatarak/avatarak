@@ -7,7 +7,31 @@ use App\Models\Profile;
 /** The 1080x1350 share image, in the three card designs. Pure string building: it is served as SVG and rasterised by the browser. */
 class ShareCard
 {
-    private const FONT = 'Vazirmatn, Tahoma, Arial, sans-serif';
+    private const FONT = "'Vazirmatn Card', Tahoma, Arial, sans-serif";
+
+    private const RANGES = [
+        'arabic' => 'U+0600-06FF,U+0750-077F,U+08A0-08FF,U+200C-200E,U+2010-2011,U+FB50-FDFF,U+FE70-FEFC',
+        'latin' => 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212',
+    ];
+
+    private static ?string $fontCss = null;
+
+    /** Vazirmatn travels inside the image: an SVG shown as <img> or turned into a PNG cannot use the page's fonts. */
+    private static function fontCss(): string
+    {
+        if (self::$fontCss === null) {
+            $css = '';
+            foreach (self::RANGES as $set => $range) {
+                $file = resource_path("fonts/vazirmatn-{$set}-wght-normal.woff2");
+                if (is_file($file)) {
+                    $css .= "@font-face{font-family:'Vazirmatn Card';font-weight:100 900;src:url(data:font/woff2;base64,".base64_encode(file_get_contents($file)).") format('woff2');unicode-range:{$range}}";
+                }
+            }
+            self::$fontCss = $css;
+        }
+
+        return self::$fontCss;
+    }
 
     public function __construct(private QrService $qr, private AvatarService $avatars, private ProfileExport $export) {}
 
@@ -22,7 +46,7 @@ class ShareCard
         $ink = CardTheme::INK;
         $grey = '#5B6470';
 
-        $text = fn (float $x, float $y, int|float $size, string $fill, string $s, string $anchor = 'middle', int $weight = 400, bool $ltr = false) => '<text x="'.$x.'" y="'.$y.'" text-anchor="'.$anchor.'" font-size="'.$size.'" font-weight="'.$weight.'" fill="'.$fill.'" font-family="'.($ltr ? 'Inter, Arial, sans-serif' : self::FONT).'"'.($ltr ? ' direction="ltr" unicode-bidi="plaintext"' : '').'>'.$esc($s).'</text>';
+        $text = fn (float $x, float $y, int|float $size, string $fill, string $s, string $anchor = 'middle', int $weight = 400, bool $ltr = false) => '<text x="'.$x.'" y="'.$y.'" text-anchor="'.$anchor.'" font-size="'.$size.'" font-weight="'.$weight.'" fill="'.$fill.'" font-family="'.self::FONT.'"'.($ltr ? ' direction="ltr" unicode-bidi="plaintext"' : '').'>'.$esc($s).'</text>';
         $fit = fn (string $s, int $max, int $min = 44, float $width = 880) => (int) max($min, min($max, $width / max(1, mb_strlen($s)) / 0.58));
 
         $photo = $this->avatars->renderProfile($profile, 360, 'jpeg');
@@ -89,6 +113,6 @@ class ShareCard
                 .$text(540, 1290, 34, $th->accentInk, $shown, 'middle', 600, true);
         }
 
-        return '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-label="'.$esc($name).'">'.$out.'</svg>';
+        return '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-label="'.$esc($name).'"><style>'.self::fontCss().'</style>'.$out.'</svg>';
     }
 }
