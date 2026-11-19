@@ -10,7 +10,7 @@ import { lt } from './copy';
 const emit = defineEmits(['start']);
 const email = ref('');
 
-// decorative sample profiles (illustrated, not real people); copy lives in copy.js
+// decorative sample profiles with generated, fictional portraits; copy lives in copy.js
 const looks = [{ tone: 1, icons: ['instagram', 'x', 'github'], tint: '#3563E9' }, { tone: 4, icons: ['github', 'linkedin', 'telegram'], tint: '#0F9D7A' }, { tone: 3, icons: ['telegram', 'instagram', 'youtube'], tint: '#C2255C' }];
 
 /*
@@ -66,7 +66,7 @@ onBeforeUnmount(() => clearInterval(timer));
                          :class="pos(i) === 0 ? 'shadow-[0_18px_50px_rgb(16_21_23/.28)]' : ''" :style="cardStyle(i)">
                     <div class="h-24" :style="{ background: `color-mix(in srgb, ${looks[i].tint} 20%, #fff)` }"></div>
                     <div class="px-8 pb-8">
-                        <div class="-mt-14 w-fit rounded-full ring-4 ring-white"><Person :tone="looks[i].tone" :size="108" /></div>
+                        <div class="-mt-14 w-fit rounded-full ring-4 ring-white"><Person :tone="looks[i].tone" :size="108" eager /></div>
                         <div class="mt-4 text-[2rem] font-bold leading-tight">{{ c.name }}</div>
                         <div class="text-base text-ink/75">{{ c.role }}</div>
                         <div class="text-base text-ink/75">{{ c.city }}</div>

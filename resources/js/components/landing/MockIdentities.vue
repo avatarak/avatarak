@@ -7,7 +7,7 @@ import SocialIcon from '../SocialIcon.vue';
 <template>
     <div class="mx-auto flex w-full max-w-[34rem] items-center gap-5" aria-hidden="true">
         <div class="relative flex-1 overflow-hidden rounded-[6px] p-6 text-white" style="background: linear-gradient(135deg, #0b0f14, #1c2735 55%, #4a4a2a)">
-            <Person :tone="6" :size="92" />
+            <Person :tone="1" :size="92" />
             <div class="mt-4 text-[1.75rem] font-bold leading-tight">{{ lt('mockName') }}</div>
             <div class="text-sm text-white/60">{{ lt('mockCity') }}</div>
             <span class="mt-5 block h-2.5 w-4/5 rounded bg-white/70"></span><span class="mt-2 block h-2.5 w-1/2 rounded bg-white/70"></span>
